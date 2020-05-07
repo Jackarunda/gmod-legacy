@@ -166,12 +166,6 @@ if(SERVER)then
 			ply:EmitSound(Snd,75,Ptch)
 			ply:EmitSound(Snd,55,Ptch)
 		end
-		if(ply.EZarmor)then
-			local Num=#table.GetKeys(ply.EZarmor.slots)
-			if(Num>=6)then
-				ply:EmitSound("snd_jack_gear"..tostring(math.random(1,6))..".wav",58,math.random(70,130))
-			end
-		end
 	end
 	hook.Add("PlayerFootstep","JackyArmorFootstep",StepSound)
 	local function RemoveArmor(ply, txt)
