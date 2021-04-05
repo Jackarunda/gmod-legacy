@@ -92,5 +92,4 @@ function ENT:Use(activator)
 	self.Used=true
 	SafeRemoveEntityDelayed(self,30)
 	self:SetDTBool(0,false)
-	self.Entity:SetUseType(nil)
 end
