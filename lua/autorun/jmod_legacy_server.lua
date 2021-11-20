@@ -691,7 +691,7 @@ if(SERVER)then
 				end
 				SafeRemoveEntityDelayed(victim,.05)
 				for i=0,20 do
-					JMod_Sploom(attacker,victim:GetPos()+VectorRand()*math.Rand(0,500),100)
+					JMod.Sploom(attacker,victim:GetPos()+VectorRand()*math.Rand(0,500),100)
 				end
 			end
 		end
@@ -1365,7 +1365,7 @@ if(SERVER)then
 			ent:SetMaterial("")
 		end
 		if(ent.OpSquadUltraMegaSuperPowerDeathZombie)then
-			JMod_Sploom(ent,ent:GetPos()+Vector(0,0,20),135)
+			JMod.Sploom(ent,ent:GetPos()+Vector(0,0,20),135)
 			local Poof=EffectData()
 			Poof:SetOrigin(ent:LocalToWorld(ent:OBBCenter())-Vector(0,0,10))
 			util.Effect("eff_jack_gmod_bloodsplosion",Poof,true,true)

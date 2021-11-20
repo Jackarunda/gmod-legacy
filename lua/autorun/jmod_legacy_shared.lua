@@ -351,7 +351,7 @@ if(SERVER)then
 		if(npc.ShouldRandomlyExplode)then
 			if not(attacker==npc)then
 				local Pos=npc:GetPos()
-				JMod_Sploom(npc,Pos+VectorRand()*math.Rand(0,100),50)
+				JMod.Sploom(npc,Pos+VectorRand()*math.Rand(0,100),50)
 				npc:Remove()
 				Sploo:Fire("explode","",0)
 				timer.Simple(.02,function()
@@ -833,7 +833,7 @@ if(SERVER)then
 			item:EmitSound("snd_jack_ordnancearm.wav")
 			JackyDetGearNotify(playah,"Set: "..armType)
 			item.Armed=true
-			if not(item.Owner)then JMod_Owner(item,playah) end
+			if not(item.Owner)then JMod.Owner(item,playah) end
 		end
 	end
 	

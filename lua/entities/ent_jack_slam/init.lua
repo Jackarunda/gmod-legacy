@@ -49,7 +49,7 @@ function ENT:Detonate(tr)
 	Poo:SetNormal(Dir)
 	util.Effect("eff_jack_directionalsplode",Poo,true,true)
 	for i=0,2 do
-		JMod_Sploom(self.Entity,SelfPos+VectorRand(),20)
+		JMod.Sploom(self.Entity,SelfPos+VectorRand(),20)
 	end
 	for i=0,5 do
 		local QT=util.QuickTrace(SelfPos,VectorRand()*50,{self})

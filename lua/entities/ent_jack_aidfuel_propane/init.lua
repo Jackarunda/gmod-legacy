@@ -49,7 +49,7 @@ function ENT:Asplode()
 	if(self.Asploded)then return end
 	self.Asploded=true
 	local SelfPos=self:LocalToWorld(self:OBBCenter())
-	JMod_Sploom(self.Entity,SelfPos,110)
+	JMod.Sploom(self.Entity,SelfPos,110)
 	self:Remove()
 end
 function ENT:Use(activator,caller)

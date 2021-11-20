@@ -95,7 +95,7 @@ function ENT:Fougassplode()
 			end
 		end
 	end
-	JMod_Sploom(self.Entity,SelfPos,30)
+	JMod.Sploom(self.Entity,SelfPos,30)
 	for i=0,25 do
 		local Tr=util.QuickTrace(SelfPos,VectorRand()*math.Rand(200,300),{self})
 		if(Tr.Hit)then

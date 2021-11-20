@@ -230,7 +230,7 @@ if(SERVER)then
 	----------------------------------------------------------------------------------*/
 	local function KaBewm(npc,attacker,inflictor)
 		if((npc.IsAJIViscerator)and not(npc.IsAJIGunhack))then
-			JMod_Sploom(npc,npc:GetPos()+Vector(0,0,20),50)
+			JMod.Sploom(npc,npc:GetPos()+Vector(0,0,20),50)
 			
 			//local poz=npc:GetPos()
 			//util.BlastDamage(npc,npc,poz,100,500)
