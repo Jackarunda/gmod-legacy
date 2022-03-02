@@ -2,7 +2,7 @@
 include('shared.lua')
 
 function ENT:Initialize()
-	self.Nice=ClientsideModel("models/props_trainyard/distillery_barrel001.mdl")
+	self.Nice=ClientsideModel("models/jmodels/explosives/bombs/powderkeg/powderkeg.mdl")
 	self.Nice:SetMaterial("models/entities/mat_jack_powderkeg")
 	self.Nice:SetPos(self:GetPos())
 	self.Nice:SetAngles(self:GetAngles())
@@ -12,7 +12,7 @@ end
 
 function ENT:Draw()
 	local Matricks=Matrix()
-	Matricks:Scale(Vector(.21,.21,.225))
+	Matricks:Scale(Vector(.80, .80, 1))
 	self.Nice:EnableMatrix("RenderMultiply",Matricks)
 	self.Nice:DrawModel()
 	--self.Entity:DrawModel()
