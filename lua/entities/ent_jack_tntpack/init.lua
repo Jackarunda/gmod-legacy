@@ -26,7 +26,7 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/weapons/w_jnt.mdl")
+	self.Entity:SetModel("models/jmodels/explosives/grenades/tnt/w_jnt.mdl")
 
 	self.Entity:PhysicsInit(SOLID_VPHYSICS)
 	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
