@@ -2,8 +2,8 @@
 
 SWEP.ViewModelFlip		= true
 SWEP.ViewModel			= "models/weapons/v_eq_fragjrenade.mdl"
-SWEP.WorldModel			= "models/weapons/w_eq_fraggrenade.mdl"
-SWEP.ViewModelFOV	  =75
+SWEP.WorldModel			= "models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl"
+SWEP.ViewModelFOV	  = 75
 
 SWEP.Spawnable			= false
 SWEP.AdminSpawnable		= false
@@ -32,10 +32,10 @@ SWEP.ViewModelBoneMods={
 	["v_weapon.Flashbang_Parent"]={ scale=Vector(0.009, 0.009, 0.009), pos=Vector(0, 0, 0), angle=Angle(0, 0, 0) }
 }
 SWEP.VElements={
-	["grenade"]={ type="Model", model="models/weapons/w_fragjade.mdl", bone="v_weapon.Flashbang_Parent", rel="", pos=Vector(0.5, -4, -0.101), angle=Angle(-90, -90, 0), size=Vector(1.5, 1.5, 1.5), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
+	["grenade"]={ type="Model", model="models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl", bone="v_weapon.Flashbang_Parent", rel="", pos=Vector(0.5, -4, -0.101), angle=Angle(-90, -90, 0), size=Vector(1.5, 1.5, 1.5), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
 }
 SWEP.WElements={
-	["grenade"]={ type="Model", model="models/weapons/w_fragjade.mdl", bone="ValveBiped.Bip01_R_Hand", rel="", pos=Vector(3.181, 2.273, 0), angle=Angle(-180, 0, 0), size=Vector(1, 1, 1), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
+	["grenade"]={ type="Model", model="models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl", bone="ValveBiped.Bip01_R_Hand", rel="", pos=Vector(3.181, 2.273, 0), angle=Angle(-180, 0, 0), size=Vector(1, 1, 1), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
 }
 
 function SWEP:SetupDataTables()
@@ -685,6 +685,7 @@ if CLIENT then
 				if(IsValid(v.modelEnt))then
 					v.modelEnt:SetPos(self:GetPos())
 					v.modelEnt:SetAngles(self:GetAngles())
+					v.modelEnt:SetModelScale(0.5)
 					v.modelEnt:SetParent(self)
 					v.modelEnt:SetNoDraw(true)
 					v.createdModel=v.model

@@ -4,7 +4,7 @@ language.Add("ent_jack_fraggrenade","Frag Grenade")
 
 function ENT:Initialize()
 	if(self:GetDTBool(0))then
-		local NiceModel=ClientsideModel("models/weapons/w_fragjade.mdl")
+		local NiceModel=ClientsideModel("models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl")
 		NiceModel:SetMaterial("modes/weapons/w_models/gjj")
 		NiceModel:SetPos(self:GetPos()+self:GetUp()*2)
 		NiceModel:SetParent(self)
@@ -12,7 +12,7 @@ function ENT:Initialize()
 		NiceModel:Activate()
 		self.NiceModel=NiceModel
 	else
-		local NiceModel=ClientsideModel("models/weapons/w_fragjade.mdl")
+		local NiceModel=ClientsideModel("models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl")
 		NiceModel:SetMaterial("models/weapons/w_models/gnd")
 		NiceModel:SetPos(self:GetPos()+self:GetUp()*2)
 		NiceModel:SetParent(self)

@@ -1,7 +1,7 @@
 //local Shit=Material("models/entities/mat_jack_apersbomb")
 include('shared.lua')
 function ENT:Initialize()
-	self.Prettiness=ClientsideModel("models/props_explosive/explosive_butane_can.mdl")
+	self.Prettiness=ClientsideModel("models/jmodels/explosives/props_explosive/explosive_butane_can.mdl")
 	self.Prettiness:SetPos(self:GetPos())
 	self.Prettiness:SetParent(self)
 	self.Prettiness:SetNoDraw(true)
