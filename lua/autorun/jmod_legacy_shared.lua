@@ -833,7 +833,7 @@ if(SERVER)then
 			item:EmitSound("snd_jack_ordnancearm.wav")
 			JackyDetGearNotify(playah,"Set: "..armType)
 			item.Armed=true
-			if not(item.Owner)then JMod.Owner(item,playah) end
+			if not(item.Owner)then JMod.SetOwner(item,playah) end
 		end
 	end
 	
