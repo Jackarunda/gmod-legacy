@@ -406,7 +406,7 @@ function GlobalJackyFGHGDeploy(self)
 		end)
 	end
 	self.Weapon:SendWeaponAnim(ACT_VM_DEPLOY)
-	self.Owner:GetViewModel():SetPlaybackRate(1.3)
+	self.EZowner:GetViewModel():SetPlaybackRate(1.3)
 	timer.Simple(1,function()
 		if(IsValid(self))then
 			self.dt.State=2
@@ -418,7 +418,7 @@ end
 function GlobalJackyFGLGDeploy(self)
 	if(self.dt.State==1)then return end
 	self.dt.State=1
- 	if(SERVER)then self.Owner:EmitSound("snd_jack_fglonggundraw.wav") end
+ 	if(SERVER)then self.EZowner:EmitSound("snd_jack_fglonggundraw.wav") end
 	if(self.NewCartridge)then
 		timer.Simple(1.4,function()
 			if(IsValid(self))then
@@ -437,7 +437,7 @@ function GlobalJackyFGLGDeploy(self)
 		end)
 	end
 	self.Weapon:SendWeaponAnim(ACT_VM_DEPLOY)
-	self.Owner:GetViewModel():SetPlaybackRate(.5)
+	self.EZowner:GetViewModel():SetPlaybackRate(.5)
 	timer.Simple(2,function()
 		if(IsValid(self))then
 			self.dt.State=2
@@ -448,7 +448,7 @@ end
 
 function GlobalJackyFGDisplayToggle(self)
 	if(CLIENT)then return end
-	if(self.Owner:KeyDown(IN_USE))then
+	if(self.EZowner:KeyDown(IN_USE))then
 		if(self.DisplaysOn)then
 			self.DisplaysOn=false
 			umsg.Start("JackysFGBoolChange")
@@ -481,7 +481,7 @@ function GlobalJackyFGLongReloadKey(self)
 	if not(self.dt.State==2)then return end
 	if(self.dt.Heat>.15)then
 		self:BurstCool()
-		self.Owner:SetAnimation(PLAYER_RELOAD)
+		self.EZowner:SetAnimation(PLAYER_RELOAD)
 	end
 end
 
@@ -491,12 +491,12 @@ function GlobalJackyLoadIronSlug(self,cartridge)
 	if(InitialMassRemaining<self.MaxRoundCapacity)then
 		self.dt.State=5
 		self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
-		self.Owner:SetAnimation(PLAYER_RELOAD)
+		self.EZowner:SetAnimation(PLAYER_RELOAD)
 		self.Weapon:EmitSound("snd_jack_massload.wav",70,130)
-		self.Owner:ViewPunch(Angle(1,0,0))
+		self.EZowner:ViewPunch(Angle(1,0,0))
 		timer.Simple(.2,function()
 			if(IsValid(self))then
-				self.Owner:ViewPunch(Angle(1,0,0))
+				self.EZowner:ViewPunch(Angle(1,0,0))
 				self.Weapon:EmitSound("snd_jack_load_iron.wav",70,130)
 				self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
 			end
@@ -504,7 +504,7 @@ function GlobalJackyLoadIronSlug(self,cartridge)
 		timer.Simple(.4,function()
 			if(IsValid(self))then
 				self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
-				self.Owner:GetViewModel():SetPlaybackRate(1.4)
+				self.EZowner:GetViewModel():SetPlaybackRate(1.4)
 			end
 		end)
 		timer.Simple(.8,function()
@@ -529,7 +529,7 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
+			umsg.Start("JackysFGMagHot",self.EZowner)
 			umsg.Entity(self.Weapon)
 			umsg.String(self.PowerType)
 			umsg.End()
@@ -539,16 +539,16 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
 				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.8)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
+				self.EZowner:GetViewModel():SetPlaybackRate(.8)
+				self.EZowner:SetAnimation(PLAYER_RELOAD)
 				self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
 				timer.Simple(.4,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
-							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.Owner:GetAimVector()*10)
+							local LolAng=self.EZowner:EyeAngles()
+							local Pos,Ang=self.EZowner:GetBonePosition(self.EZowner:LookupBone("ValveBiped.Bip01_R_Hand"))
+							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.EZowner:GetAimVector()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
 							Empty:SetAngles(LolAng)
@@ -556,7 +556,7 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity())
 						end
 						self.dt.Ammo=0
 						
@@ -573,7 +573,7 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 				timer.Simple(.6,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
+							umsg.Start("JackysFGMagCool",self.EZowner)
 							umsg.Entity(self.Weapon)
 							umsg.String(NewType)
 							umsg.End()
@@ -619,7 +619,7 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
+			umsg.Start("JackysFGMagHot",self.EZowner)
 			umsg.Entity(self.Weapon)
 			umsg.String(self.PowerType)
 			umsg.End()
@@ -629,16 +629,16 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
 				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.8)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
+				self.EZowner:GetViewModel():SetPlaybackRate(.8)
+				self.EZowner:SetAnimation(PLAYER_RELOAD)
 				self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
 				timer.Simple(.4,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
-							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.Owner:GetAimVector()*10)
+							local LolAng=self.EZowner:EyeAngles()
+							local Pos,Ang=self.EZowner:GetBonePosition(self.EZowner:LookupBone("ValveBiped.Bip01_R_Hand"))
+							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.EZowner:GetAimVector()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
 							Empty:SetAngles(LolAng)
@@ -646,7 +646,7 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity())
 						end
 						self.dt.Energy=0
 						
@@ -663,7 +663,7 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 				timer.Simple(.6,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
+							umsg.Start("JackysFGMagCool",self.EZowner)
 							umsg.Entity(self.Weapon)
 							umsg.String(NewType)
 							umsg.End()
@@ -709,7 +709,7 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
+			umsg.Start("JackysFGMagHot",self.EZowner)
 			umsg.Entity(self.Weapon)
 			umsg.String(self.PowerType)
 			umsg.End()
@@ -719,15 +719,15 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
 				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.6*rate)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
+				self.EZowner:GetViewModel():SetPlaybackRate(.6*rate)
+				self.EZowner:SetAnimation(PLAYER_RELOAD)
 				if(SERVER)then self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3]) end
 				timer.Simple(1.5,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
+							local LolAng=self.EZowner:EyeAngles()
+							local Pos,Ang=self.EZowner:GetBonePosition(self.EZowner:LookupBone("ValveBiped.Bip01_R_Hand"))
 							Empty:SetPos(Pos+Ang:Up()*10-Ang:Forward()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
@@ -736,7 +736,7 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity())
 						end
 						self.dt.Ammo=0
 						
@@ -753,7 +753,7 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 				timer.Simple(2/rate,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
+							umsg.Start("JackysFGMagCool",self.EZowner)
 							umsg.Entity(self.Weapon)
 							umsg.String(self.PowerType)
 							umsg.End()
@@ -833,7 +833,7 @@ if(SERVER)then
 			item:EmitSound("snd_jack_ordnancearm.wav")
 			JackyDetGearNotify(playah,"Set: "..armType)
 			item.Armed=true
-			if not(item.Owner)then JMod.SetOwner(item,playah) end
+			if not(item.EZowner)then JMod.SetEZowner(item,playah) end
 		end
 	end
 	
@@ -875,7 +875,7 @@ if(SERVER)then
 		for key,item in pairs(RemoteDetonatableItemTable)do
 			if not(item.Triggered)then
 				if(item.Armed)then
-					if(item.Owner==playah)then
+					if(item.EZowner==playah)then
 						playah.JackyDetonatingOrdnance=true
 						timer.Simple(1,function()
 							if(IsValid(item))then

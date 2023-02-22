@@ -38,7 +38,7 @@ function ENT:Initialize()
 	
 	self.HasEnteredWater=false
 
-	if not(self.Owner)then self:Remove() return end
+	if not(self.EZowner)then self:Remove() return end
 	if not(self.Weapon)then self:Remove() return end
 	if not(self.InitialFlightDirection)then self:Remove() return end
 	if not(self.InitialFlightSpeed)then self:Remove() return end
@@ -68,7 +68,7 @@ function ENT:Think()
 	local NoseTraceData={}
 	NoseTraceData.start=SelfPos
 	NoseTraceData.endpos=SelfPos+self.CurrentFlightDirection*self.CurrentFlightSpeed*1.25
-	NoseTraceData.filter={self,self.Owner}
+	NoseTraceData.filter={self,self.EZowner}
 	NoseTraceData.mask=MASK_SHOT
 	local NoseTrace=util.TraceLine(NoseTraceData)
 	
@@ -122,7 +122,7 @@ function ENT:Impact(trace)
 	Damage:SetDamage(Severity*DamMod)
 	Damage:SetDamageType(DMG_BULLET)
 	Damage:SetDamagePosition(trace.HitPos)
-	Damage:SetAttacker(self.Owner)
+	Damage:SetAttacker(self.EZowner)
 	Damage:SetInflictor(Inflictor)
 	Damage:SetDamageForce(Forward*Severity*3000)
 	
@@ -175,7 +175,7 @@ end
 function ENT:MakeImpactEffect(pos,dir,num)
 	local Tr={start=pos,endpos=pos+dir*1000}
 	local T=util.TraceLine(Tr)
-	if((T.Entity==self.Owner)or(T.Entity==NULL))then return end
+	if((T.Entity==self.EZowner)or(T.Entity==NULL))then return end
 	local EffectBullet={}
 	EffectBullet.Num=math.ceil(num)
 	EffectBullet.Src=pos

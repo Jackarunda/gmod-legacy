@@ -36,14 +36,14 @@ if(SERVER)then
 		rpg:Activate()
 	end
 	function SWEP:NPCShoot_Primary(ShootPos,ShootDir)
-		if(self.Owner.IsTrainedWithRocketLaunchers)then --we do these simple safety checks
-			local Enemy=self.Owner:GetEnemy()
+		if(self.EZowner.IsTrainedWithRocketLaunchers)then --we do these simple safety checks
+			local Enemy=self.EZowner:GetEnemy()
 			local enemypos=Enemy:GetPos()
 			for key,enpeesee in pairs(ents.FindInSphere(enemypos,200))do
 				if(enpeesee:IsNPC())then
 					if(enpeesee:GetClass()=="npc_citizen")then --MOVE!!
 						local WarningTable={"vo/npc/male01/getdown02.wav","vo/npc/male01/headsup01.wav","vo/npc/male01/headsup02.wav","vo/npc/male01/watchout.wav"}
-						self.Owner:EmitSound(WarningTable[math.random(1,4)])
+						self.EZowner:EmitSound(WarningTable[math.random(1,4)])
 						return
 					end
 				end
@@ -52,43 +52,43 @@ if(SERVER)then
 		if(self.NextFireTime<CurTime())then
 			self.Reloading=false
 			local GoDirection=ShootDir
-			if(self.Owner.IsTrainedWithRocketLaunchers)then --he knows to shoot at an enemy's feet, and to adjust for the drop of the rocket.
-				local dist=(self.Owner:GetEnemy():GetPos()-self.Owner:GetPos()):Length()
+			if(self.EZowner.IsTrainedWithRocketLaunchers)then --he knows to shoot at an enemy's feet, and to adjust for the drop of the rocket.
+				local dist=(self.EZowner:GetEnemy():GetPos()-self.EZowner:GetPos()):Length()
 				local DropCompensation=dist^2.022*0.000027
 				local Inaccuracy=VectorRand()*math.Rand(0,40)
-				local MovingTargetTravelTimeCompensation=(self.Owner:GetEnemy():GetVelocity())*(dist/1650)
-				GoDirection=(self.Owner:GetEnemy():GetPos()+Vector(0,0,DropCompensation)+MovingTargetTravelTimeCompensation+Inaccuracy-ShootPos):GetNormalized()
+				local MovingTargetTravelTimeCompensation=(self.EZowner:GetEnemy():GetVelocity())*(dist/1650)
+				GoDirection=(self.EZowner:GetEnemy():GetPos()+Vector(0,0,DropCompensation)+MovingTargetTravelTimeCompensation+Inaccuracy-ShootPos):GetNormalized()
 			end
-			JackyPlayNPCAnim(self.Owner,"shoot_rpg",true,.4)
+			JackyPlayNPCAnim(self.EZowner,"shoot_rpg",true,.4)
 			if not(self.FiredRocket)then
 				self.FiredRocket=true
 				timer.Simple(.5,function()
 					if(IsValid(self))then
-						self.Owner:EmitSound("weapons/rpg/rocketfire1.wav")
+						self.EZowner:EmitSound("weapons/rpg/rocketfire1.wav")
 						local rockit=ents.Create("ent_jack_gmod_npcrocket")
 						rockit:SetPos(ShootPos+ShootDir)
-						rockit:SetOwner(self.Owner)
+						rockit:SetOwner(self.EZowner)
 						rockit:SetAngles(GoDirection:Angle())
-						rockit.Owner=self.Owner
+						rockit.EZowner=self.EZowner
 						rockit:Spawn()
 						rockit:Activate()
 						self.NextFireTime=CurTime()+5
-						self.Owner:StopMoving()
-						self.Owner:RestartGesture(self.Owner:GetSequenceInfo(self.Owner:LookupSequence("shoot_rpg")).activity)
+						self.EZowner:StopMoving()
+						self.EZowner:RestartGesture(self.EZowner:GetSequenceInfo(self.EZowner:LookupSequence("shoot_rpg")).activity)
 					end
 				end)
 			end
 		else
 			self.FiredRocket=false
 			if not(self.Reloading)then
-				if(self.Owner.IsTrainedWithRocketLaunchers)then
+				if(self.EZowner.IsTrainedWithRocketLaunchers)then
 					local chance=math.random(1,3)
 					if(chance==1)then
-						self.Owner:EmitSound("vo/npc/male01/gottareload01.wav")
+						self.EZowner:EmitSound("vo/npc/male01/gottareload01.wav")
 					elseif(chance==2)then
-						self.Owner:EmitSound("vo/npc/male01/coverwhilereload01.wav")
+						self.EZowner:EmitSound("vo/npc/male01/coverwhilereload01.wav")
 					elseif(chance==3)then
-						self.Owner:EmitSound("vo/npc/male01/coverwhilereload02.wav")
+						self.EZowner:EmitSound("vo/npc/male01/coverwhilereload02.wav")
 					end
 				end
 				self.Reloading=true

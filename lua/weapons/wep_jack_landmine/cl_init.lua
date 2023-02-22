@@ -37,7 +37,7 @@ function SWEP:GetViewModelPosition(pos,ang)
 	local Right=ang:Right()
 	local Forward=ang:Forward()
 
-	if((self.Owner:KeyDown(IN_SPEED))or(self.dt.State==8))then
+	if((self.EZowner:KeyDown(IN_SPEED))or(self.dt.State==8))then
 		MoveAmount=MoveAmount+0.75
 	else
 		MoveAmount=MoveAmount*.9

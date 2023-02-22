@@ -71,8 +71,8 @@ end
    Desc: Whip it out.
 ---------------------------------------------------------*/
 function SWEP:Deploy()
-	if(IsValid(self.Owner))then
-		if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(IsValid(self.EZowner))then
+		if(self.EZowner:KeyDown(IN_SPEED))then return end
 	end
 
 	self.Weapon:SetNextPrimaryFire(CurTime()+0.25)
@@ -100,22 +100,22 @@ end
    Desc: +attack1 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
-	if(self.Owner:IsNPC())then
+	if(self.EZowner:IsNPC())then
 		local stick=ents.Create("ent_jack_dynamite")
-		stick:SetPos(self.Owner:GetPos()+Vector(0,0,40)+self.Owner:GetAimVector()*20)
-		stick.Owner=self.Owner
+		stick:SetPos(self.EZowner:GetPos()+Vector(0,0,40)+self.EZowner:GetAimVector()*20)
+		stick.EZowner=self.EZowner
 		stick.FuzeLength=self.dt.FuzeLength
 		stick.FuzeLit=self.dt.Lit
 		stick:Spawn()
 		stick:Activate()
-		stick:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()+self.Owner:GetAimVector()*1500)
+		stick:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()+self.EZowner:GetAimVector()*1500)
 		stick:GetPhysicsObject():AddAngleVelocity(VectorRand()*150)
 
 		self.Weapon:EmitSound("weapons/iceaxe/iceaxe_swing1.wav")
 		return
 	end
 	
-	if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(self.EZowner:KeyDown(IN_SPEED))then return end
 	
 	if not(self.dt.State==2)then return end
 
@@ -139,7 +139,7 @@ end
 function SWEP:SecondaryAttack()
 	if((self.dt.State==2)or(self.dt.State==5))then
 		if(self.dt.State==2)then
-			if(self.Owner:GetNetworkedInt("JackyDetGearCount")<=0)then
+			if(self.EZowner:GetNetworkedInt("JackyDetGearCount")<=0)then
 				if(self.dt.Lit==false)then return end
 			end
 			self.Weapon:SendWeaponAnim(ACT_VM_PULLPIN)
@@ -147,7 +147,7 @@ function SWEP:SecondaryAttack()
 			self.dt.State=3
 			timer.Simple(0.2,function()
 				if(IsValid(self.Weapon))then
-					self.Owner:ViewPunch(Angle(-1,0,0))
+					self.EZowner:ViewPunch(Angle(-1,0,0))
 				end
 			end)
 			timer.Simple(0.625,function()
@@ -157,17 +157,17 @@ function SWEP:SecondaryAttack()
 					self.dt.Lit=!self.dt.Lit
 					if(self.dt.Lit==true)then
 						if(SERVER)then self.Weapon:EmitSound("snd_jack_ordnancearm.wav") end
-						self.Owner:SetNetworkedInt("JackyDetGearCount",self.Owner:GetNetworkedInt("JackyDetGearCount")-1)
-						if(SERVER)then JackyDetGearNotify(self.Owner,"Fuze Lit") end
+						self.EZowner:SetNetworkedInt("JackyDetGearCount",self.EZowner:GetNetworkedInt("JackyDetGearCount")-1)
+						if(SERVER)then JackyDetGearNotify(self.EZowner,"Fuze Lit") end
 					end
-					self.Owner:ViewPunch(Angle(1,1,0))
+					self.EZowner:ViewPunch(Angle(1,1,0))
 					self:SendWeaponAnim(ACT_VM_IDLE)
 				end
 			end)
 			timer.Simple(self.Weapon:SequenceDuration(),function()
 				if(IsValid(self.Weapon))then
-					if(self.Owner:KeyDown(IN_ATTACK))then
-						if not(self.Owner:KeyDown(IN_SPEED))then
+					if(self.EZowner:KeyDown(IN_ATTACK))then
+						if not(self.EZowner:KeyDown(IN_SPEED))then
 							self:PrimaryAttack()
 						end
 					end
@@ -185,20 +185,20 @@ function SWEP:Think()
 	local Frac=self.dt.FuzeLength/900
 	self.VElements["fuze"].size=Vector(.04,.04,Frac*2.5)
 	if(self.dt.State==5)then
-		if not(self.Owner:KeyDown(IN_SPEED))then
-			if not(self.Owner:KeyDown(IN_ATTACK))then
+		if not(self.EZowner:KeyDown(IN_SPEED))then
+			if not(self.EZowner:KeyDown(IN_ATTACK))then
 				if(self.dt.CanThrow)then
 					self.dt.State=6
 					self.Weapon:SendWeaponAnim(ACT_VM_THROW)
 					self.Weapon:EmitSound("snd_jack_grenadethrow.wav",90,95)
-					self.Owner:ViewPunch(Angle(-20,0,0))
-					self.Owner:SetAnimation(PLAYER_ATTACK1)
+					self.EZowner:ViewPunch(Angle(-20,0,0))
+					self.EZowner:SetAnimation(PLAYER_ATTACK1)
 					timer.Simple(0.4,function()
 						if(IsValid(self.Weapon))then
 							if(SERVER)then
 								self:ThrowStick()
-								self.Owner:ViewPunch(Angle(20,0,0))
-								self.Owner:StripWeapon("wep_jack_dynamite")
+								self.EZowner:ViewPunch(Angle(20,0,0))
+								self.EZowner:StripWeapon("wep_jack_dynamite")
 							end
 						end
 					end)
@@ -213,12 +213,12 @@ function SWEP:Think()
 				self.Weapon:EmitSound("snd_jack_sss.wav",70,math.Rand(90,110))
 				self.dt.FuzeLength=self.dt.FuzeLength-5
 				if(self.dt.State==2)then
-					if not(self.Owner:KeyDown(IN_SPEED))then
-						local Up=self.Owner:GetUp()
+					if not(self.EZowner:KeyDown(IN_SPEED))then
+						local Up=self.EZowner:GetUp()
 						local Pss=EffectData()
-						Pss:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+Up*3+self.Owner:GetRight()*6)
+						Pss:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+Up*3+self.EZowner:GetRight()*6)
 						Pss:SetScale(1)
-						Pss:SetNormal(Up+self.Owner:GetAimVector()*.5)
+						Pss:SetNormal(Up+self.EZowner:GetAimVector()*.5)
 						util.Effect("eff_jack_fuzeburn",Pss,true,true)
 					end
 				end
@@ -226,8 +226,8 @@ function SWEP:Think()
 		end
 		if((self.dt.FuzeLength)<=0)then
 			if(SERVER)then
-				local owned=self.Owner
-				self.Owner:StripWeapon("wep_jack_dynamite")
+				local owned=self.EZowner
+				self.EZowner:StripWeapon("wep_jack_dynamite")
 				local Blam=ents.Create("ent_jack_dynamite")
 				Blam:SetPos(owned:GetShootPos()+owned:GetRight()*10+owned:GetForward()*20)
 				Blam:Spawn()
@@ -247,19 +247,19 @@ end
 function SWEP:Holster()
 	if(self.JustExploded)then return end
 	if(SERVER)then
-		local pos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-Vector(0,0,10)
+		local pos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-Vector(0,0,10)
 		if(self.dt.State==5)then
-			pos=self.Owner:GetShootPos()+self.Owner:GetRight()*20-self.Owner:GetForward()*20
+			pos=self.EZowner:GetShootPos()+self.EZowner:GetRight()*20-self.EZowner:GetForward()*20
 		end
 		local DroppedStick=ents.Create("ent_jack_dynamite")
 		DroppedStick:SetPos(pos)
 		DroppedStick.FuzeLit=self.dt.Lit
 		DroppedStick.FuzeLength=self.dt.FuzeLength
-		DroppedStick.Owner=self.Owner
+		DroppedStick.EZowner=self.EZowner
 		DroppedStick:Spawn()
 		DroppedStick:Activate()
-		DroppedStick:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*0.5+self.Owner:GetAimVector()*100)
-		self.Owner:StripWeapon("wep_jack_dynamite")
+		DroppedStick:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*0.5+self.EZowner:GetAimVector()*100)
+		self.EZowner:StripWeapon("wep_jack_dynamite")
 	end
 	return true
 end
@@ -280,13 +280,13 @@ end
 ---------------------------------------------------------*/
 function SWEP:ThrowStick()
 	local Gernad=ents.Create("ent_jack_dynamite")
-	Gernad:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20)
+	Gernad:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20)
 	Gernad.FuzeLit=self.dt.Lit
 	Gernad.FuzeLength=self.dt.FuzeLength
-	Gernad.Owner=self.Owner
+	Gernad.EZowner=self.EZowner
 	Gernad:Spawn()
 	Gernad:Activate()
-	Gernad:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()+self.Owner:GetAimVector()*1000)
+	Gernad:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()+self.EZowner:GetAimVector()*1000)
 	Gernad:GetPhysicsObject():AddAngleVelocity(VectorRand()*500)
 	self.dt.State=2
 end
@@ -324,8 +324,8 @@ function SWEP:SCKInitialize()
 		self:CreateModels(self.WElements) // create worldmodels
 		
 		// init view model bone build function
-		if IsValid(self.Owner)then
-			local vm=self.Owner:GetViewModel()
+		if IsValid(self.EZowner)then
+			local vm=self.EZowner:GetViewModel()
 			if IsValid(vm)then
 				self:ResetBonePositions(vm)
 			end
@@ -350,8 +350,8 @@ end
 
 function SWEP:SCKHolster()
 	
-	if CLIENT and IsValid(self.Owner)then
-		local vm=self.Owner:GetViewModel()
+	if CLIENT and IsValid(self.EZowner)then
+		local vm=self.EZowner:GetViewModel()
 		if IsValid(vm)then
 			self:ResetBonePositions(vm)
 		end
@@ -364,7 +364,7 @@ if CLIENT then
 	SWEP.vRenderOrder=nil
 	function SWEP:SCKViewModelDrawn()
 		
-		local vm=self.Owner:GetViewModel()
+		local vm=self.EZowner:GetViewModel()
 		if !IsValid(vm)then return end
 		
 		if(!self.VElements)then return end
@@ -492,8 +492,8 @@ if CLIENT then
 
 		end
 		
-		if(IsValid(self.Owner))then
-			bone_ent=self.Owner
+		if(IsValid(self.EZowner))then
+			bone_ent=self.EZowner
 		else
 			// when the weapon is dropped
 			bone_ent=self
@@ -618,8 +618,8 @@ if CLIENT then
 				pos, ang=m:GetTranslation(), m:GetAngles()
 			end
 			
-			if(IsValid(self.Owner) and self.Owner:IsPlayer() and 
-				ent==self.Owner:GetViewModel() and self.ViewModelFlip)then
+			if(IsValid(self.EZowner) and self.EZowner:IsPlayer() and 
+				ent==self.EZowner:GetViewModel() and self.ViewModelFlip)then
 				ang.r=-ang.r // Fixes mirrored models
 			end
 		

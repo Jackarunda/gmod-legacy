@@ -48,7 +48,7 @@ function ENT:Think()
 					Ouch:SetDamage(Damg)
 					Ouch:SetDamagePosition(found:GetPos())
 					Ouch:SetDamageForce(Vector(0,0,0))
-					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self.Entity) end
+					if(IsValid(self.EZowner))then Ouch:SetAttacker(self.EZowner) else Ouch:SetAttacker(self.Entity) end
 					if(IsValid(self.Weapon))then Ouch:SetInflictor(self.Weapon) else Ouch:SetInflictor(self.Entity) end
 					found:TakeDamageInfo(Ouch)
 					
@@ -71,7 +71,7 @@ function ENT:Think()
 					Ouch:SetDamage(Damg*.5)
 					Ouch:SetDamagePosition(found:GetPos())
 					Ouch:SetDamageForce(Vector(0,0,0))
-					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self.Entity) end
+					if(IsValid(self.EZowner))then Ouch:SetAttacker(self.EZowner) else Ouch:SetAttacker(self.Entity) end
 					if(IsValid(self.Weapon))then Ouch:SetInflictor(self.Weapon) else Ouch:SetInflictor(self.Entity) end
 					found:TakeDamageInfo(Ouch)
 					
@@ -98,8 +98,8 @@ function ENT:Think()
 		end
 		for key,detector in pairs(ents.FindInSphere(SelfPos,Range*1.25))do
 			if(detector:GetClass()=="wep_jack_fungun_eta")then
-				if(IsValid(detector.Owner))then
-					if(detector.Owner==Par)then
+				if(IsValid(detector.EZowner))then
+					if(detector.EZowner==Par)then
 						//herp
 					else
 						detector:EmitSound("snd_jack_radgunwarn.wav")

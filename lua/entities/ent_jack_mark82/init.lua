@@ -110,7 +110,7 @@ function ENT:Detonate()
 	
 	local Blamo=ents.Create("ent_jack_bigshrapnelsplosion")
 	Blamo:SetPos(SelfPos+Vector(0,0,11))
-	Blamo.Owner=self
+	Blamo.EZowner=self
 	Blamo:Spawn()
 	Blamo:Activate()
 	

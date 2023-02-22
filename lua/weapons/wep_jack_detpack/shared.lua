@@ -67,8 +67,8 @@ end
    Desc: Whip it out.
 ---------------------------------------------------------*/
 function SWEP:Deploy()
-	if(IsValid(self.Owner))then
-		if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(IsValid(self.EZowner))then
+		if(self.EZowner:KeyDown(IN_SPEED))then return end
 	end
 
 	self.Weapon:SetNextPrimaryFire(CurTime()+0.25)
@@ -96,26 +96,26 @@ end
    Desc: +attack1 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
-	if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(self.EZowner:KeyDown(IN_SPEED))then return end
 	if(self.dt.State==2)then
 		self.dt.State=3
 		self.Weapon:SendWeaponAnim(ACT_SLAM_THROW_THROW_ND)
-		self.Owner:SetAnimation(PLAYER_ATTACK1)
+		self.EZowner:SetAnimation(PLAYER_ATTACK1)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:ThrowDetpack(false)
-				if(SERVER)then self.Owner:StripWeapon("wep_jack_detpack") end
+				if(SERVER)then self.EZowner:StripWeapon("wep_jack_detpack") end
 			end
 		end)
 	elseif(self.dt.State==4)then
 		self.dt.State=5
 		self.Weapon:SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH)
-		self.Owner:SetAnimation(PLAYER_ATTACK1)
-		self.Owner:GetViewModel():SetPlaybackRate(.75)
+		self.EZowner:SetAnimation(PLAYER_ATTACK1)
+		self.EZowner:GetViewModel():SetPlaybackRate(.75)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:StickDetpack(false)
-				if(SERVER)then self.Owner:StripWeapon("wep_jack_detpack") end
+				if(SERVER)then self.EZowner:StripWeapon("wep_jack_detpack") end
 			end
 		end)
 	end
@@ -126,26 +126,26 @@ end
    Desc: +attack2 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:SecondaryAttack()
-	if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(self.EZowner:KeyDown(IN_SPEED))then return end
 	if(self.dt.State==2)then
 		self.dt.State=3
 		self.Weapon:SendWeaponAnim(ACT_SLAM_THROW_THROW_ND)
-		self.Owner:SetAnimation(PLAYER_ATTACK1)
+		self.EZowner:SetAnimation(PLAYER_ATTACK1)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:ThrowDetpack(true)
-				if(SERVER)then self.Owner:StripWeapon("wep_jack_detpack") end
+				if(SERVER)then self.EZowner:StripWeapon("wep_jack_detpack") end
 			end
 		end)
 	elseif(self.dt.State==4)then
 		self.dt.State=5
 		self.Weapon:SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH)
-		self.Owner:SetAnimation(PLAYER_ATTACK1)
-		self.Owner:GetViewModel():SetPlaybackRate(.75)
+		self.EZowner:SetAnimation(PLAYER_ATTACK1)
+		self.EZowner:GetViewModel():SetPlaybackRate(.75)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:StickDetpack(true)
-				if(SERVER)then self.Owner:StripWeapon("wep_jack_detpack") end
+				if(SERVER)then self.EZowner:StripWeapon("wep_jack_detpack") end
 			end
 		end)
 	end
@@ -156,11 +156,11 @@ end
    Desc: Called every frame.
 ---------------------------------------------------------*/
 function SWEP:Think()
-	if(self.Owner:KeyDown(IN_SPEED))then return end
+	if(self.EZowner:KeyDown(IN_SPEED))then return end
 	if not((self.dt.State==2)or(self.dt.State==4))then return end
-	local Yah=self.Owner:GetEyeTrace()
+	local Yah=self.EZowner:GetEyeTrace()
 	if(Yah.Hit)then
-		if((Yah.HitPos-self.Owner:GetShootPos()):Length()<70)then
+		if((Yah.HitPos-self.EZowner:GetShootPos()):Length()<70)then
 			if not((self.dt.State==4)or(self.dt.State==6))then
 				self.dt.State=6
 				self:TransitionFromThrowingToPlacing()
@@ -203,13 +203,13 @@ function SWEP:Holster()
 	if(SERVER)then
 		if((self.dt.State==2)or(self.dt.State==4))then
 			local DroppedPack=ents.Create("ent_jack_c4block")
-			DroppedPack:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-self.Owner:GetUp()*20)
-			DroppedPack.Owner=self.Owner
-			DroppedPack:SetOwner(self.Owner)
+			DroppedPack:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-self.EZowner:GetUp()*20)
+			DroppedPack.EZowner=self.EZowner
+			DroppedPack:SetOwner(self.EZowner)
 			DroppedPack:Spawn()
 			DroppedPack:Activate()
-			DroppedPack:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*0.5+self.Owner:GetAimVector()*10)
-			if(SERVER)then self.Owner:StripWeapon("wep_jack_detpack") end
+			DroppedPack:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*0.5+self.EZowner:GetAimVector()*10)
+			if(SERVER)then self.EZowner:StripWeapon("wep_jack_detpack") end
 		end
 	end
 	return true
@@ -235,13 +235,13 @@ end
 function SWEP:ThrowDetpack(willArm)
 	if(SERVER)then
 		local Det=ents.Create("ent_jack_c4block")
-		Det:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-self.Owner:GetUp()*20)
-		Det.Owner=self.Owner
+		Det:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-self.EZowner:GetUp()*20)
+		Det.EZowner=self.EZowner
 		Det:Spawn()
 		Det:Activate()
-		Det:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*.75+self.Owner:GetAimVector()*200)
+		Det:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*.75+self.EZowner:GetAimVector()*200)
 		Det:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-		if(willArm)then JackyOrdnanceArm(Det,self.Owner,"Remote") end
+		if(willArm)then JackyOrdnanceArm(Det,self.EZowner,"Remote") end
 		timer.Simple(.5,function()
 			if(IsValid(Det))then
 				Det:SetCollisionGroup(COLLISION_GROUP_NONE)
@@ -252,18 +252,18 @@ end
 
 function SWEP:StickDetpack(willArm)
 	if(SERVER)then
-		local Tr=self.Owner:GetEyeTrace()
+		local Tr=self.EZowner:GetEyeTrace()
 		if(Tr.Hit)then
-			if(((self.Owner:GetShootPos()-Tr.HitPos)):Length()<100)then
+			if(((self.EZowner:GetShootPos()-Tr.HitPos)):Length()<100)then
 				local Det=ents.Create("ent_jack_c4block")
 				Det:SetPos(Tr.HitPos+Tr.HitNormal*2)
 				local TheAngle=Tr.HitNormal:Angle()
 				TheAngle:RotateAroundAxis(TheAngle:Right(),90)
 				Det:SetAngles(TheAngle)
-				Det.Owner=self.Owner
+				Det.EZowner=self.EZowner
 				Det:Spawn()
 				Det:Activate()
-				if(willArm)then JackyOrdnanceArm(Det,self.Owner,"Remote") end
+				if(willArm)then JackyOrdnanceArm(Det,self.EZowner,"Remote") end
 				constraint.Weld(Det,Tr.Entity,0,0,10000,true)
 				Det:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 			else
@@ -296,8 +296,8 @@ function SWEP:SCKInitialize()
 		self:CreateModels(self.WElements) // create worldmodels
 		
 		// init view model bone build function
-		if IsValid(self.Owner)then
-			local vm=self.Owner:GetViewModel()
+		if IsValid(self.EZowner)then
+			local vm=self.EZowner:GetViewModel()
 			if IsValid(vm)then
 				self:ResetBonePositions(vm)
 			end
@@ -322,8 +322,8 @@ end
 
 function SWEP:SCKHolster()
 	
-	if CLIENT and IsValid(self.Owner)then
-		local vm=self.Owner:GetViewModel()
+	if CLIENT and IsValid(self.EZowner)then
+		local vm=self.EZowner:GetViewModel()
 		if IsValid(vm)then
 			self:ResetBonePositions(vm)
 		end
@@ -336,7 +336,7 @@ if CLIENT then
 	SWEP.vRenderOrder=nil
 	function SWEP:SCKViewModelDrawn()
 		
-		local vm=self.Owner:GetViewModel()
+		local vm=self.EZowner:GetViewModel()
 		if !IsValid(vm)then return end
 		
 		if(!self.VElements)then return end
@@ -464,8 +464,8 @@ if CLIENT then
 
 		end
 		
-		if(IsValid(self.Owner))then
-			bone_ent=self.Owner
+		if(IsValid(self.EZowner))then
+			bone_ent=self.EZowner
 		else
 			// when the weapon is dropped
 			bone_ent=self
@@ -590,8 +590,8 @@ if CLIENT then
 				pos, ang=m:GetTranslation(), m:GetAngles()
 			end
 			
-			if(IsValid(self.Owner) and self.Owner:IsPlayer() and 
-				ent==self.Owner:GetViewModel() and self.ViewModelFlip)then
+			if(IsValid(self.EZowner) and self.EZowner:IsPlayer() and 
+				ent==self.EZowner:GetViewModel() and self.ViewModelFlip)then
 				ang.r=-ang.r // Fixes mirrored models
 			end
 		
