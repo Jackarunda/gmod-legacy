@@ -40,7 +40,7 @@ function ENT:Initialize()
 		
 		for i=1,20 do
 			local Spray={
-				Attacker=self.EZowner,
+				Attacker=self.Owner,
 				Damage=10,
 				Force=10,
 				Num=10,
@@ -58,7 +58,7 @@ function ENT:FireShrapnel(dir)
 	local SelfPos=self:GetPos()
 	local Spread=Vector(.048,.048,.048)
 	local Bellit={
-		Attacker=self.EZowner,
+		Attacker=self.Owner,
 		Damage=40,
 		Force=40,
 		Num=17,

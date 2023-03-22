@@ -19,7 +19,7 @@ function ENT:SpawnFunction(ply, tr)
 	local SpawnPos=tr.HitPos+tr.HitNormal*20
 	local ent=ents.Create("ent_jack_fraggrenade")
 	ent:SetPos(SpawnPos)
-	ent.EZowner=ply
+	ent.Owner=ply
 	ent.SpoonOff=false
 	ent.PinOut=false
 	ent:Spawn()
@@ -105,12 +105,12 @@ function ENT:Explode()
 	if(self.Exploded)then return end
 	self.Exploded=true
 	local Pos=self:GetPos()
-	local Owner=self.EZowner
+	local Owner=self.Owner
 	self:Remove()
 
 	local Blamo=ents.Create("ent_jack_fragsplosion")
 	Blamo:SetPos(Pos+Vector(0,0,1))
-	Blamo.EZowner=Owner
+	Blamo.Owner=Owner
 	Blamo:Spawn()
 	Blamo:Activate()
 end

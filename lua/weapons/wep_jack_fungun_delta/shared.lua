@@ -125,14 +125,14 @@ end
 function SWEP:PrimaryAttack()
 	if(self.dt.Sprint>10)then return end
 	if not(self.dt.State==2)then return end
-	if(self.EZowner:KeyDown(IN_USE))then
+	if(self.Owner:KeyDown(IN_USE))then
 		self.dt.Mode=not(self.dt.Mode)
 		self.Weapon:EmitSound("snd_jack_microwaveswitch.wav",70,100)
 		return
 	end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.2)
-	local ShootPos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20
+	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
 	if(SERVER)then self:EmitSound("snd_jack_microwaveclick.wav",70,100) end
 	self.KlystronSound:Play()
 	self.dt.State=3
@@ -144,8 +144,8 @@ end
 function SWEP:FireMicroWaves() -- also radio waves :D
 	if(CLIENT)then return end
 
-	local SelfPos=self.EZowner:GetShootPos()
-	local AimVec=self.EZowner:GetAimVector()
+	local SelfPos=self.Owner:GetShootPos()
+	local AimVec=self.Owner:GetAimVector()
 	local RandomDirection=(AimVec+VectorRand()*.06):GetNormalized()
 	
 	local Synthetic=1
@@ -169,7 +169,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 		local TrDat={}
 		TrDat.start=CurrentTraceFromPosition
 		TrDat.endpos=NewEndPos
-		TrDat.filter=self.EZowner
+		TrDat.filter=self.Owner
 		TrDat.mask=-1 -- hit water
 		local Tr=util.TraceLine(TrDat)
 		
@@ -200,7 +200,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				WantSomeIceWithThatBurn:SetDamage(Dm*DamMod*Organic)
 				WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 				WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-				WantSomeIceWithThatBurn:SetAttacker(self.EZowner)
+				WantSomeIceWithThatBurn:SetAttacker(self.Owner)
 				WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
 				WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 				Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
@@ -225,7 +225,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				if not(self.dt.Mode)then
 					if(table.HasValue(HighHealthTable,Class))then
 						if(math.random(1,600)==49)then
-							util.BlastDamage(self.Weapon,self.EZowner,Tr.Entity:GetPos(),50,100)
+							util.BlastDamage(self.Weapon,self.Owner,Tr.Entity:GetPos(),50,100)
 						end
 					elseif(table.HasValue(NoHealthTable,Class))then
 						if(math.random(1,250)==2)then
@@ -239,7 +239,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 						WantSomeIceWithThatBurn:SetDamage(Dm*DamMod*Synthetic)
 						WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 						WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-						WantSomeIceWithThatBurn:SetAttacker(self.EZowner)
+						WantSomeIceWithThatBurn:SetAttacker(self.Owner)
 						WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
 						WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 						Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
@@ -254,7 +254,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 					WantSomeIceWithThatBurn:SetDamage(5*Organic)
 					WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 					WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-					WantSomeIceWithThatBurn:SetAttacker(self.EZowner)
+					WantSomeIceWithThatBurn:SetAttacker(self.Owner)
 					WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
 					WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 					Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
@@ -264,7 +264,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				WeHitSomething=true
 				HitWet=true
 			elseif(Class=="ent_jack_target")then
-				Tr.Entity:TakeDamage(1,self.EZowner,self.Weapon)
+				Tr.Entity:TakeDamage(1,self.Owner,self.Weapon)
 			end
 		else
 			HitMeh=true
@@ -287,14 +287,14 @@ function SWEP:Think()
 	
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.EZowner:KeyDown(IN_SPEED))then
+		if(self.Owner:KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.EZowner:KeyDown(IN_ATTACK2))then
+		if(self.Owner:KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -305,13 +305,13 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.EZowner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 
 	local State=self.dt.State
-	//self.EZowner:PrintMessage(HUD_PRINTCENTER,State)
+	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.EZowner:InVehicle())or(self.EZowner:KeyDown(IN_ZOOM)))then
+	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.KlystronSound:Stop()
 			self.dt.State=2
@@ -320,9 +320,9 @@ function SWEP:Think()
 		return
 	end
 
-	local BaseShootPos=self.EZowner:GetShootPos()
-	local ShootPos=BaseShootPos+self.EZowner:GetRight()*4-self.EZowner:GetUp()*5
-	local AimVec=self.EZowner:GetAimVector()
+	local BaseShootPos=self.Owner:GetShootPos()
+	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*5
+	local AimVec=self.Owner:GetAimVector()
 	self.CurrentAimVector=AimVec -- used by the drawing functions, stored for efficiency
 	
 	if(State==3)then
@@ -331,7 +331,7 @@ function SWEP:Think()
 		local BaseLoss=.0125
 		if not(self.dt.Mode)then BaseLoss=.0075 end
 		local Loss=(.0028+.18*Heat^4)*BaseLoss*self.ConsumptionMul
-		//self.EZowner:PrintMessage(HUD_PRINTCENTER,Loss)
+		//self.Owner:PrintMessage(HUD_PRINTCENTER,Loss)
 		self.dt.Ammo=Ammo-Loss
 		if not(self.NextKlystronSoundTime)then self.NextKlystronSoundTime=CurTime()+.1 end
 		if(self.NextKlystronSoundTime<CurTime())then
@@ -340,7 +340,7 @@ function SWEP:Think()
 			self.NextKlystronSoundTime=CurTime()+4.9
 		end
 		self:FireMicroWaves()
-		self.EZowner:ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
+		self.Owner:ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
 	end
 end
 
@@ -352,24 +352,24 @@ function SWEP:BurstCool()
 	
 	self.Weapon:SetDTFloat(3,0)
 	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.EZowner:GetViewModel():SetPlaybackRate(.25)
-	self.EZowner:SetAnimation(PLAYER_ATTACK1)
+	self.Owner:GetViewModel():SetPlaybackRate(.25)
+	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
 		self.Weapon:EmitSound("snd_jack_microwavevent.wav",70,100)
 	end
 	if(SERVER)then
 		local Pewf=EffectData()
-		Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-		Pewf:SetStart(self.EZowner:GetVelocity())
+		Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+		Pewf:SetStart(self.Owner:GetVelocity())
 		util.Effect("eff_jack_instantvent",Pewf,true,true)
 	end
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-				Pewf:SetStart(self.EZowner:GetVelocity())
+				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+				Pewf:SetStart(self.Owner:GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -378,8 +378,8 @@ function SWEP:BurstCool()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-				Pewf:SetStart(self.EZowner:GetVelocity())
+				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+				Pewf:SetStart(self.Owner:GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -480,7 +480,7 @@ local function GunThink()
 		if(Heat)then
 			local State=wep.dt.State
 			if(State==3)then
-				if((wep.dt.Ammo<=0)or(wep.EZowner:KeyDown(IN_SPEED)))then
+				if((wep.dt.Ammo<=0)or(wep.Owner:KeyDown(IN_SPEED)))then
 					if not(MicrowaveEndPlayed)then
 						MicrowaveEndPlayed=true
 						if(SERVER)then wep:EmitSound("snd_jack_microwaveclick.wav",70,90) end

@@ -75,8 +75,8 @@ end
    Desc: Whip it out.
 ---------------------------------------------------------*/
 function SWEP:Deploy()
-	if(IsValid(self.EZowner))then
-		if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(IsValid(self.Owner))then
+		if(self.Owner:KeyDown(IN_SPEED))then return end
 	end
 
 	self.Weapon:SetNextPrimaryFire(CurTime()+0.25)
@@ -104,26 +104,26 @@ end
    Desc: +attack1 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	if(self.dt.State==2)then
 		self.dt.State=3
 		self.Weapon:SendWeaponAnim(ACT_SLAM_THROW_THROW_ND)
-		self.EZowner:SetAnimation(PLAYER_ATTACK1)
+		self.Owner:SetAnimation(PLAYER_ATTACK1)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:ThrowMine(false)
-				if(SERVER)then self.EZowner:StripWeapon("wep_jack_landmine") end
+				if(SERVER)then self.Owner:StripWeapon("wep_jack_landmine") end
 			end
 		end)
 	elseif(self.dt.State==4)then
 		self.dt.State=5
 		self.Weapon:SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH)
-		self.EZowner:SetAnimation(PLAYER_ATTACK1)
-		self.EZowner:GetViewModel():SetPlaybackRate(.75)
+		self.Owner:SetAnimation(PLAYER_ATTACK1)
+		self.Owner:GetViewModel():SetPlaybackRate(.75)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:StickMine(false)
-				if(SERVER)then self.EZowner:StripWeapon("wep_jack_landmine") end
+				if(SERVER)then self.Owner:StripWeapon("wep_jack_landmine") end
 			end
 		end)
 	end
@@ -134,27 +134,27 @@ end
    Desc: +attack2 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:SecondaryAttack()
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	if(self.dt.State==2)then
 		self.dt.State=3
 		self.Weapon:SendWeaponAnim(ACT_SLAM_THROW_THROW_ND)
-		self.EZowner:GetViewModel():SetPlaybackRate(3)
-		self.EZowner:SetAnimation(PLAYER_ATTACK1)
+		self.Owner:GetViewModel():SetPlaybackRate(3)
+		self.Owner:SetAnimation(PLAYER_ATTACK1)
 		timer.Simple(.15,function()
 			if(IsValid(self))then
 				self:ThrowMine(true)
-				if(SERVER)then self.EZowner:StripWeapon("wep_jack_landmine") end
+				if(SERVER)then self.Owner:StripWeapon("wep_jack_landmine") end
 			end
 		end)
 	elseif(self.dt.State==4)then
 		self.dt.State=5
 		self.Weapon:SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH)
-		self.EZowner:SetAnimation(PLAYER_ATTACK1)
-		self.EZowner:GetViewModel():SetPlaybackRate(.75)
+		self.Owner:SetAnimation(PLAYER_ATTACK1)
+		self.Owner:GetViewModel():SetPlaybackRate(.75)
 		timer.Simple(.5,function()
 			if(IsValid(self))then
 				self:StickMine(true)
-				if(SERVER)then self.EZowner:StripWeapon("wep_jack_landmine") end
+				if(SERVER)then self.Owner:StripWeapon("wep_jack_landmine") end
 			end
 		end)
 	end
@@ -165,7 +165,7 @@ end
    Desc: Called every frame.
 ---------------------------------------------------------*/
 function SWEP:Think()
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	if(SERVER)then
 		if(self.dt.State==7)then
 			if(self.NextSprayTime<CurTime())then
@@ -193,9 +193,9 @@ function SWEP:Think()
 		end
 	end
 	if not((self.dt.State==2)or(self.dt.State==4))then return end
-	local Yah=self.EZowner:GetEyeTrace()
+	local Yah=self.Owner:GetEyeTrace()
 	if(Yah.Hit)then
-		if(((Yah.HitPos-self.EZowner:GetShootPos()):Length()<70)and not(Yah.Entity:GetClass()=="ent_jack_minebox"))then
+		if(((Yah.HitPos-self.Owner:GetShootPos()):Length()<70)and not(Yah.Entity:GetClass()=="ent_jack_minebox"))then
 			if not((self.dt.State==4)or(self.dt.State==6))then
 				self.dt.State=6
 				self:TransitionFromThrowingToPlacing()
@@ -238,14 +238,14 @@ function SWEP:Holster()
 	if(SERVER)then
 		if((self.dt.State==2)or(self.dt.State==4))then
 			local DroppedMine=ents.Create("ent_jack_landmine")
-			DroppedMine:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-self.EZowner:GetUp()*20)
-			DroppedMine.EZowner=self.EZowner
+			DroppedMine:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-self.Owner:GetUp()*20)
+			DroppedMine.Owner=self.Owner
 			DroppedMine.Camo=CamoTable[self.dt.Camo]
 			DroppedMine.ArmMode="None"
 			DroppedMine:Spawn()
 			DroppedMine:Activate()
-			DroppedMine:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*0.5+self.EZowner:GetAimVector()*10)
-			if(SERVER)then self.EZowner:StripWeapon("wep_jack_landmine") end
+			DroppedMine:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*0.5+self.Owner:GetAimVector()*10)
+			if(SERVER)then self.Owner:StripWeapon("wep_jack_landmine") end
 		end
 	end
 	return true
@@ -260,10 +260,10 @@ end
 ---------------------------------------------------------*/
 function SWEP:Reload()
 	if(self.NextReloadTime>CurTime())then return end
-	local Trayuss=self.EZowner:GetEyeTrace()
+	local Trayuss=self.Owner:GetEyeTrace()
 	if(Trayuss.Hit)then
 		if(Trayuss.Entity:GetClass()=="ent_jack_minebox")then
-			if((Trayuss.HitPos-self.EZowner:GetShootPos()):Length()<60)then
+			if((Trayuss.HitPos-self.Owner:GetShootPos()):Length()<60)then
 				self.PaintBox=Trayuss.Entity
 				if((self.dt.State==2)or(self.dt.State==4))then
 					self.dt.State=7
@@ -273,18 +273,18 @@ function SWEP:Reload()
 				if(self.dt.State==7)then
 					self.dt.Camo=self.dt.Camo+1
 					if(self.dt.Camo>10)then self.dt.Camo=1 end
-					self.EZowner:PrintMessage(HUD_PRINTCENTER,CamoTable[self.dt.Camo])
+					self.Owner:PrintMessage(HUD_PRINTCENTER,CamoTable[self.dt.Camo])
 					self.NextSprayTime=CurTime()+1
 					self.NextReloadTime=CurTime()+.3
 				end
 			else
-				self.EZowner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
+				self.Owner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
 			end
 		else
-			self.EZowner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
+			self.Owner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
 		end
 	else
-		self.EZowner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
+		self.Owner:PrintMessage(HUD_PRINTCENTER,"Need Mine Crate")
 	end
 end
 
@@ -303,8 +303,8 @@ end
 function SWEP:ThrowMine(willArm)
 	if(SERVER)then
 		local Det=ents.Create("ent_jack_landmine")
-		Det:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*30-self.EZowner:GetUp()*20)
-		Det.EZowner=self.EZowner
+		Det:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*30-self.Owner:GetUp()*20)
+		Det.Owner=self.Owner
 		if(willArm)then 
 			Det.ArmMode="OnRest"
 			self:EmitSound("Weapon_Pistol.ClipEmpty")
@@ -312,28 +312,28 @@ function SWEP:ThrowMine(willArm)
 			Det.ArmMode="None"
 		end
 		Det.Camo=CamoTable[self.dt.Camo]
-		local TheAngle=self.EZowner:GetAimVector():Angle()
+		local TheAngle=self.Owner:GetAimVector():Angle()
 		TheAngle:RotateAroundAxis(TheAngle:Right(),90)
 		Det:SetAngles(TheAngle)
 		Det:Spawn()
 		Det:Activate()
 		local Speed=200
 		if(willArm)then Speed=500 end
-		Det:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*.75+self.EZowner:GetAimVector()*Speed)
+		Det:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*.75+self.Owner:GetAimVector()*Speed)
 	end
 end
 
 function SWEP:StickMine(willArm)
 	if(SERVER)then
-		local Tr=self.EZowner:GetEyeTrace()
+		local Tr=self.Owner:GetEyeTrace()
 		if(Tr.Hit)then
-			if((((self.EZowner:GetShootPos()-Tr.HitPos)):Length()<100)and not(Tr.Entity:GetClass()=="ent_jack_minebox"))then
+			if((((self.Owner:GetShootPos()-Tr.HitPos)):Length()<100)and not(Tr.Entity:GetClass()=="ent_jack_minebox"))then
 				local Det=ents.Create("ent_jack_landmine")
 				Det:SetPos(Tr.HitPos+Tr.HitNormal*.5)
 				local TheAngle=Tr.HitNormal:Angle()
 				//TheAngle:RotateAroundAxis(TheAngle:Right(),90)
 				Det:SetAngles(TheAngle)
-				Det.EZowner=self.EZowner
+				Det.Owner=self.Owner
 				if(willArm)then Det.ArmMode="Instant" else Det.ArmMode="None" end
 				Det.Camo=CamoTable[self.dt.Camo]
 				Det:Spawn()
@@ -373,8 +373,8 @@ function SWEP:SCKInitialize()
 		self:CreateModels(self.WElements) // create worldmodels
 		
 		// init view model bone build function
-		if IsValid(self.EZowner)then
-			local vm=self.EZowner:GetViewModel()
+		if IsValid(self.Owner)then
+			local vm=self.Owner:GetViewModel()
 			if IsValid(vm)then
 				self:ResetBonePositions(vm)
 			end
@@ -399,8 +399,8 @@ end
 
 function SWEP:SCKHolster()
 	
-	if CLIENT and IsValid(self.EZowner)then
-		local vm=self.EZowner:GetViewModel()
+	if CLIENT and IsValid(self.Owner)then
+		local vm=self.Owner:GetViewModel()
 		if IsValid(vm)then
 			self:ResetBonePositions(vm)
 		end
@@ -413,7 +413,7 @@ if CLIENT then
 	SWEP.vRenderOrder=nil
 	function SWEP:SCKViewModelDrawn()
 		
-		local vm=self.EZowner:GetViewModel()
+		local vm=self.Owner:GetViewModel()
 		if !IsValid(vm)then return end
 		
 		if(!self.VElements)then return end
@@ -541,8 +541,8 @@ if CLIENT then
 
 		end
 		
-		if(IsValid(self.EZowner))then
-			bone_ent=self.EZowner
+		if(IsValid(self.Owner))then
+			bone_ent=self.Owner
 		else
 			// when the weapon is dropped
 			bone_ent=self
@@ -667,8 +667,8 @@ if CLIENT then
 				pos, ang=m:GetTranslation(), m:GetAngles()
 			end
 			
-			if(IsValid(self.EZowner) and self.EZowner:IsPlayer() and 
-				ent==self.EZowner:GetViewModel() and self.ViewModelFlip)then
+			if(IsValid(self.Owner) and self.Owner:IsPlayer() and 
+				ent==self.Owner:GetViewModel() and self.ViewModelFlip)then
 				ang.r=-ang.r // Fixes mirrored models
 			end
 		

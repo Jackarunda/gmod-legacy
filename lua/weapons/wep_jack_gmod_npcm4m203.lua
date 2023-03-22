@@ -47,7 +47,7 @@ if(SERVER)then
 		["npc_headcrab_poison"]=-5
 	}
 	function SWEP:HeightCorrection()
-		local Enemy=self.EZowner:GetEnemy()
+		local Enemy=self.Owner:GetEnemy()
 		local Class=Enemy:GetClass()
 		if(table.HasValue(NeedsHeightCorrectionTable,Class))then
 			return Vector(0,0,HeightCorrectionTable[Class])
@@ -57,9 +57,9 @@ if(SERVER)then
 	end
 	function SWEP:CanSee(Ent)
 		local TressDet={}
-		TressDet.start=self.EZowner:GetShootPos()
+		TressDet.start=self.Owner:GetShootPos()
 		TressDet.endpos=Ent:LocalToWorld(Ent:OBBCenter())
-		TressDet.filter={self.EZowner,Ent}
+		TressDet.filter={self.Owner,Ent}
 		TressDet.mask=MASK_SHOT
 		local Tress=util.TraceLine(TressDet)
 		if(Tress.Hit)then
@@ -69,8 +69,8 @@ if(SERVER)then
 		end
 	end
 	function SWEP:BadGuy()
-		if(IsValid(self.EZowner))then
-			local Dude=self.EZowner:GetEnemy()
+		if(IsValid(self.Owner))then
+			local Dude=self.Owner:GetEnemy()
 			if(IsValid(Dude))then
 				if(self:CanSee(Dude))then
 					return Dude
@@ -82,43 +82,43 @@ if(SERVER)then
 	function SWEP:ExtraThink()
 		--[[
 		for i=0,100 do
-			if(self.EZowner:IsCurrentSchedule(i))then
+			if(self.Owner:IsCurrentSchedule(i))then
 				JPrint(i)
 			end
 		end--]]
-		if(IsValid(self.EZowner))then
+		if(IsValid(self.Owner))then
 			if not(self.Reloading)then
-				local Enemy=self.EZowner:GetEnemy()
-				local Act=self.EZowner:GetActivity()
+				local Enemy=self.Owner:GetEnemy()
+				local Act=self.Owner:GetActivity()
 				if not(IsValid(Enemy))then
 					if(IsValid(LastEnemy))then
-						self.EZowner:UpdateEnemyMemory(LastEnemy,LastEnemy:GetPos())
+						self.Owner:UpdateEnemyMemory(LastEnemy,LastEnemy:GetPos())
 					else
-						if not(self.EZowner.BeingACombatLifeSaver)then
+						if not(self.Owner.BeingACombatLifeSaver)then
 							if(math.random(1,20)==11)then
-								for key,dude in pairs(ents.FindInSphere(self.EZowner:GetPos(),1000))do
+								for key,dude in pairs(ents.FindInSphere(self.Owner:GetPos(),1000))do
 									if(dude.JackyUSSoldier)then
-										if not(dude==self.EZowner)then
+										if not(dude==self.Owner)then
 											if(dude:Health()<49)then
-												self.EZowner.BeingACombatLifeSaver=true
-												self.EZowner.CLSPatient=dude
+												self.Owner.BeingACombatLifeSaver=true
+												self.Owner.CLSPatient=dude
 											end
 										end
 									end
 								end
 							end
 						else
-							if(IsValid(self.EZowner.CLSPatient))then
-								local Dist=(self.EZowner:GetPos()-self.EZowner.CLSPatient:GetPos()):Length()
+							if(IsValid(self.Owner.CLSPatient))then
+								local Dist=(self.Owner:GetPos()-self.Owner.CLSPatient:GetPos()):Length()
 								if(Dist>50)then
-									if not(self.EZowner:IsCurrentSchedule(SCHED_FORCED_GO_RUN))then
-										self.EZowner:SetLastPosition(self.EZowner.CLSPatient:GetPos())
-										self.EZowner:SetSchedule(SCHED_FORCED_GO_RUN)
+									if not(self.Owner:IsCurrentSchedule(SCHED_FORCED_GO_RUN))then
+										self.Owner:SetLastPosition(self.Owner.CLSPatient:GetPos())
+										self.Owner:SetSchedule(SCHED_FORCED_GO_RUN)
 									end
 								else
-									JackyPlayNPCAnim(self.EZowner,"Heal",true,1)
-									self.EZowner.CLSPatient:StopMoving()
-									local Wut=self.EZowner.CLSPatient
+									JackyPlayNPCAnim(self.Owner,"Heal",true,1)
+									self.Owner.CLSPatient:StopMoving()
+									local Wut=self.Owner.CLSPatient
 									timer.Simple(.5,function()
 										if((IsValid(self))and(IsValid(Wut)))then
 											--JackyPlayNPCAnim(Wut,"deathpose_back",true,3)
@@ -127,11 +127,11 @@ if(SERVER)then
 											Wut:EmitSound("snd_jack_bandage.wav",65,100)
 										end
 									end)
-									self.EZowner.BeingACombatLifeSaver=false
-									self.EZowner.CLSPatient=nil
+									self.Owner.BeingACombatLifeSaver=false
+									self.Owner.CLSPatient=nil
 								end
 							else
-								self.EZowner.BeingACombatLifeSaver=false
+								self.Owner.BeingACombatLifeSaver=false
 							end
 						end
 						if(Act==ACT_IDLE)then
@@ -141,9 +141,9 @@ if(SERVER)then
 						end
 					end
 				else
-					if(self.EZowner:IsCurrentSchedule(SCHED_COMBAT_STAND))then
+					if(self.Owner:IsCurrentSchedule(SCHED_COMBAT_STAND))then
 						-- get off your ass
-						self.EZowner:SetSchedule(SCHED_CHASE_ENEMY)
+						self.Owner:SetSchedule(SCHED_CHASE_ENEMY)
 					end
 					if not(self.LastEnemy==Enemy)then
 						self.LastEnemy=Enemy
@@ -169,16 +169,16 @@ if(SERVER)then
 	end
 	function SWEP:NPCShoot_Primary(ShootPos,ShootDir)
 		if((self.NextShootTime<CurTime())and not(self.Reloading))then
-			local Anim=self.EZowner:GetSequenceName(self.EZowner:GetSequence())
+			local Anim=self.Owner:GetSequenceName(self.Owner:GetSequence())
 			self:Shoot(ShootPos,ShootDir)
-			local Enem=self.EZowner:GetEnemy()
+			local Enem=self.Owner:GetEnemy()
 			if((IsValid(Enem))and((Anim=="shoot_ar2")or(Anim=="ShootToIdleAngry")))then
-				local Dist=(Enem:GetPos()-self.EZowner:GetPos()):Length()
+				local Dist=(Enem:GetPos()-self.Owner:GetPos()):Length()
 				local Chance=1.25-(Dist/2000)
 				if(math.Rand(0,1)<Chance)then
 					timer.Simple(.075,function()
-						self.EZowner:SetSchedule(SCHED_RANGE_ATTACK1)
-						self.EZowner:RestartGesture(279)
+						self.Owner:SetSchedule(SCHED_RANGE_ATTACK1)
+						self.Owner:RestartGesture(279)
 						self:NPCShoot_Primary(ShootPos,ShootDir)
 					end)
 				end
@@ -188,7 +188,7 @@ if(SERVER)then
 	function SWEP:Shoot(ShootPos,ShootDir)
 		if(self.NextShootTime>CurTime())then return end
 		if(self.Reloading)then return end
-		local Enemy=self.EZowner:GetEnemy()
+		local Enemy=self.Owner:GetEnemy()
 		if not(IsValid(Enemy))then return end
 		if(self.RoundsInMag>0)then
 			--self:EmitSound("snd_jack_npcrifleshoot_close.wav")
@@ -197,7 +197,7 @@ if(SERVER)then
 			sound.Play("snd_jack_npcrifleshoot_close.wav",ShootPos,85,100)
 			sound.Play("snd_jack_npcrifleshoot_far.wav",ShootPos+Vector(0,0,1),130,75)
 			local Fect=EffectData()
-			Fect:SetStart(ShootPos+ShootDir*40-self.EZowner:GetUp()*10)
+			Fect:SetStart(ShootPos+ShootDir*40-self.Owner:GetUp()*10)
 			Fect:SetNormal(ShootDir)
 			Fect:SetScale(1)
 			util.Effect("eff_jack_gmod_noflashmuzzle",Fect,true,true)
@@ -209,15 +209,15 @@ if(SERVER)then
 			local ShootAng=ShootDir:Angle()
 			local angpos=self:GetAttachment(self:LookupAttachment("muzzle"))
 			local ShootOrigin=angpos.Pos+angpos.Ang:Forward()*19+angpos.Ang:Up()*5
-			local Dist=(Enemy:GetPos()-self.EZowner:GetPos()):Length()
+			local Dist=(Enemy:GetPos()-self.Owner:GetPos()):Length()
 			local Miss=50
-			if not(self.EZowner.USMilitaryRiflemanTraining)then Miss=5 end
+			if not(self.Owner.USMilitaryRiflemanTraining)then Miss=5 end
 			local EnemyPos=Enemy:LocalToWorld(Enemy:OBBCenter())+VectorRand()*math.Rand(0,Dist/Miss)+self:HeightCorrection()
 			local Dir=(EnemyPos-ShootPos):GetNormalized()
 			local EyeTraceData={}
 			EyeTraceData.start=ShootPos
 			EyeTraceData.endpos=ShootPos+Dir*99999
-			EyeTraceData.filter=self.EZowner
+			EyeTraceData.filter=self.Owner
 			EyeTraceData.mask=MASK_SHOT
 			local EyeTrace=util.TraceLine(EyeTraceData)
 			if(EyeTrace.Hit)then
@@ -229,9 +229,9 @@ if(SERVER)then
 				Bewlat.Dir=Dir
 				Bewlat.Spread=Vector(0,0,0)
 				Bewlat.Tracer=0
-				self.EZowner:FireBullets(Bewlat)
+				self.Owner:FireBullets(Bewlat)
 			end
-			--JPrint(self.EZowner:GetSequenceName(self.EZowner:GetSequence()))
+			--JPrint(self.Owner:GetSequenceName(self.Owner:GetSequence()))
 			self.RoundsInMag=self.RoundsInMag-1
 		else
 			self:Reload()
@@ -266,9 +266,9 @@ function SWEP:Reload()
 	if(self.Reloading)then return end
 	self.Reloading=true
 	self.RoundsInMag=0
-	self.EZowner:SetSchedule(SCHED_RELOAD)
-	JackyPlayNPCAnim(self.EZowner,"reload_smg1",true,3)
-	self.EZowner:EmitSound("snd_jack_npcriflereload.wav")
+	self.Owner:SetSchedule(SCHED_RELOAD)
+	JackyPlayNPCAnim(self.Owner,"reload_smg1",true,3)
+	self.Owner:EmitSound("snd_jack_npcriflereload.wav")
 	timer.Simple(3,function()
 		if(IsValid(self))then
 			self.Reloading=false

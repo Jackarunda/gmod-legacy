@@ -32,10 +32,10 @@ SWEP.ViewModelBoneMods={
 	["v_weapon.Flashbang_Parent"]={ scale=Vector(0.009, 0.009, 0.009), pos=Vector(0, 0, 0), angle=Angle(0, 0, 0) }
 }
 SWEP.VElements={
-	["grenade"]={ type="Model", model="models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl", bone="v_weapon.Flashbang_Parent", rel="", pos=Vector(0.5, -4, -0.101), angle=Angle(-90, -90, 0), size=Vector(1.5, 1.5, 1.5), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
+	["grenade"]={ type="Model", model="models/jmod/explosives/grenades/fragnade/w_fragjade.mdl", bone="v_weapon.Flashbang_Parent", rel="", pos=Vector(0.5, -4, -0.101), angle=Angle(-90, -90, 0), size=Vector(1.5, 1.5, 1.5), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
 }
 SWEP.WElements={
-	["grenade"]={ type="Model", model="models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl", bone="ValveBiped.Bip01_R_Hand", rel="", pos=Vector(3.181, 2.273, 0), angle=Angle(-180, 0, 0), size=Vector(1, 1, 1), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
+	["grenade"]={ type="Model", model="models/jmod/explosives/grenades/fragnade/w_fragjade.mdl", bone="ValveBiped.Bip01_R_Hand", rel="", pos=Vector(3.181, 2.273, 0), angle=Angle(-180, 0, 0), size=Vector(1, 1, 1), color=Color(255, 255, 255, 255), surpresslightning=false, material="models/weapons/w_models/gnd", skin=0, bodygroup={} }
 }
 
 function SWEP:SetupDataTables()
@@ -73,8 +73,8 @@ end
    Desc: Whip it out.
 ---------------------------------------------------------*/
 function SWEP:Deploy()
-	if(IsValid(self.EZowner))then
-		if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(IsValid(self.Owner))then
+		if(self.Owner:KeyDown(IN_SPEED))then return end
 	end
 
 	self.Weapon:SetNextPrimaryFire(CurTime()+0.25)
@@ -102,21 +102,21 @@ end
    Desc: +attack1 has been pressed.
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
-	if(self.EZowner:IsNPC())then
+	if(self.Owner:IsNPC())then
 		local grenade=ents.Create("ent_jack_fraggrenade")
-		grenade:SetPos(self.EZowner:GetPos()+Vector(0,0,40)+self.EZowner:GetAimVector()*20)
-		grenade.EZowner=self.EZowner
+		grenade:SetPos(self.Owner:GetPos()+Vector(0,0,40)+self.Owner:GetAimVector()*20)
+		grenade.Owner=self.Owner
 		grenade.FuzeTime=self.dt.FuzeLength
 		grenade:Spawn()
 		grenade:Activate()
-		grenade:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()+self.EZowner:GetAimVector()*1500)
+		grenade:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()+self.Owner:GetAimVector()*1500)
 		grenade:GetPhysicsObject():AddAngleVelocity(VectorRand()*150)
 
 		self.Weapon:EmitSound("weapons/iceaxe/iceaxe_swing1.wav")
 		return
 	end
 	
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	
 	if not(self.dt.State==2)then return end
 
@@ -146,7 +146,7 @@ function SWEP:SecondaryAttack()
 				self.dt.State=3
 				timer.Simple(0.2,function()
 					if(IsValid(self.Weapon))then
-						self.EZowner:ViewPunch(Angle(-1,0,0))
+						self.Owner:ViewPunch(Angle(-1,0,0))
 					end
 				end)
 				timer.Simple(0.625,function()
@@ -154,13 +154,13 @@ function SWEP:SecondaryAttack()
 						self.dt.Primed=true
 						self.dt.State=2
 						if(SERVER)then self.Weapon:EmitSound("snd_jack_pinpull.wav") end
-						self.EZowner:ViewPunch(Angle(1,1,0))
+						self.Owner:ViewPunch(Angle(1,1,0))
 					end
 				end)
 				timer.Simple(self.Weapon:SequenceDuration(),function()
 					if(IsValid(self.Weapon))then
-						if(self.EZowner:KeyDown(IN_ATTACK))then
-							if not(self.EZowner:KeyDown(IN_SPEED))then
+						if(self.Owner:KeyDown(IN_ATTACK))then
+							if not(self.Owner:KeyDown(IN_SPEED))then
 								self:PrimaryAttack()
 							end
 						end
@@ -174,12 +174,12 @@ function SWEP:SecondaryAttack()
 			
 			if(SERVER)then
 				local Spewn=ents.Create("ent_jack_spoon")
-				Spewn:SetPos(self.EZowner:GetShootPos()-self.EZowner:GetForward()*20+self.EZowner:GetRight()*20)
+				Spewn:SetPos(self.Owner:GetShootPos()-self.Owner:GetForward()*20+self.Owner:GetRight()*20)
 				Spewn:Spawn()
 				Spewn:Activate()
 				Spewn:GetPhysicsObject():SetVelocity(VectorRand()*750)
 				Spewn:GetPhysicsObject():AddAngleVelocity(VectorRand()*750)
-				self.EZowner:EmitSound("snd_jack_spoonfling.wav")
+				self.Owner:EmitSound("snd_jack_spoonfling.wav")
 			end
 			return
 		end
@@ -192,16 +192,16 @@ end
 ---------------------------------------------------------*/
 function SWEP:Think()
 	if(self.dt.State==5)then
-		if not(self.EZowner:KeyDown(IN_SPEED))then
-			if not(self.EZowner:KeyDown(IN_ATTACK))then
+		if not(self.Owner:KeyDown(IN_SPEED))then
+			if not(self.Owner:KeyDown(IN_ATTACK))then
 				if(self.dt.CanThrow)then
 					self.dt.State=6
 					self.Weapon:SendWeaponAnim(ACT_VM_THROW)
 					self.Weapon:EmitSound("snd_jack_grenadethrow.wav",90,95)
-					self.EZowner:ViewPunch(Angle(-20,0,0))
+					self.Owner:ViewPunch(Angle(-20,0,0))
 					timer.Simple(0.25,function()
 						if(IsValid(self.Weapon))then
-							self.EZowner:SetAnimation(PLAYER_ATTACK1)
+							self.Owner:SetAnimation(PLAYER_ATTACK1)
 						end
 					end)
 					timer.Simple(0.4,function()
@@ -211,11 +211,11 @@ function SWEP:Think()
 							end
 							if(SERVER)then
 								self:ThrowGrenade()
-								self.EZowner:ViewPunch(Angle(20,0,0))
+								self.Owner:ViewPunch(Angle(20,0,0))
 								timer.Simple(0.4,function()
 									if(IsValid(self.Weapon))then
 										if(SERVER)then
-											self.EZowner:StripWeapon("wep_jack_fraggrenade")
+											self.Owner:StripWeapon("wep_jack_fraggrenade")
 										end
 									end
 								end)
@@ -230,13 +230,13 @@ function SWEP:Think()
 		if((self.dt.ArmTime+self.dt.FuzeLength)<CurTime())then
 			if(SERVER)then
 				local Agh=ents.Create("ent_jack_fragsplosion")
-				Agh:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetRight()*10+self.EZowner:GetUp()*10)
-				Agh.EZowner=self.EZowner
+				Agh:SetPos(self.Owner:GetShootPos()+self.Owner:GetRight()*10+self.Owner:GetUp()*10)
+				Agh.Owner=self.Owner
 				Agh:Spawn()
 				Agh:Activate()
 			end
 			self.JustExploded=true
-			if(SERVER)then self.EZowner:StripWeapon("wep_jack_fraggrenade") end
+			if(SERVER)then self.Owner:StripWeapon("wep_jack_fraggrenade") end
 		end
 	end
 end
@@ -249,20 +249,20 @@ end
 function SWEP:Holster()
 	if(self.JustExploded)then return end
 	if(SERVER)then
-		local pos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-Vector(0,0,10)
+		local pos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-Vector(0,0,10)
 		if(self.dt.State==5)then
-			pos=self.EZowner:GetShootPos()+self.EZowner:GetRight()*20-self.EZowner:GetForward()*20
+			pos=self.Owner:GetShootPos()+self.Owner:GetRight()*20-self.Owner:GetForward()*20
 		end
 		local DroppedGrenade=ents.Create("ent_jack_fraggrenade")
 		DroppedGrenade:SetPos(pos)
 		DroppedGrenade.PinOut=self.dt.Primed
 		DroppedGrenade.SpoonOff=self.dt.Armed
 		DroppedGrenade.FuzeTime=self.dt.FuzeLength
-		DroppedGrenade.EZowner=self.EZowner
+		DroppedGrenade.Owner=self.Owner
 		DroppedGrenade:Spawn()
 		DroppedGrenade:Activate()
-		DroppedGrenade:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()*0.5+self.EZowner:GetAimVector()*100)
-		self.EZowner:StripWeapon("wep_jack_fraggrenade")
+		DroppedGrenade:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()*0.5+self.Owner:GetAimVector()*100)
+		self.Owner:StripWeapon("wep_jack_fraggrenade")
 	end
 	return true
 end
@@ -275,7 +275,7 @@ end
 	Reload
 ---------------------------------------------------------*/
 function SWEP:Reload()
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	if(self.NextReloadTime>CurTime())then return end
 	if(not(self.dt.Primed)and(self.dt.State==5))then
 		self.dt.State=1
@@ -293,11 +293,11 @@ function SWEP:Reload()
 		self.dt.State=1
 		self.Weapon:EmitSound("snd_jack_pinreplace.wav",100,130)
 		self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
-		self.EZowner:GetViewModel():SetPlaybackRate(1)
+		self.Owner:GetViewModel():SetPlaybackRate(1)
 		timer.Simple(0.1,function()
 			if(IsValid(self.Weapon))then
 				self.Weapon:SendWeaponAnim(ACT_VM_PULLPIN)
-				self.EZowner:GetViewModel():SetPlaybackRate(2)
+				self.Owner:GetViewModel():SetPlaybackRate(2)
 				self.dt.State=4
 			end
 		end)
@@ -305,7 +305,7 @@ function SWEP:Reload()
 			if(IsValid(self.Weapon))then
 				self.dt.Primed=false
 				self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
-				self.EZowner:GetViewModel():SetPlaybackRate(1)
+				self.Owner:GetViewModel():SetPlaybackRate(1)
 				self.dt.State=2
 			end
 		end)
@@ -321,16 +321,16 @@ end
    Name: SWEP:ThrowGrenade()
 ---------------------------------------------------------*/
 function SWEP:ThrowGrenade()
-	if(self.EZowner:KeyDown(IN_SPEED))then return end
+	if(self.Owner:KeyDown(IN_SPEED))then return end
 	local Gernad=ents.Create("ent_jack_fraggrenade")
-	Gernad:SetPos(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20)
+	Gernad:SetPos(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20)
 	Gernad.PinOut=self.dt.Primed
 	Gernad.SpoonOff=self.dt.Armed
 	Gernad.FuzeTime=self.dt.FuzeLength-(CurTime()-self.dt.ArmTime)
-	Gernad.EZowner=self.EZowner
+	Gernad.Owner=self.Owner
 	Gernad:Spawn()
 	Gernad:Activate()
-	Gernad:GetPhysicsObject():SetVelocity(self.EZowner:GetVelocity()+self.EZowner:GetAimVector()*1200)
+	Gernad:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity()+self.Owner:GetAimVector()*1200)
 	Gernad:GetPhysicsObject():AddAngleVelocity(VectorRand()*500)
 	self.dt.State=2
 end
@@ -368,8 +368,8 @@ function SWEP:SCKInitialize()
 		self:CreateModels(self.WElements) // create worldmodels
 		
 		// init view model bone build function
-		if IsValid(self.EZowner)then
-			local vm=self.EZowner:GetViewModel()
+		if IsValid(self.Owner)then
+			local vm=self.Owner:GetViewModel()
 			if IsValid(vm)then
 				self:ResetBonePositions(vm)
 			end
@@ -394,8 +394,8 @@ end
 
 function SWEP:SCKHolster()
 	
-	if CLIENT and IsValid(self.EZowner)then
-		local vm=self.EZowner:GetViewModel()
+	if CLIENT and IsValid(self.Owner)then
+		local vm=self.Owner:GetViewModel()
 		if IsValid(vm)then
 			self:ResetBonePositions(vm)
 		end
@@ -408,7 +408,7 @@ if CLIENT then
 	SWEP.vRenderOrder=nil
 	function SWEP:SCKViewModelDrawn()
 		
-		local vm=self.EZowner:GetViewModel()
+		local vm=self.Owner:GetViewModel()
 		if !IsValid(vm)then return end
 		
 		if(!self.VElements)then return end
@@ -536,8 +536,8 @@ if CLIENT then
 
 		end
 		
-		if(IsValid(self.EZowner))then
-			bone_ent=self.EZowner
+		if(IsValid(self.Owner))then
+			bone_ent=self.Owner
 		else
 			// when the weapon is dropped
 			bone_ent=self
@@ -662,8 +662,8 @@ if CLIENT then
 				pos, ang=m:GetTranslation(), m:GetAngles()
 			end
 			
-			if(IsValid(self.EZowner) and self.EZowner:IsPlayer() and 
-				ent==self.EZowner:GetViewModel() and self.ViewModelFlip)then
+			if(IsValid(self.Owner) and self.Owner:IsPlayer() and 
+				ent==self.Owner:GetViewModel() and self.ViewModelFlip)then
 				ang.r=-ang.r // Fixes mirrored models
 			end
 		

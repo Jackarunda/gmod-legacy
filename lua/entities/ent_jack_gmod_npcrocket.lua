@@ -50,8 +50,8 @@ if(SERVER)then
 	end
 
 	function ENT:Think()
-		//local FirstNoseTrace=util.QuickTrace(self:GetPos(),self:GetForward()*50,{self,self.EZowner})
-		//local SecondNoseTrace=util.QuickTrace(self:GetPos()*VectorRand()*20,self:GetForward()*50+VectorRand()*20,{self,self.EZowner})
+		//local FirstNoseTrace=util.QuickTrace(self:GetPos(),self:GetForward()*50,{self,self.Owner})
+		//local SecondNoseTrace=util.QuickTrace(self:GetPos()*VectorRand()*20,self:GetForward()*50+VectorRand()*20,{self,self.Owner})
 		//if((FirstNoseTrace.Hit)or(SecondNoseTrace.Hit))then
 		//	self:Explode()
 		//end
@@ -76,7 +76,7 @@ if(SERVER)then
 				self:KillHelicopter(ent)
 			end
 		end
-		if not(ent==self.EZowner)then self:Explode() end
+		if not(ent==self.Owner)then self:Explode() end
 	end
 
 	function ENT:Explode()
@@ -85,8 +85,8 @@ if(SERVER)then
 		local explo=EffectData()
 		explo:SetOrigin(self:GetPos())
 		util.Effect("explosion",explo)
-		if(IsValid(self.EZowner))then
-			util.BlastDamage(self,self.EZowner,self:GetPos(),250,90)
+		if(IsValid(self.Owner))then
+			util.BlastDamage(self,self.Owner,self:GetPos(),250,90)
 		else
 			util.BlastDamage(self,game.GetWorld(),self:GetPos(),250,90)
 		end

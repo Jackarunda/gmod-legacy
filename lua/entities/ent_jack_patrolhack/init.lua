@@ -38,7 +38,7 @@ ENT.BehavioralState=BVS_NOTHING
 ENT.NextSoundTime=0
 ENT.DesiredPositionOverride=nil
 ENT.Target=nil
-ENT.EZowner=nil
+ENT.Owner=nil
 ENT.WillAlertOnFollowFind=false
 ENT.PhrasesSaid=0
 ENT.CombatReadiness=0
@@ -121,7 +121,7 @@ function ENT:Think()
 			LookForce=6
 			if not(BState==BVS_PURSUING)then
 				if(BState==BVS_FOLLOWING)then
-					if(((self.EZowner:GetPos()-self.Target:GetPos()):Length()>500)and(self.CombatReadiness==2))then
+					if(((self.Owner:GetPos()-self.Target:GetPos()):Length()>500)and(self.CombatReadiness==2))then
 						self:BeginPursuit()
 					end
 				elseif(BState==BVS_PATROLLING)then
@@ -216,7 +216,7 @@ function ENT:ScanForTarget()
 	local ScanPos=self.SweepPosition
 	local ScanRange=1750
 	if((self.BehavioralState==BVS_FOLLOWING)or(self.BehavioralState==BVS_PURSUING))then
-		ScanPos=self.EZowner:GetShootPos()
+		ScanPos=self.Owner:GetShootPos()
 		if(self.CombatReadiness==1)then
 			ScanRange=200
 		elseif(self.CombatReadiness==2)then
@@ -232,7 +232,7 @@ function ENT:ScanForTarget()
 			HullType=potential:GetHullType()
 		end
 		local Class=potential:GetClass()
-		if(((potential:IsNPC())or(potential:IsPlayer()))and not((potential==self)or(potential==self.EZowner)))then
+		if(((potential:IsNPC())or(potential:IsPlayer()))and not((potential==self)or(potential==self.Owner)))then
 			if(self:Visible(potential))then
 				if not((potential:IsPlayer())and not(potential:Alive()))then
 					--print(tostring(CurTime()).." tried for "..tostring(potential))
@@ -263,7 +263,7 @@ function ENT:TargetMovin(targ)
 	local TWDiff=(TargVel):Length()
 	local TSDiff=(TargVel-SelfVel):Length()
 	if((self.BehavioralState==BVS_FOLLOWING)or(self.BehavioralState==BVS_PURSUING))then
-		local OwnVel=self.EZowner:GetVelocity()
+		local OwnVel=self.Owner:GetVelocity()
 		local TODiff=(TargVel-OwnVel):Length()
 		return ((TODiff>10)and(TSDiff>10)and(TWDiff>10))
 	elseif(self.BehavioralState==BVS_PATROLLING)then
@@ -276,12 +276,12 @@ function ENT:GetDesiredPosition()
 	local SelfPos=self:GetPos()
 	local BState=self.BehavioralState
 	if((BState==BVS_FOLLOWING)or(BState==BVS_SEARCHING))then
-		if(IsValid(self.EZowner))then
-			local OwnPos=self.EZowner:GetShootPos()
-			local OwnVec=self.EZowner:GetAimVector()
-			local OwnVel=self.EZowner:GetVelocity()
+		if(IsValid(self.Owner))then
+			local OwnPos=self.Owner:GetShootPos()
+			local OwnVec=self.Owner:GetAimVector()
+			local OwnVel=self.Owner:GetVelocity()
 			local Pos=OwnPos-OwnVec*20+Vector(0,0,75)
-			if not(self:ClearBetween(self.EZowner,Pos))then Pos=OwnPos+Vector(0,0,30)-OwnVec*10 end
+			if not(self:ClearBetween(self.Owner,Pos))then Pos=OwnPos+Vector(0,0,30)-OwnVec*10 end
 			if(self:ClearBetween(self,Pos))then
 				if(BState==BVS_SEARCHING)then
 					self.BehavioralState=BVS_FOLLOWING
@@ -295,13 +295,13 @@ function ENT:GetDesiredPosition()
 				self:SearchForFollowTarget(Pos)
 			end
 		else
-			self.EZowner=nil
+			self.Owner=nil
 			self.BehavioralState=BVS_IDLING
 		end
 	elseif(BState==BVS_PURSUING)then
-		if(IsValid(self.EZowner))then
+		if(IsValid(self.Owner))then
 			if(IsValid(self.Target))then
-				local OwnPos=self.EZowner:GetShootPos()
+				local OwnPos=self.Owner:GetShootPos()
 				local TargPos=self.Target:GetPos()
 				local ToVec=(TargPos-OwnPos)
 				return OwnPos+ToVec/2
@@ -310,7 +310,7 @@ function ENT:GetDesiredPosition()
 				self.BehavioralState=BVS_FOLLOWING
 			end
 		else
-			self.EZowner=nil
+			self.Owner=nil
 			self.BehavioralState=BVS_IDLING
 		end
 	end
@@ -353,8 +353,8 @@ function ENT:GetDesiredLookDirection()
 	local SelfPos=self:GetPos()
 	local BState=self.BehavioralState
 	if((BState==BVS_FOLLOWING)or(BState==BVS_PURSUING))then
-		if(IsValid(self.EZowner))then
-			local OwnPos=self.EZowner:GetShootPos()
+		if(IsValid(self.Owner))then
+			local OwnPos=self.Owner:GetShootPos()
 			if not(IsValid(self.Target))then
 				return (OwnPos-SelfPos):GetNormalized()
 			else
@@ -362,7 +362,7 @@ function ENT:GetDesiredLookDirection()
 			end
 		else
 			self.BehavioralState=BVS_IDLING
-			self.EZowner=nil
+			self.Owner=nil
 		end
 	end
 	return self:GetForward()
@@ -405,7 +405,7 @@ function ENT:StartUp()
 	self.PhysicalState=PVS_UNFOLDING
 	self.BehavioralState=BVS_IDLING
 	self:Animate("PanelPoses",.5)
-	if(_DEBUGMODE)then self.EZowner=player.GetAll()[1] end
+	if(_DEBUGMODE)then self.Owner=player.GetAll()[1] end
 	timer.Simple(3,function()
 		if(IsValid(self))then
 			self:SetBodygroup(2,1)
@@ -420,14 +420,14 @@ function ENT:StartUp()
 			self:GetPhysicsObject():EnableGravity(false)
 			if((self.PreviousBehavioralInfo)and(table.maxn(self.PreviousBehavioralInfo)>0))then
 				self.BehavioralState=self.PreviousBehavioralInfo[1]
-				self.EZowner=self.PreviousBehavioralInfo[2]
+				self.Owner=self.PreviousBehavioralInfo[2]
 				self.Target=self.PreviousBehavioralInfo[3]
 			end
 		end
 	end)
 end
 function ENT:ShutDown()
-	self.PreviousBehavioralInfo={self.BehavioralState,self.EZowner,self.Target}
+	self.PreviousBehavioralInfo={self.BehavioralState,self.Owner,self.Target}
 	self.PhysicalState=PVS_FOLDING
 	self.BehavioralState=BVS_IDLING
 	self:Animate("PanelPoses",-.5)
@@ -446,18 +446,18 @@ function ENT:ClearBetween(ent,pos)
 	local TrDat={}
 	TrDat.start=ent:LocalToWorld(ent:OBBCenter())
 	TrDat.endpos=pos
-	TrDat.filter={ent,self,self.EZowner,self.Target}
+	TrDat.filter={ent,self,self.Owner,self.Target}
 	return (!util.TraceLine(TrDat).Hit)
 end
 function ENT:KleerButween(posOne,posTwo)
 	local TrDat={}
 	TrDat.start=posOne
 	TrDat.endpos=posTwo
-	TrDat.filter={self,self.EZowner,self.Target}
+	TrDat.filter={self,self.Owner,self.Target}
 	return (!util.TraceLine(TrDat).Hit)
 end
 function ENT:GetNewMaster(ply)
-	self.EZowner=ply
+	self.Owner=ply
 	self.BehavioralState=BVS_IDLING
 	self:Speak({"acknowledged"})
 end
@@ -531,11 +531,11 @@ function ENT:NumberToWords(num) -- only accepts integers from zero to a thousand
 	end
 end
 function ENT:Say(snd)
-	if(IsValid(self.EZowner))then
-		local Dist=(self:GetPos()-self.EZowner:GetShootPos()):Length()
+	if(IsValid(self.Owner))then
+		local Dist=(self:GetPos()-self.Owner:GetShootPos()):Length()
 		if(Dist<100)then
 			self:EmitSound(snd,60,100)
-			sound.Play(snd,self.EZowner:GetShootPos(),40,100)
+			sound.Play(snd,self.Owner:GetShootPos(),40,100)
 			return
 		end
 	end
@@ -569,7 +569,7 @@ function ENT:Listen(ply,tlk)
 	local Str=string.lower(tlk)
 	if not(string.sub(Str,1,6)=="drone,")then return end
 	Str=string.sub(Str,7)
-	if(IsValid(self.EZowner))then
+	if(IsValid(self.Owner))then
 		if(string.find(Str,"follow"))then
 			self:BeginFollowing()
 		elseif(string.find(Str,"say again"))then

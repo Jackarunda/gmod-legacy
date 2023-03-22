@@ -54,14 +54,14 @@ end
 
 function SWEP:UpdateNextIdle()
 
-	local vm=self.EZowner:GetViewModel()
+	local vm=self.Owner:GetViewModel()
 	self:SetNextIdle( CurTime()+vm:SequenceDuration() )
 	
 end
 
 function SWEP:PrimaryAttack( right )
 	if(true)then return end
-	self.EZowner:SetAnimation( PLAYER_ATTACK1 )
+	self.Owner:SetAnimation( PLAYER_ATTACK1 )
 
 	local anim="fists_left"
 	if( right )then anim="fists_right" end
@@ -69,7 +69,7 @@ function SWEP:PrimaryAttack( right )
 		anim="fists_uppercut"
 	end
 
-	local vm=self.EZowner:GetViewModel()
+	local vm=self.Owner:GetViewModel()
 	vm:SendViewModelMatchingSequence( vm:LookupSequence( anim ) )
 
 	self:EmitSound( SwingSound )
@@ -88,21 +88,21 @@ end
 
 function SWEP:DealDamage()
 
-	local anim=self:GetSequenceName(self.EZowner:GetViewModel():GetSequence())
+	local anim=self:GetSequenceName(self.Owner:GetViewModel():GetSequence())
 
-	self.EZowner:LagCompensation( true )
+	self.Owner:LagCompensation( true )
 	
 	local tr=util.TraceLine( {
-		start=self.EZowner:GetShootPos(),
-		endpos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*self.HitDistance,
-		filter=self.EZowner
+		start=self.Owner:GetShootPos(),
+		endpos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*self.HitDistance,
+		filter=self.Owner
 	} )
 
 	if( !IsValid( tr.Entity ) )then 
 		tr=util.TraceHull( {
-			start=self.EZowner:GetShootPos(),
-			endpos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*self.HitDistance,
-			filter=self.EZowner,
+			start=self.Owner:GetShootPos(),
+			endpos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*self.HitDistance,
+			filter=self.Owner,
 			mins=Vector( -10, -10, -8 ),
 			maxs=Vector( 10, 10, 8 )
 		} )
@@ -118,7 +118,7 @@ function SWEP:DealDamage()
 	if( SERVER && IsValid( tr.Entity ) && ( tr.Entity:IsNPC() || tr.Entity:IsPlayer() || tr.Entity:Health()>0 ) )then
 		local dmginfo=DamageInfo()
 	
-		local attacker=self.EZowner
+		local attacker=self.Owner
 		if( !IsValid( attacker ) )then attacker=self end
 		dmginfo:SetAttacker( attacker )
 
@@ -126,11 +126,11 @@ function SWEP:DealDamage()
 		dmginfo:SetDamage( math.random( 8, 12 ) )
 
 		if( anim=="fists_left" )then
-			dmginfo:SetDamageForce( self.EZowner:GetRight()*4912+self.EZowner:GetForward()*9998 ) -- Yes we need those specific numbers
+			dmginfo:SetDamageForce( self.Owner:GetRight()*4912+self.Owner:GetForward()*9998 ) -- Yes we need those specific numbers
 		elseif( anim=="fists_right" )then
-			dmginfo:SetDamageForce( self.EZowner:GetRight()*-4912+self.EZowner:GetForward()*9989 )
+			dmginfo:SetDamageForce( self.Owner:GetRight()*-4912+self.Owner:GetForward()*9989 )
 		elseif( anim=="fists_uppercut" )then
-			dmginfo:SetDamageForce( self.EZowner:GetUp()*5158+self.EZowner:GetForward()*10012 )
+			dmginfo:SetDamageForce( self.Owner:GetUp()*5158+self.Owner:GetForward()*10012 )
 			dmginfo:SetDamage( math.random( 12, 24 ) )
 		end
 
@@ -142,7 +142,7 @@ function SWEP:DealDamage()
 	if( SERVER && IsValid( tr.Entity ) )then
 		local phys=tr.Entity:GetPhysicsObject()
 		if( IsValid( phys ) )then
-			phys:ApplyForceOffset( self.EZowner:GetAimVector()*80*phys:GetMass(), tr.HitPos )
+			phys:ApplyForceOffset( self.Owner:GetAimVector()*80*phys:GetMass(), tr.HitPos )
 		end
 	end
 
@@ -154,14 +154,14 @@ function SWEP:DealDamage()
 		end
 	end
 
-	self.EZowner:LagCompensation( false )
+	self.Owner:LagCompensation( false )
 
 end
 
 function SWEP:OnRemove()
 	
-	if( IsValid( self.EZowner ) && CLIENT && self.EZowner:IsPlayer() )then
-		local vm=self.EZowner:GetViewModel()
+	if( IsValid( self.Owner ) && CLIENT && self.Owner:IsPlayer() )then
+		local vm=self.Owner:GetViewModel()
 		if( IsValid( vm ) )then vm:SetMaterial( "" ) end
 	end
 	
@@ -177,7 +177,7 @@ end
 
 function SWEP:Deploy()
 
-	local vm=self.EZowner:GetViewModel()
+	local vm=self.Owner:GetViewModel()
 	vm:SendViewModelMatchingSequence( vm:LookupSequence( "fists_draw" ) )
 	
 	self:UpdateNextIdle()
@@ -192,7 +192,7 @@ end
 
 function SWEP:Think()
 	
-	local vm=self.EZowner:GetViewModel()
+	local vm=self.Owner:GetViewModel()
 	local curtime=CurTime()
 	local idletime=self:GetNextIdle()
 	

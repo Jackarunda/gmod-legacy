@@ -23,7 +23,7 @@ function ENT:Initialize()
 	self.Impacted=false
 	
 	if not(self:GetDTFloat(0))then self:Remove() return end
-	if not(self.EZowner)then self:Remove() return end
+	if not(self.Owner)then self:Remove() return end
 	if not(self.Weapon)then self:Remove() return end
 	if not(self.InitialFlightDirection)then self:Remove() return end
 	if not(self.InitialFlightSpeed)then self:Remove() return end
@@ -90,7 +90,7 @@ function ENT:Think()
 	local NoseTraceData={}
 	NoseTraceData.start=SelfPos
 	NoseTraceData.endpos=SelfPos+self.CurrentFlightDirection*self.CurrentFlightSpeed*1.25
-	NoseTraceData.filter={self,self.EZowner}
+	NoseTraceData.filter={self,self.Owner}
 	NoseTraceData.mask=MASK_SHOT
 	local NoseTrace=util.TraceLine(NoseTraceData)
 	
@@ -132,7 +132,7 @@ function ENT:Impact(trace)
 	Damage:SetDamage(Severity*DamMod)
 	Damage:SetDamageType(DMG_BULLET)
 	Damage:SetDamagePosition(trace.HitPos)
-	Damage:SetAttacker(self.EZowner)
+	Damage:SetAttacker(self.Owner)
 	Damage:SetInflictor(self.Weapon)
 	Damage:SetDamageForce(Forward*Severity*300)
 	
@@ -173,7 +173,7 @@ function ENT:Impact(trace)
 				Damage:SetDamage(Severity/4)
 				Damage:SetDamageType(DMG_SLASH)
 				Damage:SetDamagePosition(trace.HitPos)
-				Damage:SetAttacker(self.EZowner)
+				Damage:SetAttacker(self.Owner)
 				Damage:SetInflictor(self.Weapon)
 				Damage:SetDamageForce((victim:GetPos()-trace.HitPos):GetNormalized()*30000)
 				victim:TakeDamageInfo(Damage)

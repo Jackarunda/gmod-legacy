@@ -88,7 +88,7 @@ function SWEP:PrimaryAttack()
 	if not(self.dt.State==2)then return end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.2)
-	local ShootPos=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20
+	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
 	if not(self.ChargingSound)then self.ChargingSound=CreateSound(self.Weapon,"snd_jack_electrolasercharge.wav");self.ChargingSound:SetSoundLevel(80) end
 	self.ChargingSound:Stop()
 	self.ChargingSound:Play()
@@ -98,14 +98,14 @@ function SWEP:PrimaryAttack()
 		if(IsValid(self))then
 			self.dt.State=2
 			local Aim=1-self.dt.Aim/100
-			local BaseShootPos=self.EZowner:GetShootPos()
-			local AimVec=self.EZowner:GetAimVector()
-			local ShootPos=BaseShootPos+AimVec*20-self.EZowner:GetUp()*3+self.EZowner:GetRight()*2*Aim
-			local TrDat={start=BaseShootPos,endpos=ShootPos,filter=self.EZowner}
+			local BaseShootPos=self.Owner:GetShootPos()
+			local AimVec=self.Owner:GetAimVector()
+			local ShootPos=BaseShootPos+AimVec*20-self.Owner:GetUp()*3+self.Owner:GetRight()*2*Aim
+			local TrDat={start=BaseShootPos,endpos=ShootPos,filter=self.Owner}
 			local Tr=util.TraceLine(TrDat)
 			if(Tr.Hit)then ShootPos=BaseShootPos end
-			if(self.EZowner:KeyDown(IN_SPEED))then AimVec=self.EZowner:EyeAngles():Up();ShootPos=BaseShootPos+AimVec*20 end
-			self:LaserTrace(ShootPos,ShootPos+AimVec*40000,self.EZowner,1)
+			if(self.Owner:KeyDown(IN_SPEED))then AimVec=self.Owner:EyeAngles():Up();ShootPos=BaseShootPos+AimVec*20 end
+			self:LaserTrace(ShootPos,ShootPos+AimVec*40000,self.Owner,1)
 		end
 	end)
 end
@@ -143,7 +143,7 @@ function SWEP:LaserTrace(stert,ayund,filtah,stack)
 				WantSomeIceWithThatBurn:SetDamage(math.Rand(5,10))
 				WantSomeIceWithThatBurn:SetDamagePosition(Tress.HitPos)
 				WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-				WantSomeIceWithThatBurn:SetAttacker(self.EZowner)
+				WantSomeIceWithThatBurn:SetAttacker(self.Owner)
 				WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
 				if(Tress.Entity:IsOnFire())then
 					WantSomeIceWithThatBurn:SetDamageType(DMG_GENERIC)
@@ -176,8 +176,8 @@ function SWEP:LaserTrace(stert,ayund,filtah,stack)
 			
 			timer.Simple(.05,function()
 				if(IsValid(self))then
-					local DerPosition=self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20-self.EZowner:GetUp()*3+self.EZowner:GetRight()*2*(self.dt.Aim/100)
-					if(self.EZowner:KeyDown(IN_SPEED))then DerPosition=self.EZowner:GetShootPos()+self.EZowner:EyeAngles():Up()*20 end
+					local DerPosition=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20-self.Owner:GetUp()*3+self.Owner:GetRight()*2*(self.dt.Aim/100)
+					if(self.Owner:KeyDown(IN_SPEED))then DerPosition=self.Owner:GetShootPos()+self.Owner:EyeAngles():Up()*20 end
 					local Derp=EffectData()
 					Derp:SetStart(DerPosition)
 					Derp:SetOrigin(stert)
@@ -227,7 +227,7 @@ function SWEP:ElectriTrace(stert,ayund,filtah,stack)
 				WantSomeIceWithThatBurn:SetDamage(math.Rand(20,30))
 				WantSomeIceWithThatBurn:SetDamagePosition(Tress.HitPos)
 				WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-				WantSomeIceWithThatBurn:SetAttacker(self.EZowner)
+				WantSomeIceWithThatBurn:SetAttacker(self.Owner)
 				WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
 				WantSomeIceWithThatBurn:SetDamageType(DMG_SHOCK)
 				Tress.Entity.JustGotZapped=true
@@ -310,14 +310,14 @@ function SWEP:Think()
 	
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.EZowner:KeyDown(IN_SPEED))then
+		if(self.Owner:KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.EZowner:KeyDown(IN_ATTACK2))then
+		if(self.Owner:KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -328,23 +328,23 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.EZowner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 
 	local State=self.dt.State
-	//self.EZowner:PrintMessage(HUD_PRINTCENTER,State)
+	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.EZowner:InVehicle())or(self.EZowner:KeyDown(IN_ZOOM)))then
+	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.dt.State=2
 		end
 		return
 	end
 
-	local BaseShootPos=self.EZowner:GetShootPos()
-	local AimVec=self.EZowner:GetAimVector()
+	local BaseShootPos=self.Owner:GetShootPos()
+	local AimVec=self.Owner:GetAimVector()
 	local Aim=self.dt.Aim/100
-	local ShootPos=BaseShootPos+self.EZowner:GetRight()*(3-3*Aim)-self.EZowner:GetUp()*(5-3*Aim)+AimVec*25
+	local ShootPos=BaseShootPos+self.Owner:GetRight()*(3-3*Aim)-self.Owner:GetUp()*(5-3*Aim)+AimVec*25
 end
 
 function SWEP:BurstCool()
@@ -352,29 +352,29 @@ function SWEP:BurstCool()
 	self.dt.State=4
 
 	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.EZowner:GetViewModel():SetPlaybackRate(.25)
-	self.EZowner:SetAnimation(PLAYER_ATTACK1)
+	self.Owner:GetViewModel():SetPlaybackRate(.25)
+	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
 		self.Weapon:EmitSound("snd_jack_laservent.wav",70,100)
 	end
 	local Pewf=EffectData()
-	Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-	Pewf:SetStart(self.EZowner:GetVelocity())
+	Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+	Pewf:SetStart(self.Owner:GetVelocity())
 	util.Effect("eff_jack_instantvent",Pewf,true,true)
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			local Pewf=EffectData()
-			Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-			Pewf:SetStart(self.EZowner:GetVelocity())
+			Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+			Pewf:SetStart(self.Owner:GetVelocity())
 			util.Effect("eff_jack_instantvent",Pewf,true,true)
 		end
 	end)
 	timer.Simple(.4,function()
 		if(IsValid(self))then
 			local Pewf=EffectData()
-			Pewf:SetOrigin(self.EZowner:GetShootPos()+self.EZowner:GetAimVector()*20+self.EZowner:GetRight()*4)
-			Pewf:SetStart(self.EZowner:GetVelocity())
+			Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
+			Pewf:SetStart(self.Owner:GetVelocity())
 			util.Effect("eff_jack_instantvent",Pewf,true,true)
 		end
 	end)
@@ -455,7 +455,7 @@ local function GunThink()
 		if(Heat)then
 			local State=wep.dt.State
 			if(State==3)then
-				if((wep.dt.Ammo<=0)or(wep.EZowner:KeyDown(IN_SPEED)))then
+				if((wep.dt.Ammo<=0)or(wep.Owner:KeyDown(IN_SPEED)))then
 					if not(LaserEndPlayed)then
 						LaserEndPlayed=true
 						if(SERVER)then wep:EmitSound("snd_jack_laserend.wav",70,100) end

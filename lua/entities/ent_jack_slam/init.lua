@@ -8,7 +8,7 @@ function ENT:SpawnFunction(ply, tr)
 	local ent=ents.Create("ent_jack_slam")
 	ent:SetAngles(Angle(0,0,0))
 	ent:SetPos(SpawnPos)
-	ent.EZowner=ply
+	ent.Owner=ply
 	ent:Spawn()
 	ent:Activate()
 	local effectdata=EffectData()

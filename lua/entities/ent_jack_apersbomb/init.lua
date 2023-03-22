@@ -81,12 +81,12 @@ function ENT:Detonate()
 	sound.Play("snd_jack_c4splodeclose.wav",SelfPos,110,110)
 	self.Entity:EmitSound("BaseExplosionEffect.Sound")
 
-	local Owner=self.EZowner
+	local Owner=self.Owner
 	self:Remove()
 
 	local Blamo=ents.Create("ent_jack_smallshrapnelsplosion")
 	Blamo:SetPos(SelfPos+Vector(0,0,5))
-	Blamo.EZowner=Owner
+	Blamo.Owner=Owner
 	Blamo:Spawn()
 	Blamo:Activate()
 end
