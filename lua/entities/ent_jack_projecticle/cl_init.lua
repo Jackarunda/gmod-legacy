@@ -14,9 +14,9 @@ function ENT:Draw()
 	//apparently, gmod13 did away with SetModelScale()...
 	local Mat=Matrix()
 	Mat:Scale(Vector(Size*1.25,Size/2,Size/2))
-	self.Entity:EnableMatrix("RenderMultiply",Mat)
+	self:EnableMatrix("RenderMultiply",Mat)
 	
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 function ENT:Think()

@@ -277,7 +277,7 @@ if(CLIENT)then
 	
 	local function RemoveExplodoCrabRagdollClient(data)
 		local Pos=data:ReadVector()
-		for key,rag in pairs(ents.FindInSphere(Pos,50))do
+		for key,rag in ipairs(ents.FindInSphere(Pos,50))do
 			if(rag:GetClass()=="class C_ClientRagdoll")then
 				if(rag:GetModel()=="models/headcrabclassic.mdl")then
 					rag:Remove()
@@ -373,7 +373,7 @@ if(SERVER)then
 	hook.Add("PlayerSpawnedNPC","JackysLolExplodoCrabs",MakeExplodoCrab)--]]
 	
 	local function MakeExplodoCrabsCommand(args)
-		for key,found in pairs(ents.FindByClass("npc_headcrab")) do
+		for key,found in ipairs(ents.FindByClass("npc_headcrab")) do
 			found.ShouldRandomlyExplode=true
 			found:SetMaterial("models/mat_jack_explodocrab")
 		end
@@ -393,7 +393,7 @@ function GlobalJackyFGHGDeploy(self)
 			if(IsValid(self))then
 				self:EmitSound("snd_jack_smallcharge.wav",65,100)
 				self.NewCartridge=false
-				if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then self.Weapon:EmitSound("snd_jack_nuclearfgc_start.wav") end
+				if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then self:EmitSound("snd_jack_nuclearfgc_start.wav") end
 				self.DisplaysOn=true
 				if(SERVER)then
 					umsg.Start("JackysFGBoolChange")
@@ -405,12 +405,12 @@ function GlobalJackyFGHGDeploy(self)
 			end
 		end)
 	end
-	self.Weapon:SendWeaponAnim(ACT_VM_DEPLOY)
-	self.Owner:GetViewModel():SetPlaybackRate(1.3)
+	self:SendWeaponAnim(ACT_VM_DEPLOY)
+	self:GetOwner():GetViewModel():SetPlaybackRate(1.3)
 	timer.Simple(1,function()
 		if(IsValid(self))then
 			self.dt.State=2
-			self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+			self:SendWeaponAnim(ACT_VM_IDLE)
 		end
 	end)
 end
@@ -418,13 +418,13 @@ end
 function GlobalJackyFGLGDeploy(self)
 	if(self.dt.State==1)then return end
 	self.dt.State=1
- 	if(SERVER)then self.Owner:EmitSound("snd_jack_fglonggundraw.wav") end
+ 	if(SERVER)then self:GetOwner():EmitSound("snd_jack_fglonggundraw.wav") end
 	if(self.NewCartridge)then
 		timer.Simple(1.4,function()
 			if(IsValid(self))then
 				self:EmitSound("snd_jack_smallcharge.wav",65,100)
 				self.NewCartridge=false
-				if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then self.Weapon:EmitSound("snd_jack_nuclearfgc_start.wav") end
+				if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then self:EmitSound("snd_jack_nuclearfgc_start.wav") end
 				self.DisplaysOn=true
 				if(SERVER)then
 					umsg.Start("JackysFGBoolChange")
@@ -436,19 +436,19 @@ function GlobalJackyFGLGDeploy(self)
 			end
 		end)
 	end
-	self.Weapon:SendWeaponAnim(ACT_VM_DEPLOY)
-	self.Owner:GetViewModel():SetPlaybackRate(.5)
+	self:SendWeaponAnim(ACT_VM_DEPLOY)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.5)
 	timer.Simple(2,function()
 		if(IsValid(self))then
 			self.dt.State=2
-			self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+			self:SendWeaponAnim(ACT_VM_IDLE)
 		end
 	end)
 end
 
 function GlobalJackyFGDisplayToggle(self)
 	if(CLIENT)then return end
-	if(self.Owner:KeyDown(IN_USE))then
+	if(self:GetOwner():KeyDown(IN_USE))then
 		if(self.DisplaysOn)then
 			self.DisplaysOn=false
 			umsg.Start("JackysFGBoolChange")
@@ -481,7 +481,7 @@ function GlobalJackyFGLongReloadKey(self)
 	if not(self.dt.State==2)then return end
 	if(self.dt.Heat>.15)then
 		self:BurstCool()
-		self.Owner:SetAnimation(PLAYER_RELOAD)
+		self:GetOwner():SetAnimation(PLAYER_RELOAD)
 	end
 end
 
@@ -490,21 +490,21 @@ function GlobalJackyLoadIronSlug(self,cartridge)
 	local InitialMassRemaining=self.dt.Mass
 	if(InitialMassRemaining<self.MaxRoundCapacity)then
 		self.dt.State=5
-		self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
-		self.Owner:SetAnimation(PLAYER_RELOAD)
-		self.Weapon:EmitSound("snd_jack_massload.wav",70,130)
-		self.Owner:ViewPunch(Angle(1,0,0))
+		self:SendWeaponAnim(ACT_VM_DRAW)
+		self:GetOwner():SetAnimation(PLAYER_RELOAD)
+		self:EmitSound("snd_jack_massload.wav",70,130)
+		self:GetOwner():ViewPunch(Angle(1,0,0))
 		timer.Simple(.2,function()
 			if(IsValid(self))then
-				self.Owner:ViewPunch(Angle(1,0,0))
-				self.Weapon:EmitSound("snd_jack_load_iron.wav",70,130)
-				self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
+				self:GetOwner():ViewPunch(Angle(1,0,0))
+				self:EmitSound("snd_jack_load_iron.wav",70,130)
+				self:SendWeaponAnim(ACT_VM_DRAW)
 			end
 		end)
 		timer.Simple(.4,function()
 			if(IsValid(self))then
-				self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
-				self.Owner:GetViewModel():SetPlaybackRate(1.4)
+				self:SendWeaponAnim(ACT_VM_DRAW)
+				self:GetOwner():GetViewModel():SetPlaybackRate(1.4)
 			end
 		end)
 		timer.Simple(.8,function()
@@ -529,26 +529,26 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
-			umsg.Entity(self.Weapon)
+			umsg.Start("JackysFGMagHot",self:GetOwner())
+			umsg.Entity(self)
 			umsg.String(self.PowerType)
 			umsg.End()
 		end
 		local TimeToStart=0.001
-		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self.Weapon:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
+		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
-				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.8)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
-				self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
+				self:SendWeaponAnim(ACT_VM_RELOAD)
+				self:GetOwner():GetViewModel():SetPlaybackRate(.8)
+				self:GetOwner():SetAnimation(PLAYER_RELOAD)
+				self:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
 				timer.Simple(.4,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
-							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.Owner:GetAimVector()*10)
+							local LolAng=self:GetOwner():EyeAngles()
+							local Pos,Ang=self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
+							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self:GetOwner():GetAimVector()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
 							Empty:SetAngles(LolAng)
@@ -556,7 +556,7 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity())
 						end
 						self.dt.Ammo=0
 						
@@ -573,8 +573,8 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 				timer.Simple(.6,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
-							umsg.Entity(self.Weapon)
+							umsg.Start("JackysFGMagCool",self:GetOwner())
+							umsg.Entity(self)
 							umsg.String(NewType)
 							umsg.End()
 						end
@@ -596,7 +596,7 @@ function GlobalJackyFGHGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							umsg.Bool(self.DisplaysOn)
 							umsg.End()
 						end
-						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self.Weapon:EmitSound("snd_jack_nuclearfgc_start.wav") end
+						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self:EmitSound("snd_jack_nuclearfgc_start.wav") end
 						self:EmitSound("snd_jack_smallcharge.wav",65,100)
 					end
 				end)
@@ -619,26 +619,26 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
-			umsg.Entity(self.Weapon)
+			umsg.Start("JackysFGMagHot",self:GetOwner())
+			umsg.Entity(self)
 			umsg.String(self.PowerType)
 			umsg.End()
 		end
 		local TimeToStart=0.001
-		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self.Weapon:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
+		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
-				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.8)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
-				self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
+				self:SendWeaponAnim(ACT_VM_RELOAD)
+				self:GetOwner():GetViewModel():SetPlaybackRate(.8)
+				self:GetOwner():SetAnimation(PLAYER_RELOAD)
+				self:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3])
 				timer.Simple(.4,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
-							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self.Owner:GetAimVector()*10)
+							local LolAng=self:GetOwner():EyeAngles()
+							local Pos,Ang=self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
+							Empty:SetPos((Pos+Ang:Up()*10-Ang:Forward()*10)+self:GetOwner():GetAimVector()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
 							Empty:SetAngles(LolAng)
@@ -646,7 +646,7 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity())
 						end
 						self.dt.Energy=0
 						
@@ -663,8 +663,8 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 				timer.Simple(.6,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
-							umsg.Entity(self.Weapon)
+							umsg.Start("JackysFGMagCool",self:GetOwner())
+							umsg.Entity(self)
 							umsg.String(NewType)
 							umsg.End()
 						end
@@ -686,7 +686,7 @@ function GlobalJackyFGHGLoadEnCartNoPrim(self,cartridge,powerType,heatMul,consum
 							umsg.Bool(self.DisplaysOn)
 							umsg.End()
 						end
-						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self.Weapon:EmitSound("snd_jack_nuclearfgc_start.wav") end
+						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self:EmitSound("snd_jack_nuclearfgc_start.wav") end
 						self:EmitSound("snd_jack_smallcharge.wav",65,100)
 					end
 				end)
@@ -709,25 +709,25 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 		self.dt.State=5
 		local Orig=self.DisplaysOn
 		if(SERVER)then
-			umsg.Start("JackysFGMagHot",self.Owner)
-			umsg.Entity(self.Weapon)
+			umsg.Start("JackysFGMagHot",self:GetOwner())
+			umsg.Entity(self)
 			umsg.String(self.PowerType)
 			umsg.End()
 		end
 		local TimeToStart=0.001
-		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self.Weapon:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
+		if(self.PowerType=="Self-Contained Micro Nuclear Fission Reactor")then if(SERVER)then self:EmitSound("snd_jack_nuclearfgc_end.wav") end;TimeToStart=2 end
 		timer.Simple(TimeToStart,function()
 			if(IsValid(self))then
-				self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-				self.Owner:GetViewModel():SetPlaybackRate(.6*rate)
-				self.Owner:SetAnimation(PLAYER_RELOAD)
-				if(SERVER)then self.Weapon:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3]) end
+				self:SendWeaponAnim(ACT_VM_RELOAD)
+				self:GetOwner():GetViewModel():SetPlaybackRate(.6*rate)
+				self:GetOwner():SetAnimation(PLAYER_RELOAD)
+				if(SERVER)then self:EmitSound(self.ReloadNoise[1],self.ReloadNoise[2],self.ReloadNoise[3]) end
 				timer.Simple(1.5,function()
 					if(IsValid(self))then
 						if(SERVER)then
 							local Empty=ents.Create(PowerTypeToEntClassTable[self.PowerType])
-							local LolAng=self.Owner:EyeAngles()
-							local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
+							local LolAng=self:GetOwner():EyeAngles()
+							local Pos,Ang=self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
 							Empty:SetPos(Pos+Ang:Up()*10-Ang:Forward()*10)
 							LolAng:RotateAroundAxis(LolAng:Forward(),90)
 							LolAng:RotateAroundAxis(LolAng:Up(),180)
@@ -736,7 +736,7 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							Empty.Charge=InitialRemaining
 							Empty:Spawn()
 							Empty:Activate()
-							Empty:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity())
+							Empty:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity())
 						end
 						self.dt.Ammo=0
 						
@@ -753,8 +753,8 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 				timer.Simple(2/rate,function()
 					if(IsValid(self))then
 						if(SERVER)then
-							umsg.Start("JackysFGMagCool",self.Owner)
-							umsg.Entity(self.Weapon)
+							umsg.Start("JackysFGMagCool",self:GetOwner())
+							umsg.Entity(self)
 							umsg.String(self.PowerType)
 							umsg.End()
 						end
@@ -776,7 +776,7 @@ function GlobalJackyFGLGLoadEnCart(self,cartridge,powerType,heatMul,consumptionM
 							umsg.Bool(self.DisplaysOn)
 							umsg.End()
 						end
-						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self.Weapon:EmitSound("snd_jack_nuclearfgc_start.wav") end
+						if(NewType=="Self-Contained Micro Nuclear Fission Reactor")then self:EmitSound("snd_jack_nuclearfgc_start.wav") end
 						self:EmitSound("snd_jack_smallcharge.wav",65,100)
 					end
 				end)
@@ -811,7 +811,7 @@ hook.Add("Initialize","JackySplosivesInitialize",Initialize)
 
 local function Think()
 	if(SERVER)then
-		for key,playah in pairs(player.GetAll())do
+		for key,playah in ipairs(player.GetAll())do
 			if(playah.JackyDetonatingOrdnance)then
 				local Wap=playah:GetActiveWeapon()
 				if(IsValid(Wap))then Wap:SendWeaponAnim(ACT_VM_DRAW) end
@@ -834,6 +834,10 @@ if(SERVER)then
 			JackyDetGearNotify(playah,"Set: "..armType)
 			item.Armed=true
 			if not(item.Owner)then JMod.SetOwner(item,playah) end
+		else
+			playah:ChatPrint("You need a Fuzing Equipment to arm the bomb.")
+			item.NextUseTime=CurTime()+1.5
+			item.NextFuzeTime=CurTime()+1.5
 		end
 	end
 	
@@ -868,9 +872,9 @@ if(SERVER)then
 	local function RemoteOrdnanceDet(playah,cmd)
 		if(playah.JackyDetonatingOrdnance)then return end
 		local RemoteDetonatableItemTable={}
-		for key,obj in pairs(ents.FindByClass("ent_jack_claymore"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
-		for key,obj in pairs(ents.FindByClass("ent_jack_c4block"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
-		--for key,obj in pairs(ents.FindByClass("ent_jack_firebomb"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
+		for key,obj in ipairs(ents.FindByClass("ent_jack_claymore"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
+		for key,obj in ipairs(ents.FindByClass("ent_jack_c4block"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
+		--for key,obj in ipairs(ents.FindByClass("ent_jack_firebomb"))do table.ForceInsert(RemoteDetonatableItemTable,obj) end
 		local Items=0
 		for key,item in pairs(RemoteDetonatableItemTable)do
 			if not(item.Triggered)then
@@ -964,7 +968,7 @@ elseif(CLIENT)then
 			local playah=LocalPlayer()
 			local num=playah:GetNetworkedInt("JackyDetGearCount")
 			if(num)then
-				if(type(num)=="number")then --weird-ass-shit, bro
+				if(type(num)=="number")then
 					if(LocalPlayer():Alive())then
 						local Height=ScrH()
 						local Width=ScrW()

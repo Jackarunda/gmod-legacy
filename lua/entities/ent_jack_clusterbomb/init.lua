@@ -25,16 +25,16 @@ end
 
 function ENT:Initialize()
 	self:SetAngles(Angle(0,0,0))
-	self.Entity:SetModel("models/Mechanics/robotics/a1.mdl")
+	self:SetModel("models/Mechanics/robotics/a1.mdl")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
 	self.Exploded=false
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(100)
@@ -53,9 +53,8 @@ function ENT:Initialize()
 	self.TailFins:SetNotSolid(true)
 	self.TailFins:SetNoDraw(true)
 	self:DeleteOnRemove(self.TailFins)
-	constraint.Weld(self.Entity,self.TailFins,0,0,0,true)
-	
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+	constraint.Weld(self,self.TailFins,0,0,0,true)
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<5000)then Settings.MaxVelocity=5000 end
 	physenv.SetPerformanceSettings(Settings)
@@ -82,13 +81,13 @@ function ENT:Detonate()
 	splad:SetOrigin(SelfPos)
 	splad:SetScale(1)
 	util.Effect("Explosion",splad,true,true)
-	self.Entity:EmitSound("BaseExplosionEffect.Sound")
+	self:EmitSound("BaseExplosionEffect.Sound")
 	
 	for i=1,40 do
 		local Dir=VectorRand()
 		local Spl=ents.Create("ent_jack_bomblet")
 		Spl:SetPos(SelfPos+Dir*math.Rand(1,15))
-		Spl.ParentEntity=self.Entity
+		Spl.ParentEntity=self
 		Spl.NoBombletTrigger=true
 		Spl:SetAngles(Dir:Angle())
 		Spl:Spawn()
@@ -103,7 +102,7 @@ end
 
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 end
 
@@ -112,7 +111,7 @@ function ENT:OnTakeDamage(dmginfo)
 	if((dmginfo:IsExplosionDamage())and(dmginfo:GetDamage()>110))then
 		self:Detonate()
 	end
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator,caller)
@@ -124,6 +123,10 @@ function ENT:Use(activator,caller)
 			if(Num>0)then
 				JackySimpleOrdnanceArm(self,activator,"Set: Free-Fall Time")
 				self.Armed=true
+			else
+				activator:ChatPrint("You need a Fuzing Equipment to arm the bomb.")
+				self.NextUseTime=CurTime()+1.5
+				self.NextFuzeTime=CurTime()+1.5
 			end
 		else
 			JackyOrdnanceDisarm(self,activator,"")

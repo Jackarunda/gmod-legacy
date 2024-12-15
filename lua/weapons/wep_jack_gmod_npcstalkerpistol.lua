@@ -25,7 +25,7 @@ if(SERVER)then
 	SWEP.AutoSwitchTo=false
 	SWEP.AutoSwitchFrom=false 
 	function SWEP:NPCShoot_Secondary(ShootPos,ShootDir)
-		--the fuck are you doing, son?
+		
 	end
 	function SWEP:OnDrop()
 		local wep=ents.Create("weapon_pistol")
@@ -38,7 +38,7 @@ if(SERVER)then
 	function SWEP:NPCShoot_Primary(ShootPos,ShootDir)
 		if(self.Reloading)then return end
 		if(self.NextFire>CurTime())then return end
-		local Enem=self.Owner:GetEnemy()
+		local Enem=self:GetOwner():GetEnemy()
 		if(IsValid(Enem))then
 			local EnemPos=Enem:LocalToWorld(Enem:OBBCenter())
 			local Vec=(EnemPos-ShootPos):GetNormalized()
@@ -47,14 +47,14 @@ if(SERVER)then
 	end
 	function SWEP:Shoot(ShootPos,ShootDir)
 		if(self.RoundsInPulseMag>0)then
-			self.Owner:SetAnimation(ACT_RANGE_ATTACK_PISTOL)
+			self:GetOwner():SetAnimation(ACT_RANGE_ATTACK_PISTOL)
 			local posang=self:GetAttachment(self:LookupAttachment("muzzle"))
 			--local Kabang=EffectData()
 			--Kabang:SetStart(posang.Pos+posang.Ang:Forward()*3)
 			--Kabang:SetNormal(ShootDir)
 			--Kabang:SetScale(1)
 			--util.Effect("eff_jack_combinemuzzle",Kabang)
-			self.Weapon:EmitSound("weapons/pistol/pistol_fire3.wav")
+			self:EmitSound("weapons/pistol/pistol_fire3.wav")
 			--sound.Play("weapons/irifle/irifle_fire2.wav",self:GetPos(),75,160)
 			local Bam={}
 			Bam.Src=ShootPos
@@ -63,8 +63,8 @@ if(SERVER)then
 			Bam.Damage=5
 			Bam.Tracer=1
 			Bam.Spread=Vector(.035,.035,.035)
-			Bam.Attacker=self.Owner
-			Bam.Inflictor=self.Weapon
+			Bam.Attacker=self:GetOwner()
+			Bam.Inflictor=self
 			self:FireBullets(Bam)
 		else
 			self:Reload()
@@ -73,9 +73,9 @@ if(SERVER)then
 	function SWEP:Reload()
 		if(self.Reloading)then return end
 		self.Reloading=true
-		self.Owner:EmitSound("weapons/pistol/pistol_reload1.wav")
+		self:GetOwner():EmitSound("weapons/pistol/pistol_reload1.wav")
 		self.RoundsInPulseMag=10
-		self.Owner:SetSchedule(SCHED_RELOAD)
+		self:GetOwner():SetSchedule(SCHED_RELOAD)
 		timer.Simple(1.5,function()
 			if(IsValid(self))then
 				self.Reloading=false
@@ -114,18 +114,18 @@ elseif(CLIENT)then
 	function SWEP:DrawWorldModel()
 		if not(self:GetDTBool(0))then
 			render.SetColorModulation(.1,.1,.1)
-			self.Weapon:DrawModel()
+			self:DrawModel()
 			render.SetColorModulation(1,1,1)
 		end
 		if(self:GetDTBool(1))then
-			local Pos,Ang=self.Owner:GetBonePosition(11) -- Right Hand
+			local Pos,Ang=self:GetOwner():GetBonePosition(11) -- Right Hand
 			self.Blade:SetRenderOrigin(Pos+Ang:Forward()*15)
 			self.Blade:SetAngles(Ang)
 			self.Blade:DrawModel()
 		end
 	end
 	function SWEP:DrawWorldModelTranslucent()
-		self.Weapon:DrawModel()
+		self:DrawModel()
 	end
 	function SWEP:AdjustMouseSensitivity()
 		return nil

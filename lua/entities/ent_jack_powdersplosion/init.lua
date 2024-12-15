@@ -4,21 +4,21 @@ include('shared.lua')
 function ENT:Initialize()
 
 	--We need to init physics properties even though this entity isn't physically simulated
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:DrawShadow( false )
-	self.Entity:SetNoDraw(true)
+	self:SetMoveType( MOVETYPE_NONE )
+	self:DrawShadow( false )
+	self:SetNoDraw(true)
 	
-	self.Entity:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
-	self.Entity:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:EnableCollisions( false )		
 	end
 
-	self.Entity:SetNotSolid( true )
+	self:SetNotSolid( true )
 
-	self.Entity:Fire("kill","",0.25)
+	self:Fire("kill","",0.25)
 
 	/*-------------- Here we go, boy --------------*/
 	
@@ -123,7 +123,7 @@ function ENT:Initialize()
 	timer.Simple(0.1,function()
 		if(IsValid(self))then
 			for i=0,Radius/30 do
-				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/1.75,{self.Entity,self.ParentEntity})
+				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/1.75,{self,self.ParentEntity})
 				if(Trayuss.Hit)then
 					if(self.BasePower>50)then
 						util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)

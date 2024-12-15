@@ -2,7 +2,7 @@
 include('shared.lua')
 
 function ENT:Initialize()
-	self.Nice=ClientsideModel("models/jmodels/explosives/bombs/powderkeg/powderkeg.mdl")
+	self.Nice=ClientsideModel("models/jmod/explosives/powderkeg.mdl")
 	self.Nice:SetMaterial("models/entities/mat_jack_powderkeg")
 	self.Nice:SetPos(self:GetPos())
 	self.Nice:SetAngles(self:GetAngles())
@@ -15,7 +15,7 @@ function ENT:Draw()
 	Matricks:Scale(Vector(.80, .80, 1))
 	self.Nice:EnableMatrix("RenderMultiply",Matricks)
 	self.Nice:DrawModel()
-	--self.Entity:DrawModel()
+	--self:DrawModel()
 end
 
 function ENT:OnRemove()

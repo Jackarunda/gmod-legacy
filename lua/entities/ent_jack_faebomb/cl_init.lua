@@ -17,7 +17,7 @@ function ENT:Draw()
 	self.Nice:SetRenderOrigin(self:GetPos()-self:GetUp()*6)
 	self.Nice:SetRenderAngles(self:GetAngles())
 	self.Nice:DrawModel()
-	--self.Entity:DrawModel()
+	--self:DrawModel()
 end
 
 function ENT:OnRemove()

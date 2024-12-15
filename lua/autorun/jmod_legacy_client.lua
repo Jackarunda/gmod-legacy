@@ -231,7 +231,7 @@ if(CLIENT)then
 	local function JackyClientHeadcrabRemoval(data)
 		local Pos=data:ReadVector()
 		timer.Simple(.01,function()
-			for key,rag in pairs(ents.FindInSphere(Pos,90))do
+			for key,rag in ipairs(ents.FindInSphere(Pos,90))do
 				if(rag:GetClass()=="class C_ClientRagdoll")then
 					local Moddel=rag:GetModel()
 					if((Moddel=="models/headcrabclassic.mdl")or(Moddel=="models/headcrab.mdl"))then
@@ -245,7 +245,7 @@ if(CLIENT)then
 	local function JackyClientRagdollRemoval(data)
 		local Pos=data:ReadVector()
 		timer.Simple(.01,function()
-			for key,rag in pairs(ents.FindInSphere(Pos,90))do
+			for key,rag in ipairs(ents.FindInSphere(Pos,90))do
 				if(rag:GetClass()=="class C_ClientRagdoll")then
 					SafeRemoveEntity(rag)
 				end
@@ -257,17 +257,8 @@ if(CLIENT)then
 		SafeRemoveEntity(data:ReadEntity().Helmet)
 	end
 	usermessage.Hook("JackyOpSquadRemoveHelmet",JackyOpSquadRemoveHelmet)
-	--local Avg=0
-	--local Count=0
 	local function JackyOpSquadOpaqueDrawFunc(bDrawingDepth,bDrawingSkybox)
-		--Avg=Avg+FrameTime()
-		--Count=Count+1
-		--if(Count>=300)then
-		--	Count=0
-		--	JPrint(Avg/300)
-		--	Avg=0
-		--end
-		for key,helm in pairs(ents.FindByClass("class C_BaseFlex"))do
+		for key,helm in ipairs(ents.FindByClass("class C_BaseFlex"))do
 			if(helm.IsJackyOpSquadHelmet)then
 				if not(IsValid(helm.Wearer))then
 					SafeRemoveEntity(helm)

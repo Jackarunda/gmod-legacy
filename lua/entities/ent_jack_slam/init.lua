@@ -17,15 +17,15 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/weapons/w_jlam.mdl")
-	self.Entity:SetColor(Color(217,208,157))
-	self.Entity:SetBodygroup(0,0)
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/weapons/w_jlam.mdl")
+	self:SetColor(Color(217,208,157))
+	self:SetBodygroup(0,0)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(40)
@@ -49,7 +49,7 @@ function ENT:Detonate(tr)
 	Poo:SetNormal(Dir)
 	util.Effect("eff_jack_directionalsplode",Poo,true,true)
 	for i=0,2 do
-		JMod.Sploom(self.Entity,SelfPos+VectorRand(),20)
+		JMod.Sploom(self,SelfPos+VectorRand(),20)
 	end
 	for i=0,5 do
 		local QT=util.QuickTrace(SelfPos,VectorRand()*50,{self})
@@ -59,7 +59,7 @@ function ENT:Detonate(tr)
 	end
 	for i=1,20 do
 		local Bellit={
-			Attacker=self.Entity,
+			Attacker=self,
 			Damage=1,
 			Force=1,
 			Num=1,
@@ -93,7 +93,7 @@ function ENT:Detonate(tr)
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("DryWall.ImpactHard")
+		self:EmitSound("DryWall.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
@@ -160,5 +160,4 @@ function ENT:Think()
 	return true
 end
 function ENT:OnRemove()
-	-- fuck face
 end

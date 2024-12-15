@@ -49,7 +49,7 @@ function ENT:SpawnFunction(ply,tr)
 	local effectdata=EffectData()
 	effectdata:SetEntity(ent)
 	util.Effect("propspawn",effectdata)
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<7500)then
 		Settings.MaxVelocity=7500
@@ -89,7 +89,7 @@ function ENT:FireShot()
 		end
 	end
 	if(self.RoundInChamber)then
-		--self.Entity:ResetSequence(3) --prollem with this is the flash
+		--self:ResetSequence(3) --prollem with this is the flash
 		if(self.Heat>=95)then
 			if(self.NextOverHeatWhineTime<Time)then
 				self.NextOverHeatWhineTime=Time+.5
@@ -131,17 +131,17 @@ function ENT:FireShot()
 		Dir=(Dir+VectorRand()*Spred):GetNormalized()
 		--fire round
 		local Grenade=ents.Create("ent_jack_40mmgrenade")
-		Grenade.ParentLauncher=self.Entity
+		Grenade.ParentLauncher=self
 		self.MostRecentGrenade=Grenade
 		Grenade:SetOwner(self:GetOwner())
-		Grenade:SetNetworkedEntity("Owenur",self.Entity)
+		Grenade:SetNetworkedEntity("Owenur",self)
 		Grenade:SetPos(SelfPos)
 		local Ang=Dir:Angle()
 		Grenade:SetAngles(Ang)
 		Grenade.Type="HE"
 		Grenade:Spawn()
 		Grenade:Activate()
-		constraint.NoCollide(self.Entity,Grenade,0,0)
+		constraint.NoCollide(self,Grenade,0,0)
 		Grenade:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()+Dir*7500) --the Mk.19 throws its grenades typically at about 240mps
 		self.FiredAtCurrentTarget=true
 		self.RoundInChamber=false
@@ -183,7 +183,7 @@ function ENT:FireShot()
 					Shell:SetAngles(self:GetAngles())
 					Shell:Spawn()
 					Shell:Activate()
-					constraint.NoCollide(self.Entity,Shell,0,0)
+					constraint.NoCollide(self,Shell,0,0)
 					Shell:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()-Forward*10+Up*30+Right*30+VectorRand()*10)
 					Shell:GetPhysicsObject():AddAngleVelocity(VectorRand()*math.Rand(10,3000))
 					Shell:GetPhysicsObject():SetMaterial("metal_bouncy")

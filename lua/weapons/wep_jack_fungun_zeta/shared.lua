@@ -67,7 +67,7 @@ local MeltTable={MAT_METAL,MAT_GRATE,MAT_VENT,MAT_COMPUTER,MAT_CONCRETE,MAT_TILE
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("revolver")
-	self.ChargingSound=CreateSound(self.Weapon,"snd_jack_zetachargeloop.wav")
+	self.ChargingSound=CreateSound(self,"snd_jack_zetachargeloop.wav")
 	self.ChargingSound:SetSoundLevel(60)
 	self.CurrentCapacitorCharge=0
 	self.NewCartridge=true
@@ -93,7 +93,7 @@ function SWEP:PrimaryAttack()
 	if not(self.dt.State==2)then return end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.025)
-	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
+	local ShootPos=self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20
 	if(self.CurrentCapacitorCharge==0)then self:EmitSound("snd_jack_chargebegin.wav",60,120) end
 	self.ChargingSound:Play()
 	self.dt.State=3
@@ -104,12 +104,12 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:FireLaser()
-	if(self.Owner:KeyDown(IN_SPEED))then self.dt.State=2 return end
+	if(self:GetOwner():KeyDown(IN_SPEED))then self.dt.State=2 return end
 	if(CLIENT)then self.CurrentCapacitorCharge=0;self.ChargingSound:Stop() return end
 	if(AlreadyFired)then return end
 	AlreadyFired=true
 	
-	self.Weapon:EmitSound("snd_jack_laserpulse.wav",70,100)
+	self:EmitSound("snd_jack_laserpulse.wav",70,100)
 	
 	umsg.Start("JackysFGFloatChange")
 	umsg.Entity(self)
@@ -117,13 +117,13 @@ function SWEP:FireLaser()
 	umsg.Bool(0)
 	umsg.End()
 	
-	local BaseShootPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
 	
 	local TraceData={}
 	TraceData.start=BaseShootPos
 	TraceData.endpos=BaseShootPos+AimVec*8000
-	TraceData.filter=self.Owner
+	TraceData.filter=self:GetOwner()
 	TraceData.mask=MASK_SHOT+CONTENTS_WATER
 	local Trace=util.TraceLine(TraceData)
 	
@@ -132,13 +132,13 @@ function SWEP:FireLaser()
 		local Power=(1-(Dist/8000))*self.CurrentCapacitorCharge
 
 		util.ScreenShake(Trace.HitPos,50,50,Power/35,Power*12)
-		util.BlastDamage(self.Weapon,self.Owner,Trace.HitPos,Power*6,Power*1)
+		util.BlastDamage(self,self:GetOwner(),Trace.HitPos,Power*6,Power*1)
 		local Derp=DamageInfo()
 		Derp:SetDamage(Power/2)
 		Derp:SetDamageType(DMG_DIRECT)
 		Derp:SetDamageForce(AimVec*Power*8000)
-		Derp:SetAttacker(self.Owner)
-		Derp:SetInflictor(self.Weapon)
+		Derp:SetAttacker(self:GetOwner())
+		Derp:SetInflictor(self)
 		Derp:SetDamagePosition(Trace.HitPos)
 		Trace.Entity:TakeDamageInfo(Derp)
 		
@@ -165,7 +165,7 @@ function SWEP:FireLaser()
 			util.Effect("Sparks",effectdata,true,true)
 		end
 		
-		if(self.Owner:WaterLevel()==3)then
+		if(self:GetOwner():WaterLevel()==3)then
 			local Blamo=EffectData()
 			Blamo:SetOrigin(BaseShootPos+AimVec*30)
 			Blamo:SetStart(AimVec)
@@ -187,7 +187,7 @@ function SWEP:FireLaser()
 			sound.Play(Snd,Trace.HitPos,Dist,Pitch)
 		end
 		
-		for key,ply in pairs(ents.FindInSphere(Trace.HitPos,Power*4))do
+		for key,ply in ipairs(ents.FindInSphere(Trace.HitPos,Power*4))do
 			if(ply:IsPlayer())then
 				ply:ViewPunch(Angle(math.Rand(-1.5,1.5)*Power,math.Rand(-1.5,1.5)*Power,math.Rand(-1.5,1.5)*Power))
 			end
@@ -214,14 +214,14 @@ end
 function SWEP:Think()
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -232,16 +232,16 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 	if not(self.CurrentCapacitorCharge)then self.CurrentCapacitorCharge=0 end
 	local Culler=(self.CurrentCapacitorCharge/75)*255
 	self.VElements["lawl"].color=Color(Culler,Culler,Culler,255)
 
 	local State=self.dt.State
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
+	if((self:GetOwner():InVehicle())or(self:GetOwner():KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.ChargingSound:Stop()
 			self.CurrentCapacitorCharge=0
@@ -252,9 +252,9 @@ function SWEP:Think()
 	
 	local Ammo=self.dt.Ammo
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*5
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*4-self:GetOwner():GetUp()*5
+	local AimVec=self:GetOwner():GetAimVector()
 	
 	if(State==3)then
 		if not(self.NextChargingSoundTime)then self.NextChargingSoundTime=CurTime()+.1 end
@@ -266,7 +266,7 @@ function SWEP:Think()
 		self.CurrentCapacitorCharge=math.Clamp(self.CurrentCapacitorCharge+.25,1,75)
 		local Pitch=math.Clamp(((self.CurrentCapacitorCharge/2+50)/100)*255,1,250)
 		self.ChargingSound:ChangePitch(Pitch,0)
-		//self.Owner:PrintMessage(HUD_PRINTCENTER,self.CurrentCapacitorCharge)
+		//self:GetOwner():PrintMessage(HUD_PRINTCENTER,self.CurrentCapacitorCharge)
 		local Amount=.000025
 		if(self.PowerType=="Radiosotope Thermoelectric Generator/Battery Module")then Amount=.0037 end
 		local NewAmmo=Ammo-Amount
@@ -290,25 +290,25 @@ function SWEP:BurstCool()
 	if(self.dt.State==4)then return end
 	self.dt.State=4
 
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:GetViewModel():SetPlaybackRate(.25)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.25)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
-		self.Weapon:EmitSound("snd_jack_laservent.wav",70,100)
+		self:EmitSound("snd_jack_laservent.wav",70,100)
 	end
 	if(SERVER)then
 		local Pewf=EffectData()
-		Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-		Pewf:SetStart(self.Owner:GetVelocity())
+		Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+		Pewf:SetStart(self:GetOwner():GetVelocity())
 		util.Effect("eff_jack_instantvent",Pewf,true,true)
 	end
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -317,8 +317,8 @@ function SWEP:BurstCool()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -408,7 +408,7 @@ end
 hook.Add("KeyRelease","JackysZetaFungunFire",TriggerFire)
 
 local function GunThink()	
-	for key,wep in pairs(ents.FindByClass("wep_jack_fungun_zeta"))do
+	for key,wep in ipairs(ents.FindByClass("wep_jack_fungun_zeta"))do
 		local Heat=wep:GetDTFloat(0)
 		if(Heat)then
 			local State=wep:GetDTInt(0)

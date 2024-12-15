@@ -115,18 +115,18 @@ function SWEP:ReloadPile()
 	timer.Simple(.75,function()
 		if(IsValid(self))then
 			self.dt.State=3
-			self.Weapon:EmitSound("snd_jack_pilereload.wav",70,100)
-			self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-			self.Owner:GetViewModel():SetPlaybackRate(.15)
+			self:EmitSound("snd_jack_pilereload.wav",70,100)
+			self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+			self:GetOwner():GetViewModel():SetPlaybackRate(.15)
 			if(SERVER)then
 				local Poof=EffectData()
-				Poof:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*3-self.Owner:GetUp()*3)
-				Poof:SetStart(self.Owner:GetVelocity()+self.Owner:GetRight()*100)
+				Poof:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*3-self:GetOwner():GetUp()*3)
+				Poof:SetStart(self:GetOwner():GetVelocity()+self:GetOwner():GetRight()*100)
 				util.Effect("eff_jack_smallvent",Poof,true,true)
 				
 				Poof=EffectData()
-				Poof:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*3-self.Owner:GetUp()*3)
-				Poof:SetStart(self.Owner:GetVelocity()-self.Owner:GetRight()*100)
+				Poof:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*3-self:GetOwner():GetUp()*3)
+				Poof:SetStart(self:GetOwner():GetVelocity()-self:GetOwner():GetRight()*100)
 				util.Effect("eff_jack_smallvent",Poof,true,true)
 
 				umsg.Start("JackysFGFloatChange")
@@ -153,45 +153,45 @@ function SWEP:ReloadPile()
 	timer.Simple(2.8,function()
 		if(IsValid(self))then
 			self.dt.State=2
-			if(self.Owner:KeyDown(IN_ATTACK))then self:PrimaryAttack() end
+			if(self:GetOwner():KeyDown(IN_ATTACK))then self:PrimaryAttack() end
 		end
 	end)
 end
 
 function SWEP:PrimaryAttack()
-	if not(IsFirstTimePredicted())then return end -- this seems to keep shit from fuckin up
+	if not(IsFirstTimePredicted())then return end
 	if(self.dt.Sprint>10)then return end
 	if not(self.dt.State==2)then return end
 	if(self.dt.Extension>0)then self:ReloadPile() return end
 	self:ReloadPile()
 	AlreadyFired=false
 	
-	local BaseShootPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()-self.Owner:GetUp()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()-self:GetOwner():GetUp()
 	
-	local PreTraceData={start=BaseShootPos,endpos=ShootPos,filter=self.Owner}
+	local PreTraceData={start=BaseShootPos,endpos=ShootPos,filter=self:GetOwner()}
 	local PreTrace=util.TraceLine(PreTraceData)
 	if(PreTrace.Hit)then ShootPos=BaseShootPos end
 	
 	local MainTraceData={}
 	MainTraceData.start=ShootPos
 	MainTraceData.endpos=ShootPos+AimVec*75
-	MainTraceData.filter=self.Owner
+	MainTraceData.filter=self:GetOwner()
 	MainTraceData.mask=MASK_SHOT
 	local MainTrace=util.TraceLine(MainTraceData)
 	
-	sound.Play("snd_jack_pilefire.wav",self.Owner:GetShootPos(),75,100)
+	sound.Play("snd_jack_pilefire.wav",self:GetOwner():GetShootPos(),75,100)
 	self.dt.Extension=1
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:GetViewModel():SetPlaybackRate(.05)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.05)
 	timer.Simple(.05,function()
 		if(IsValid(self))then
-			self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+			self:SendWeaponAnim(ACT_VM_IDLE)
 		end
 	end)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
-	self.Owner:ViewPunch(Angle(math.Rand(-.5,.5),math.Rand(-.5,.5),math.Rand(-.5,.5)))
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+	self:GetOwner():ViewPunch(Angle(math.Rand(-.5,.5),math.Rand(-.5,.5),math.Rand(-.5,.5)))
 	
 	if(MainTrace.Hit)then
 		MainTrace.Entity:SetMaterial("models/mat_jack_gearblood")
@@ -216,24 +216,24 @@ function SWEP:PrimaryAttack()
 			Dammej:SetDamage(Damage)
 			Dammej:SetDamageType(DMG_SLASH)
 			Dammej:SetDamagePosition(MainTrace.HitPos)
-			Dammej:SetAttacker(self.Owner)
-			Dammej:SetInflictor(self.Weapon)
+			Dammej:SetAttacker(self:GetOwner())
+			Dammej:SetInflictor(self)
 			Dammej:SetDamageForce(AimVec*Force)
 			MainTrace.Entity:TakeDamageInfo(Dammej)
 		end
 		
 		if(Hardness>.7)then
-			self.Weapon:EmitSound("snd_jack_pileresonate_loud.wav",70,100)
+			self:EmitSound("snd_jack_pileresonate_loud.wav",70,100)
 			self.HeldBackAmount=1.5
-			self.Owner:SetVelocity(-AimVec*225*Proximity)
+			self:GetOwner():SetVelocity(-AimVec*225*Proximity)
 		else
 			self.HeldBackAmount=1.2
 			if not((MainTrace.Entity:IsPlayer())or(MainTrace.Entity:IsNPC()))then
-				self.Owner:SetVelocity(-AimVec*150*Proximity)
+				self:GetOwner():SetVelocity(-AimVec*150*Proximity)
 			end
 		end
 	else
-		self.Weapon:EmitSound("snd_jack_pileresonate_quiet.wav",70,100)
+		self:EmitSound("snd_jack_pileresonate_quiet.wav",70,100)
 		self.HeldBackAmount=.3
 		if(SERVER)then
 			umsg.Start("JackysFGFloatChange")
@@ -274,19 +274,19 @@ function SWEP:MakeImpactEffect(pos,dir,num)
 	EffectBullet.Tracer=0
 	EffectBullet.Damage=1
 	EffectBullet.Force=1
-	self.Owner:FireBullets(EffectBullet)
+	self:GetOwner():FireBullets(EffectBullet)
 end
 
 function SWEP:Think()
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -294,9 +294,9 @@ function SWEP:Think()
 	end
 
 	local State=self.dt.State
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
+	if((self:GetOwner():InVehicle())or(self:GetOwner():KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.dt.State=2
 		end
@@ -324,7 +324,7 @@ function SWEP:Think()
 	else
 		if not(LockPlayed)then
 			LockPlayed=true
-			if(SERVER)then self.Weapon:EmitSound("snd_jack_pilelock.wav") end
+			if(SERVER)then self:EmitSound("snd_jack_pilelock.wav") end
 		end
 	end
 	
@@ -334,9 +334,9 @@ function SWEP:Think()
 	
 	local Ammo=self.dt.Ammo
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*5
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*4-self:GetOwner():GetUp()*5
+	local AimVec=self:GetOwner():GetAimVector()
 	
 	if(State==3)then
 		local Amount=.00009
@@ -351,7 +351,7 @@ end
 
 if(CLIENT)then
 	local function DrawExtension()
-		for key,wep in pairs(ents.FindByClass("wep_jack_fungun_eta"))do
+		for key,wep in ipairs(ents.FindByClass("wep_jack_fungun_eta"))do
 			local Extension=wep.dt.Extension
 			if(Extension)then
 				if(Extension>0)then

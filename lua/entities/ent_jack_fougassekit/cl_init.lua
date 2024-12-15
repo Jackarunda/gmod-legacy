@@ -3,7 +3,7 @@ function ENT:Initialize()
 	self:SetModelScale(.7,0)
 end
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 function ENT:OnRemove()
 	--carpetlicker

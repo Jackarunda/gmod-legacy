@@ -12,7 +12,7 @@ end
 
 function ENT:Draw()
 
-	local pos=self.Entity:GetPos()
+	local pos=self:GetPos()
 
 	render.SetMaterial( matBall )
 

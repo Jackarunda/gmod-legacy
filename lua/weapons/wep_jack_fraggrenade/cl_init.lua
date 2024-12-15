@@ -3,7 +3,8 @@ include('shared.lua')
 SWEP.PrintName			= "M67 Fragmentation Grenade"			// 'Nice' Weapon name (Shown on HUD)	
 SWEP.Slot				= 4							// Slot in the weapon selection menu
 SWEP.SlotPos			= 1							// Position in the slot
-SWEP.DrawWeaponInfoBox =false
+SWEP.Instructions	="A U.S. Military M67 fragmentation hand grenade with an M213 four-second fuze. Upon detonation, disperses upwards of 1000 fragments in all directions to produce casualties.\n\nPublished fatality radius of 5 meters and casualty radius of 15 meters, though fragments can fly to and wound at much greater distances.\n\nLMB to throw, RMB to pull out pin, RMB again to release spoon."
+SWEP.DrawWeaponInfoBox =true
 SWEP.DrawCrosshair	 =false --crosshairs are for big loose pussies
 SWEP.BounceWeaponIcon=false
 
@@ -35,7 +36,7 @@ function SWEP:GetViewModelPosition(pos,ang)
 	local Right=ang:Right()
 	local Forward=ang:Forward()
 
-	if(self.Owner:KeyDown(IN_SPEED))then
+	if(self:GetOwner():KeyDown(IN_SPEED))then
 		MoveAmount=MoveAmount+0.5
 	else
 		MoveAmount=MoveAmount-0.5

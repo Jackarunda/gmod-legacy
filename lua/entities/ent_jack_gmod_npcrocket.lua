@@ -13,7 +13,7 @@ if(SERVER)then
 		self:SetMoveType(MOVETYPE_FLY)
 		self:SetHealth(1)
 
-		local phys=self.Entity:GetPhysicsObject()
+		local phys=self:GetPhysicsObject()
 		if(phys:IsValid())then
 			phys:Wake()
 			phys:EnableGravity(false)
@@ -161,6 +161,6 @@ elseif(CLIENT)then
 	end
 
 	function ENT:Draw()
-		self.Entity:DrawModel()
+		self:DrawModel()
 	end
 end

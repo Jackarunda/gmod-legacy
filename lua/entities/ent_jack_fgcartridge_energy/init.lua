@@ -23,17 +23,17 @@ function ENT:SpawnFunction(ply,tr)
 end
 
 function ENT:Initialize()
-	self.Entity:SetModel("models/mass_effect_3/weapons/misc/jeatsink.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/mass_effect_3/weapons/misc/jeatsink.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_NONE)
+	self:SetCollisionGroup(COLLISION_GROUP_NONE)
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:Wake()
 		phys:SetMass(12)
@@ -43,9 +43,9 @@ function ENT:Initialize()
 		self.Heat=1
 		self.HasFallenInWater=false
 		self.AllUsedUp=true
-		self.Entity:SetMaterial("models/debug/debugwhite")
-		--self.Entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-		self.Entity:DrawShadow(false)
+		self:SetMaterial("models/debug/debugwhite")
+		--self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+		self:DrawShadow(false)
 		SafeRemoveEntityDelayed(self,math.random(50,80))
 	end
 end
@@ -93,7 +93,7 @@ end
 function ENT:PhysicsCollide(data,physobj)
 	if not(data.HitEntity.DoNotBangOnCartridges)then
 		if(data.DeltaTime>.2)then
-			local Traiss=util.QuickTrace(self:GetPos()-data.OurOldVelocity,data.OurOldVelocity*20,self.Entity)
+			local Traiss=util.QuickTrace(self:GetPos()-data.OurOldVelocity,data.OurOldVelocity*20,self)
 			if(Traiss.Hit)then
 				if((Traiss.MatType==MAT_DIRT)or(Traiss.MatType==MAT_SAND))then
 					sound.Play("snd_jack_fgc_dirt_"..tostring(math.random(1,2))..".wav",self:GetPos(),70,math.Rand(90,110))
@@ -108,7 +108,7 @@ function ENT:PhysicsCollide(data,physobj)
 end
 
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator)
@@ -138,8 +138,8 @@ function ENT:Touch(ent)
 				Dmg:SetDamage(self.Heat*1.3)
 				Dmg:SetDamagePosition(self:GetPos())
 				Dmg:SetDamageForce(Vector(0,0,0))
-				Dmg:SetAttacker(self.Entity)
-				Dmg:SetInflictor(self.Entity)
+				Dmg:SetAttacker(self)
+				Dmg:SetInflictor(self)
 				ent:TakeDamageInfo(Dmg)
 			end
 		end

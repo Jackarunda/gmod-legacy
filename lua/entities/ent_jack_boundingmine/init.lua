@@ -18,14 +18,14 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_junk/glassjug01.mdl")
-	self.Entity:SetColor(Color(153,147,111))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/props_junk/glassjug01.mdl")
+	self:SetColor(Color(153,147,111))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(50)
@@ -62,7 +62,6 @@ function ENT:Launch(toucher)
 			self:Detonate()
 		end
 	end)
-	--GET THE FUCK OFF--
 	Tr=util.QuickTrace(self:GetPos()+self:GetUp()*20,self:GetUp()*30,{self})
 	if(Tr.Hit)then
 		if(Tr.Entity:IsPlayer())then
@@ -92,11 +91,11 @@ function ENT:Detonate()
 	Poo:SetDamageType(DMG_BLAST)
 	Poo:SetNormal(Vector(0,0,0))
 	util.Effect("eff_jack_shrapnelburst",Poo,true,true)
-	util.BlastDamage(self.Entity,self.Entity,SelfPos,750,150)
+	util.BlastDamage(self,self,SelfPos,750,150)
 	sound.Play("snd_jack_fragsplodeclose.wav",SelfPos,75,100)
 	util.ScreenShake(SelfPos,99999,99999,1,750)
 	for i=0,70 do
-		local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200-self:GetUp()*100,{self.Entity})
+		local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200-self:GetUp()*100,{self})
 		if(Trayuss.Hit)then
 			util.Decal("FadingScorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)
 		end
@@ -105,7 +104,7 @@ function ENT:Detonate()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		if not(data.HitEntity:IsPlayer())then self.Entity:EmitSound("SolidMetal.ImpactHard") end
+		if not(data.HitEntity:IsPlayer())then self:EmitSound("SolidMetal.ImpactHard") end
 	end
 	if(data.HitEntity:IsWorld())then self:StartTouch(data.HitEntity) end
 end
@@ -156,8 +155,6 @@ function ENT:Use(activator,caller)
 	end
 end
 function ENT:Think()
-	-- get the gerbils out of your ass
 end
 function ENT:OnRemove()
-	-- fuck face
 end

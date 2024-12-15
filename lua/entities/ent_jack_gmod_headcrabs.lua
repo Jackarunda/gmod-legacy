@@ -268,13 +268,13 @@ if(SERVER)then
 				if(IsValid(explosion2))then undo.AddEntity(explosion2) end
 				if(IsValid(explosion3))then undo.AddEntity(explosion3) end
 				undo.AddFunction(function(undo)
-					for key,found in pairs(ents.FindByClass("npc_headcrab_poison"))do
+					for key,found in ipairs(ents.FindByClass("npc_headcrab_poison"))do
 						if(found:GetOwner()==pod1)then SafeRemoveEntity(found) end
 					end
-					for key,found in pairs(ents.FindByClass("npc_headcrab_fast"))do
+					for key,found in ipairs(ents.FindByClass("npc_headcrab_fast"))do
 						if(found:GetOwner()==pod2)then SafeRemoveEntity(found) end
 					end
-					for key,found in pairs(ents.FindByClass("npc_headcrab"))do
+					for key,found in ipairs(ents.FindByClass("npc_headcrab"))do
 						if(found:GetOwner()==pod3)then SafeRemoveEntity(found) end
 					end
 				end)

@@ -64,14 +64,14 @@ function ENT:Draw()
 	if(self:GetDTBool(1))then self.BatOne:DrawModel() end
 	if(self:GetDTBool(2))then self.BatTwo:DrawModel() end
 	self.Dissipator:DrawModel()
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 function ENT:OnRemove()
 	--wtf
 end
 local function ElectriTwitchClient(data)
 	local Pos=data:ReadVector()
-	for key,rag in pairs(ents.FindInSphere(Pos,40))do
+	for key,rag in ipairs(ents.FindInSphere(Pos,40))do
 		if(rag:GetClass()=="class C_ClientRagdoll")then
 			for i=1,60 do
 				timer.Simple(i/20,function()

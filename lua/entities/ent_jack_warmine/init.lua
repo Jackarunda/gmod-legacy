@@ -20,15 +20,15 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_combine/combine_mine01.mdl")
-	self.Entity:SetMaterial("models/mat_jack_warmine")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/props_combine/combine_mine01.mdl")
+	self:SetMaterial("models/mat_jack_warmine")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(75)
@@ -55,22 +55,22 @@ function ENT:Detonate()
 	ParticleEffect("pcf_jack_groundsplode_large",SelfPos,vector_up:Angle())
 	sound.Play("snd_jack_bigsplodeclose.wav",SelfPos,110,100)
 	sound.Play("snd_jack_bigsplodeclose.wav",SelfPos,110,100)
-	for key,ent in pairs(ents.FindInSphere(SelfPos,150))do
+	for key,ent in ipairs(ents.FindInSphere(SelfPos,150))do
 		if(IsValid(ent:GetPhysicsObject()))then
 			if((ent:Visible(self))and not(ent.JackyArmoredPanel))then
 				constraint.RemoveAll(ent)
 			end
 		end
 	end
-	util.BlastDamage(self.Entity,self.Entity,SelfPos,800,400)
+	util.BlastDamage(self,self,SelfPos,800,400)
 	util.ScreenShake(SelfPos,99999,99999,1,1000)
 	self:EmitSound("snd_jack_fragsplodeclose.wav",80,100)
 	sound.Play("snd_jack_fragsplodeclose.wav",SelfPos+Vector(0,0,1),75,80)
 	sound.Play("snd_jack_fragsplodefar.wav",SelfPos+Vector(0,0,2),100,80)
 	sound.Play("snd_jack_bigsplodeclose.wav",SelfPos+Vector(0,0,3),81,90)
-	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".mp3",SelfPos,80,90)
+	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".wav",SelfPos,80,90)
 	for i=0,30 do
-		local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200,{self.Entity})
+		local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200,{self})
 		if(Trayuss.Hit)then
 			util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)
 		end
@@ -79,7 +79,7 @@ function ENT:Detonate()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 end
 --[[
@@ -119,7 +119,7 @@ function ENT:Think()
 		local SelfPos=self:GetPos()+self:GetUp()*10
 		local Fastest=20
 		local DangerClose=false
-		for key,found in pairs(ents.FindInSphere(SelfPos,500))do
+		for key,found in ipairs(ents.FindInSphere(SelfPos,500))do
 			local Phys=found:GetPhysicsObject()
 			local MyPhys=self:GetPhysicsObject()
 			if(IsValid(Phys))then
@@ -224,7 +224,7 @@ function ENT:Arm()
 end
 function ENT:PlantEffect(x,y)
 	local Bellit={
-		Attacker=self.Entity,
+		Attacker=self,
 		Damage=3,
 		Force=2,
 		Num=8,
@@ -259,11 +259,11 @@ local function MenuCloseSync(...)
 	if(Tag==0)then
 		ply:PrintMessage(HUD_PRINTCENTER,"You don't have an IFF tag equipped.")
 	elseif((self.IFFTags)and(table.HasValue(self.IFFTags,Tag)))then
-		ply:PrintMessage(HUD_PRINTTALK,"IFF tag ID forgotten.")
+		ply:ChatPrint("IFF tag ID forgotten.")
 		table.remove(self.IFFTags,table.KeyFromValue(self.IFFTags,Tag))
 	else
 		if not(Tag==0)then table.ForceInsert(self.IFFTags,Tag) end
-		ply:PrintMessage(HUD_PRINTTALK,"IFF tag ID recorded.")
+		ply:ChatPrint("IFF tag ID recorded.")
 	end
 	self.MenuOpen=false
 end

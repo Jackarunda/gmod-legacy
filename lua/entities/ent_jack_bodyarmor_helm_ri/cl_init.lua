@@ -13,11 +13,11 @@ function ENT:Draw()
 	self.Visor:SetRenderAngles(Ang)
 	Pos=Pos-Ang:Up()*5+Ang:Right()*2.6-Ang:Forward()*4.5
 	self.Visor:SetRenderOrigin(Pos)
-	self.Entity:DrawModel()
+	self:DrawModel()
 	self.Visor:DrawModel()
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_bodyarmor_helm_ri","Helmet")
 --[[-------------------------

@@ -5,15 +5,15 @@ include('shared.lua')
 local StickTable={MAT_FLESH,MAT_ALIENFLESH,MAT_BLOODYFLESH,MAT_DIRT,MAT_SAND,MAT_WOOD,MAT_ANTLION,MAT_PLASTIC}
 
 function ENT:Initialize()	
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:SetMaterial("models/mat_jack_ice")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)	
-	self.Entity:SetMoveType(MOVETYPE_NONE)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)	
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_WEAPON) --don't want to shoot yourself in the back of the head
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:SetMaterial("models/mat_jack_ice")
+	self:PhysicsInit(SOLID_VPHYSICS)	
+	self:SetMoveType(MOVETYPE_NONE)	
+	self:SetSolid(SOLID_VPHYSICS)	
+	self:SetCollisionGroup(COLLISION_GROUP_WEAPON) --don't want to shoot yourself in the back of the head
+	self:DrawShadow(true)
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:Wake()
 		phys:SetMass(10)
@@ -24,7 +24,7 @@ function ENT:Initialize()
 	
 	if not(self:GetDTFloat(0))then self:Remove() return end
 	if not(self.Owner)then self:Remove() return end
-	if not(self.Weapon)then self:Remove() return end
+	if not(self)then self:Remove() return end
 	if not(self.InitialFlightDirection)then self:Remove() return end
 	if not(self.InitialFlightSpeed)then self:Remove() return end
 	
@@ -38,8 +38,8 @@ function ENT:Initialize()
 	SmokeTrail:SetKeyValue("spritename","trails/smoke.vmt")
 	SmokeTrail:SetKeyValue("rendermode","5")
 	SmokeTrail:SetKeyValue("rendercolor","180 185 200")
-	SmokeTrail:SetPos(self.Entity:GetPos())
-	SmokeTrail:SetParent(self.Entity)
+	SmokeTrail:SetPos(self:GetPos())
+	SmokeTrail:SetParent(self)
 	SmokeTrail:Spawn()
 	SmokeTrail:Activate()
 	
@@ -133,7 +133,7 @@ function ENT:Impact(trace)
 	Damage:SetDamageType(DMG_BULLET)
 	Damage:SetDamagePosition(trace.HitPos)
 	Damage:SetAttacker(self.Owner)
-	Damage:SetInflictor(self.Weapon)
+	Damage:SetInflictor(self)
 	Damage:SetDamageForce(Forward*Severity*300)
 	
 	local EffectBullet={Damage=1,Src=SelfPos,Dir=self:GetForward(),Num=BulletNum,Tracer=0,Spread=Vector(0,0,0),Force=Severity*3}
@@ -148,7 +148,7 @@ function ENT:Impact(trace)
 			trace.Entity:DeleteOnRemove(self)
 		elseif not(trace.Entity:IsWorld())then
 			self:SetPos(trace.HitPos+trace.HitNormal/2)
-			self.Entity:SetParent(trace.Entity)
+			self:SetParent(trace.Entity)
 			trace.Entity:DeleteOnRemove(self)
 		else
 			//derp
@@ -167,14 +167,14 @@ function ENT:Impact(trace)
 		util.Decal("impact.glass",trace.HitPos+trace.HitNormal,trace.HitPos-trace.HitNormal)
 		sound.Play("snd_jack_iceimpact.wav",SelfPos,90,Snd)
 		
-		for key,victim in pairs(ents.FindInSphere(trace.HitPos+trace.HitNormal,Severity/1.8))do
+		for key,victim in ipairs(ents.FindInSphere(trace.HitPos+trace.HitNormal,Severity/1.8))do
 			if(victim.TakeDamageInfo)then
 				local Damage=DamageInfo()
 				Damage:SetDamage(Severity/4)
 				Damage:SetDamageType(DMG_SLASH)
 				Damage:SetDamagePosition(trace.HitPos)
 				Damage:SetAttacker(self.Owner)
-				Damage:SetInflictor(self.Weapon)
+				Damage:SetInflictor(self)
 				Damage:SetDamageForce((victim:GetPos()-trace.HitPos):GetNormalized()*30000)
 				victim:TakeDamageInfo(Damage)
 			end

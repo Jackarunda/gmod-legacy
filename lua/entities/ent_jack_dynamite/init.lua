@@ -26,17 +26,17 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetAngles(Angle(0,0,0))
+	self:SetAngles(Angle(0,0,0))
 
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:SetMaterial("models/entities/mat_jack_dynamite")
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:SetMaterial("models/entities/mat_jack_dynamite")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	
 	self.Exploded=false
 	
@@ -47,7 +47,7 @@ function ENT:Initialize()
 		self.FuzeLit=false
 	end
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(10)
@@ -103,7 +103,7 @@ function ENT:Detonate()
 	Spl:SetPos(SelfPos)
 	Spl.BasePower=110
 	Spl.BlastRadius=350
-	Spl.ParentEntity=self.Entity
+	Spl.ParentEntity=self
 	Spl.FromDynamite=true
 	Spl:Spawn()
 	Spl:Activate()
@@ -114,7 +114,7 @@ end
 function ENT:PhysicsCollide(data, physobj)
 	// Play sound on bounce
 	if(data.Speed>80 and data.DeltaTime>0.2)then
-		//self.Entity:EmitSound("Canister.ImpactHard")
+		//self:EmitSound("Canister.ImpactHard")
 	end
 end
 
@@ -130,7 +130,7 @@ function ENT:OnTakeDamage(dmginfo)
 		self.FuzeLit=true
 	end
 
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	
 end
 
@@ -154,7 +154,7 @@ function ENT:Think()
 		Fsh:SetNormal(self:GetForward())
 		util.Effect("eff_jack_fuzeburn",Fsh,true,true)
 		
-		self.Entity:EmitSound("snd_jack_sss.wav",65,math.Rand(90,110))
+		self:EmitSound("snd_jack_sss.wav",65,math.Rand(90,110))
 		
 		if(self.FuzeLength<=0)then
 			self:Detonate()

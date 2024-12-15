@@ -24,18 +24,18 @@ function ENT:SpawnFunction(ply, tr)
 end
 
 function ENT:Initialize()
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:SetMaterial("models/entities/mat_jack_bomblet")
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:SetMaterial("models/entities/mat_jack_bomblet")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
 	self.Exploded=false
 	self.NoBombletTrigger=true
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(15)
@@ -50,8 +50,7 @@ function ENT:Initialize()
 	
 	--duds are bad m'kay
 	timer.Simple(math.Rand(89,91),function() if(IsValid(self))then self:Detonate() end end)
-	
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<5000)then Settings.MaxVelocity=5000 end
 	physenv.SetPerformanceSettings(Settings)
@@ -77,13 +76,13 @@ function ENT:Detonate()
 	splad:SetScale(1)
 	util.Effect("eff_jack_bombletdetonate",splad,true,true)
 	
-	util.BlastDamage(self.Entity,self.Entity,SelfPos,220,110)
+	util.BlastDamage(self,self,SelfPos,220,110)
 	util.ScreenShake(SelfPos,10,10,.5,250)
 	
 	local Tr=util.QuickTrace(SelfPos,self:GetPhysicsObject():GetVelocity(),{self})
 	if(Tr.Hit)then util.Decal("Scorch",Tr.HitPos+Tr.HitNormal,Tr.HitPos-Tr.HitNormal) end
 	
-	for key,object in pairs(ents.FindInSphere(SelfPos,60))do
+	for key,object in ipairs(ents.FindInSphere(SelfPos,60))do
 		local Phys=object:GetPhysicsObject()
 		if(IsValid(Phys))then
 			if(Phys:GetMass()<=350)then constraint.RemoveAll(object);object:Fire("enablemotion","",0) end
@@ -97,7 +96,7 @@ function ENT:PhysicsCollide(data, physobj)
 	if(data.Speed>200)then
 		self:Detonate()
 	elseif((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 end
 
@@ -111,7 +110,7 @@ function ENT:OnTakeDamage(dmginfo)
 	if((dmginfo:IsExplosionDamage())and(dmginfo:GetDamage()>250))then
 		self:Detonate()
 	end
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator,caller)
@@ -123,6 +122,9 @@ function ENT:Use(activator,caller)
 			if(Num>0)then
 				JackySimpleOrdnanceArm(self,activator,"Set: Impact")
 				self.Armed=true
+			else
+				self.NextUseTime=CurTime()+1.5
+				self.NextFuzeTime=CurTime()+1.5
 			end
 		else
 			JackyOrdnanceDisarm(self,activator,"")

@@ -80,7 +80,7 @@ if(SERVER)then
 			if not(IsValid(manhack:GetEnemy()))then
 				manhack:EmitSound("snds_jack_gmod/search.wav",65,100)
 			end
-			for key,found in pairs(ents.FindByClass("npc_*"))do
+			for key,found in ipairs(ents.FindByClass("npc_*"))do
 				local enemypos=found:GetPos()
 				if(manhack:Disposition(found)==D_HT)then
 					if not(IsValid(manhack:GetEnemy()))then

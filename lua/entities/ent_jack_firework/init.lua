@@ -23,21 +23,21 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/mechanics/solid_steel/type_b_2_4.mdl")
+	self:SetModel("models/mechanics/solid_steel/type_b_2_4.mdl")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
 	
 	self.Exploded=false
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(250)
 	end
 
-	self.Entity:DrawShadow(true)
+	self:DrawShadow(true)
 	
 	self:SetAngles(Angle(0,0,0))
 	self.Nice=ents.Create("prop_dynamic")
@@ -58,7 +58,7 @@ function ENT:Initialize()
 	self.TailFins:SetNotSolid(true)
 	self.TailFins:SetNoDraw(true)
 	self:DeleteOnRemove(self.TailFins)
-	constraint.Weld(self.Entity,self.TailFins,0,0,0,true)
+	constraint.Weld(self,self.TailFins,0,0,0,true)
 	
 	self.Armed=false
 	self.NextUseTime=CurTime()
@@ -102,7 +102,7 @@ function ENT:Detonate()
 		timer.Simple(5,function()
 			local Song="snd_jack_merica"..math.random(1,10)..".mp3"
 			sound.Play(Song,SelfPos,150,95)
-			for key,found in pairs(player.GetAll())do
+			for key,found in ipairs(player.GetAll())do
 				if(found:GetName()=="Jackarunda")then
 					sound.Play(Song,SelfPos,140,95)
 					sound.Play(Song,SelfPos,130,95)
@@ -140,7 +140,7 @@ function ENT:OnTakeDamage(dmginfo)
 		self:Detonate()
 	end
 
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	
 end
 
@@ -153,6 +153,10 @@ function ENT:Use(activator,caller)
 			if(Num>0)then
 				JackySimpleOrdnanceArm(self,activator,"Set: Upward Flight Time")
 				self.Armed=true
+			else
+				activator:ChatPrint("You need a Fuzing Equipment to arm the bomb.")
+				self.NextUseTime=CurTime()+1.5
+				self.NextFuzeTime=CurTime()+1.5
 			end
 		else
 			JackyOrdnanceDisarm(self,activator,"")

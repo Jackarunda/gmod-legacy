@@ -50,7 +50,7 @@ function ENT:Draw()
 	end
 	
 	render.SetColorModulation(1,1,1)
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 function ENT:OnRemove()

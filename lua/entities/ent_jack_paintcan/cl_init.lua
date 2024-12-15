@@ -77,7 +77,7 @@ function ENT:Draw()
 	--render.SetBlend(1)
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 --[[--------------------------------------------------------------
 	I hate desiging UIs so damn much

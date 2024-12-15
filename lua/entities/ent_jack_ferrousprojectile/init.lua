@@ -6,16 +6,16 @@ local MaximumRicochetAngleTable={[MAT_VENT]=0,[MAT_GRATE]=0,[MAT_SLOSH]=0,[MAT_D
 local PenetrationDistanceMultiplierTable={[MAT_VENT]=5,[MAT_GRATE]=10,[MAT_SLOSH]=5,[MAT_DIRT]=4,[MAT_GRASS]=4,[MAT_FOLIAGE]=4,[MAT_FLESH]=1.3,[MAT_ALIENFLESH]=1.5,[MAT_ANTLION]=1.5,[MAT_SAND]=3.75,[MAT_PLASTIC]=2,[MAT_GLASS]=0.75,[MAT_TILE]=0.75,[MAT_WOOD]=1,[MAT_CONCRETE]=0.35,[MAT_METAL]=0.2,[MAT_COMPUTER]=0.9,[45]=2}
 
 function ENT:Initialize()
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:SetMaterial("models/debug/debugwhite")
-	if not(self:GetDTBool(0))then self.Entity:SetMaterial("phoenix_storms/iron_rails") end
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_NONE)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_WEAPON) --don't want to shoot yourself in the back of the head
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:SetMaterial("models/debug/debugwhite")
+	if not(self:GetDTBool(0))then self:SetMaterial("phoenix_storms/iron_rails") end
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_NONE)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:SetCollisionGroup(COLLISION_GROUP_WEAPON) --don't want to shoot yourself in the back of the head
+	self:DrawShadow(true)
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:Wake()
 		phys:SetMass(10)
@@ -29,8 +29,8 @@ function ENT:Initialize()
 		SmokeTrail:SetKeyValue("spritename","trails/smoke.vmt")
 		SmokeTrail:SetKeyValue("rendermode","5")
 		SmokeTrail:SetKeyValue("rendercolor","255 255 255")
-		SmokeTrail:SetPos(self.Entity:GetPos())
-		SmokeTrail:SetParent(self.Entity)
+		SmokeTrail:SetPos(self:GetPos())
+		SmokeTrail:SetParent(self)
 		SmokeTrail:Spawn()
 		SmokeTrail:Activate()
 		self.Trail=SmokeTrail
@@ -39,7 +39,7 @@ function ENT:Initialize()
 	self.HasEnteredWater=false
 
 	if not(self.Owner)then self:Remove() return end
-	if not(self.Weapon)then self:Remove() return end
+	if not(self)then self:Remove() return end
 	if not(self.InitialFlightDirection)then self:Remove() return end
 	if not(self.InitialFlightSpeed)then self:Remove() return end
 	
@@ -83,7 +83,7 @@ function ENT:Think()
 	self.CurrentFlightDirection=(self.CurrentFlightDirection+Vector(0,0,-.002)):GetNormalized()
 	self.CurrentFlightSpeed=self.CurrentFlightSpeed*.99
 	
-	if(self.Entity:WaterLevel()>0)then
+	if(self:WaterLevel()>0)then
 		if not(self.HasEnteredWater)then
 			self.HasEnteredWater=true
 			self:WaterSurfaceSplash(NoseTrace.HitPos)
@@ -115,8 +115,8 @@ function ENT:Impact(trace)
 		DamMod=DamMod/3
 	end
 	
-	local Inflictor=self.Weapon
-	if not(IsValid(self.Weapon))then Inflictor=self.Entity end
+	local Inflictor=self
+	if not(IsValid(self))then Inflictor=self end
 	
 	local Damage=DamageInfo()
 	Damage:SetDamage(Severity*DamMod)
@@ -153,7 +153,7 @@ function ENT:Impact(trace)
 			local TraceData={}
 			TraceData.start=InitialPos+Vectah*CheckDistance
 			TraceData.endpos=InitialPos
-			TraceData.filter=self.Entity
+			TraceData.filter=self
 			local Trace=util.TraceLine(TraceData)
 			if(Trace.StartSolid)then
 				CheckDistance=CheckDistance+1
@@ -184,7 +184,7 @@ function ENT:MakeImpactEffect(pos,dir,num)
 	EffectBullet.Tracer=0
 	EffectBullet.Damage=1
 	EffectBullet.Force=1
-	self.Entity:FireBullets(EffectBullet)
+	self:FireBullets(EffectBullet)
 end
 
 function ENT:WaterSurfaceSplash(InitialCheckPos) --jackarunda is clever

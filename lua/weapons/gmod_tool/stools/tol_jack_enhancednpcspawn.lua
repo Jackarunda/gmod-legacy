@@ -44,8 +44,8 @@ if(CLIENT)then
 	function TOOL.BuildCPanel(CPanel)
 		table.sort(Options)
 		local RealOptions={}
-		for k,dude in pairs(Options)do
-			RealOptions[dude]={tol_jack_enhancednpcspawn_SelectedNPC=dude} -- what a monuMENTALLY stupid, non-intuitive method of operation this is. Garry's a fucking idiot.
+		for k,dude in ipairs(Options)do
+			RealOptions[dude]={tol_jack_enhancednpcspawn_SelectedNPC=dude}
 		end
 		CPanel:AddControl("ListBox",{Label="#tool.tol_jack_enhancednpcspawn.name",Height="300",Options=RealOptions})
 	end

@@ -9,7 +9,7 @@ function ENT:Draw()
 	local Matricks=Matrix()
 	Matricks:Scale(Vector(.8,1.2,1.2))
 	self:EnableMatrix("RenderMultiply",Matricks)
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 function ENT:OnRemove()

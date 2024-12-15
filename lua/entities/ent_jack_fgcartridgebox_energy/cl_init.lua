@@ -5,7 +5,7 @@ language.Add("ent_jack_fgcartridgebox_energy","Energy Cartridge Box")
 local Pic=surface.GetTextureID("sprites/mat_jack_radsign")
 
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 	
 	if not(self:GetDTBool(0))then return end
 	

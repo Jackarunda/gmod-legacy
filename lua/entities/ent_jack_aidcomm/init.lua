@@ -63,14 +63,14 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_lab/reciever01b.mdl")
-	self.Entity:SetMaterial("models/mat_jack_aidradio")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_lab/reciever01b.mdl")
+	self:SetMaterial("models/mat_jack_aidradio")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(60)
@@ -91,8 +91,8 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Computer.ImpactSoft")
-		self.Entity:EmitSound("Computer.ImpactHard")
+		self:EmitSound("Computer.ImpactSoft")
+		self:EmitSound("Computer.ImpactHard")
 	end
 	if(data.Speed>750)then
 		self.StructuralIntegrity=self.StructuralIntegrity-data.Speed/10
@@ -102,7 +102,7 @@ function ENT:PhysicsCollide(data, physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	local DType=dmginfo:GetDamageType()
 	if((DType==536870914)or(DType==DMG_BUCKSHOT)or(DType==DMG_BULLET)or(DType==DMG_BLAST)or(DType==DMG_CLUB)or(DType==DMG_SLASH)or(DType==DMG_FALL)or(DType==DMG_CRUSH))then
 		self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
@@ -119,7 +119,7 @@ function ENT:Break()
 	end
 end
 function ENT:FindRepairKit()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do
 		if(potential:GetClass()=="ent_jack_radiorepairkit")then
 			return potential
 		end
@@ -179,9 +179,9 @@ function ENT:PowerOff()
 end
 function ENT:Speak(msg)
 	if not(self.PoweredOn)then return end
-	for key,ply in pairs(ents.FindInSphere(self:GetPos(),100))do
+	for key,ply in ipairs(ents.FindInSphere(self:GetPos(),100))do
 		if(ply:IsPlayer())then
-			ply:PrintMessage(HUD_PRINTTALK,msg)
+			ply:ChatPrint(msg)
 		end
 	end
 	local Path="/npc/combine_soldier/vo/"
@@ -196,9 +196,9 @@ function ENT:Speak(msg)
 end
 function ENT:SpeakTerse(msg)
 	if not(self.PoweredOn)then return end
-	for key,ply in pairs(ents.FindInSphere(self:GetPos(),100))do
+	for key,ply in ipairs(ents.FindInSphere(self:GetPos(),100))do
 		if(ply:IsPlayer())then
-			ply:PrintMessage(HUD_PRINTTALK,msg)
+			ply:ChatPrint(msg)
 		end
 	end
 	local Path="/npc/combine_soldier/vo/"
@@ -208,9 +208,9 @@ function ENT:SpeakTerse(msg)
 end
 function ENT:SpeakTerseLoud(msg)
 	if not(self.PoweredOn)then return end
-	for key,ply in pairs(ents.FindInSphere(self:GetPos(),300))do
+	for key,ply in ipairs(ents.FindInSphere(self:GetPos(),300))do
 		if(ply:IsPlayer())then
-			ply:PrintMessage(HUD_PRINTTALK,msg)
+			ply:ChatPrint(msg)
 		end
 	end
 	local Path="/npc/combine_soldier/vo/"
@@ -287,11 +287,11 @@ function ENT:DeliverPackage(dz)
 	end
 	timer.Simple(3,function()
 		if(IsValid(self))then
-			sound.Play("snd_jack_flyby_drop.mp3",DropPos,150,100)
-			sound.Play("snd_jack_flyby_drop.mp3",DropPos,150,100)
-			sound.Play("snd_jack_flyby_drop.mp3",DropPos,150,100)
-			for key,ply in pairs(player.GetAll())do
-				ply:EmitSound("snd_jack_flyby_drop_far.mp3",70,100)
+			sound.Play("snd_jack_flyby_drop.wav",DropPos,150,100)
+			sound.Play("snd_jack_flyby_drop.wav",DropPos,150,100)
+			sound.Play("snd_jack_flyby_drop.wav",DropPos,150,100)
+			for key,ply in ipairs(player.GetAll())do
+				ply:EmitSound("snd_jack_flyby_drop_far.wav",70,100)
 			end
 		end
 	end)
@@ -423,7 +423,7 @@ function ENT:ListShit()
 	end)
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end
 function ENT:SecretListen(ply,tlk)
 	if(self.Broken)then return false end
@@ -466,7 +466,7 @@ end
 local function ChatListen(ply,txt)
 	if(string.sub(txt,1,5)=="comm ")then
 		local Sended=false
-		for key,comm in pairs(ents.FindByClass("ent_jack_aidcomm"))do
+		for key,comm in ipairs(ents.FindByClass("ent_jack_aidcomm"))do
 			if(comm:SecretListen(ply,txt))then
 				Sended=true
 			end
@@ -475,7 +475,7 @@ local function ChatListen(ply,txt)
 	end
 	timer.Simple(.25,function()
 		if(IsValid(ply))then
-			for key,comm in pairs(ents.FindByClass("ent_jack_aidcomm"))do
+			for key,comm in ipairs(ents.FindByClass("ent_jack_aidcomm"))do
 				comm:Listen(ply,txt)
 			end
 		end

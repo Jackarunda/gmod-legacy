@@ -17,13 +17,13 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/hunter/plates/plate025x025.mdl")
-	self.Entity:SetColor(Color(153,147,111))
-	self.Entity:SetRenderMode(RENDERMODE_TRANSALPHA)
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/hunter/plates/plate025x025.mdl")
+	self:SetColor(Color(153,147,111))
+	self:SetRenderMode(RENDERMODE_TRANSALPHA)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
 	self.PrettyModel=ents.Create("prop_dynamic")
 	self.PrettyModel:SetPos(self:GetPos()+self:GetForward()*6)
@@ -32,15 +32,15 @@ function ENT:Initialize()
 	local TheAngle=self:GetAngles()
 	TheAngle:RotateAroundAxis(TheAngle:Right(),90)
 	self.PrettyModel:SetAngles(TheAngle)
-	self.PrettyModel:SetParent(self.Entity)
+	self.PrettyModel:SetParent(self)
 	self.PrettyModel:Spawn()
 	self.PrettyModel:Activate()
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(50)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.Armed=false
 	self.NextUseTime=0
 end
@@ -51,7 +51,7 @@ function ENT:Detonate()
 	local Forward=self:GetForward()
 	local Up=self:GetUp()
 	local Origin=SelfPos-Forward*20
-	util.BlastDamage(self.Entity,self.Entity,SelfPos,100,50)
+	util.BlastDamage(self,self,SelfPos,100,50)
 	local Sploom=EffectData()
 	Sploom:SetOrigin(Origin)
 	Sploom:SetNormal(-Up)
@@ -63,11 +63,11 @@ function ENT:Detonate()
 	Pow:SetNormal(-Up)
 	Pow:SetScale(1)
 	util.Effect("eff_jack_shrapnelburst",Pow,true,true)
-	self.Entity:EmitSound("BaseExplosionEffect.Sound")
+	self:EmitSound("BaseExplosionEffect.Sound")
 	self:EmitSound("snd_jack_fragsplodeclose.wav",100,120)
 	util.ScreenShake(SelfPos,99999,99999,.5,1000)
 	local MaxRange=1000
-	for key,target in pairs(ents.FindInSphere(SelfPos,MaxRange))do
+	for key,target in ipairs(ents.FindInSphere(SelfPos,MaxRange))do
 		if not((target==self)or(target==self.PrettyModel)or(target:IsWorld()))then
 			if(IsValid(target:GetPhysicsObject()))then
 				local TargPos=target:LocalToWorld(target:OBBCenter())
@@ -78,7 +78,7 @@ function ENT:Detonate()
 				if(ApproachAngle>130)then
 					if(self:Visible(target))then
 						self:FireBullets({ --for the effect
-							Attacker=self.Entity,
+							Attacker=self,
 							Damage=1,
 							Force=1,
 							Num=1,
@@ -175,7 +175,7 @@ local function DetonateClaymores(ply)
 	if(NextTime>Time)then return end
 	NextTime=Time+1
 	local FoundEm=false
-	for key,lel in pairs(ents.FindByClass("ent_jack_claymore"))do
+	for key,lel in ipairs(ents.FindByClass("ent_jack_claymore"))do
 		if((lel.Activator)and(lel.Activator==ply)and(lel.Armed))then
 			FoundEm=true
 			timer.Simple(.7,function()

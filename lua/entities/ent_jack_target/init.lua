@@ -27,13 +27,13 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/hunter/misc/sphere025x025.mdl")
+	self:SetModel("models/hunter/misc/sphere025x025.mdl")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(75)
@@ -125,7 +125,7 @@ function ENT:PhysicsCollide(data,physobj)
 		dmg:SetDamageForce(data.HitEntity:GetPhysicsObject():GetVelocity()-self:GetPhysicsObject():GetVelocity())
 		self:Die(dmg)
 	elseif((data.Speed>80)and(data.DeltaTime>.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 end
 
@@ -134,7 +134,7 @@ function ENT:OnTakeDamage(dmginfo)
 	if(dmginfo:GetDamage()>0)then
 		self:Die(dmginfo)
 	end
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator, caller)
@@ -143,7 +143,7 @@ end
 
 function ENT:Think()
 	if(self.Dying)then return end
-	for key,found in pairs(ents.GetAll())do
+	for key,found in ipairs(ents.GetAll())do
 		if(found:IsNPC())then
 			if not(found:GetClass()=="npc_bullseye")then
 				found:AddEntityRelationship(self.LittleFella,D_HT,99)
