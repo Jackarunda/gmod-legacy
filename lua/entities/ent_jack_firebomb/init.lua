@@ -26,16 +26,16 @@ end
 
 function ENT:Initialize()
 	self:SetAngles(Angle(0,0,0))
-	self.Entity:SetModel("models/Mechanics/robotics/a1.mdl")
+	self:SetModel("models/Mechanics/robotics/a1.mdl")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
 	self.Exploded=false
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(100)
@@ -53,9 +53,8 @@ function ENT:Initialize()
 	self.TailFins:SetNotSolid(true)
 	self.TailFins:SetNoDraw(true)
 	self:DeleteOnRemove(self.TailFins)
-	constraint.Weld(self.Entity,self.TailFins,0,0,0,true)
-	
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+	constraint.Weld(self,self.TailFins,0,0,0,true)
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<5000)then Settings.MaxVelocity=5000 end
 	physenv.SetPerformanceSettings(Settings)
@@ -78,7 +77,7 @@ function ENT:Detonate()
 	
 	local SelfPos=self:LocalToWorld(self:OBBCenter())
 	
-	self.Entity:EmitSound("BaseExplosionEffect.Sound")
+	self:EmitSound("BaseExplosionEffect.Sound")
 	local Spl=EffectData()
 	Spl:SetOrigin(SelfPos)
 	Spl:SetScale(1)
@@ -88,10 +87,10 @@ function ENT:Detonate()
 	Sploom:SetScale(.6)
 	util.Effect("eff_jack_firebomb",Sploom,true,true)
 	if(self:WaterLevel()>0)then self:Remove() return end ------------
-	self.Entity:EmitSound("snd_jack_firebomb.wav",100,100)
-	self.Entity:EmitSound("snd_jack_firebomb.wav",101,99)
+	self:EmitSound("snd_jack_firebomb.wav",100,100)
+	self:EmitSound("snd_jack_firebomb.wav",101,99)
 	
-	for key,thing in pairs(ents.FindInSphere(SelfPos,800))do
+	for key,thing in ipairs(ents.FindInSphere(SelfPos,800))do
 		if(((IsValid(thing:GetPhysicsObject()))or(thing:IsPlayer())or(thing:IsNPC()))and not((thing==self)or(thing:GetClass()=="ent_jack_napalmpoint")or(thing:IsWorld())))then
 			local Dist=(thing:GetPos()-SelfPos):Length()
 			timer.Simple(Dist/3000*math.Rand(.8,1.2),function()
@@ -164,7 +163,7 @@ end
 
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 end
 
@@ -173,7 +172,7 @@ function ENT:OnTakeDamage(dmginfo)
 	if((dmginfo:IsExplosionDamage())and(dmginfo:GetDamage()>110))then
 		self:Detonate()
 	end
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator,caller)
@@ -185,6 +184,10 @@ function ENT:Use(activator,caller)
 			if(Num>0)then
 				JackySimpleOrdnanceArm(self,activator,"Set: Proximity")
 				self.Armed=true
+			else
+				activator:ChatPrint("You need a Fuzing Equipment to arm the bomb.")
+				self.NextUseTime=CurTime()+1.5
+				self.NextFuzeTime=CurTime()+1.5
 			end
 		else
 			JackyOrdnanceDisarm(self,activator,"")

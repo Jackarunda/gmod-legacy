@@ -4,10 +4,10 @@ function ENT:Initialize()
 	--herp
 end
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_terminal","Sentry Terminal")
 --[[---------------------------------------
@@ -98,7 +98,7 @@ local function JackaDraw()
 		draw.DrawText(Ply.JackaSentryControl.LabelText,"CloseCaption_Normal",60,H-60,Color(0,255,255),TEXT_ALIGN_LEFT)
 		draw.DrawText(tostring(Ply.JackaSentryControl:GetDTInt(4)),"CloseCaption_Normal",W/2-100,H/2,Color(0,255,255),TEXT_ALIGN_CENTER)
 		surface.SetDrawColor(Color(255,255,255,255))
-		for key,playa in pairs(player.GetAll())do
+		for key,playa in ipairs(player.GetAll())do
 			local Tag=playa:GetNetworkedInt("JackyIFFTag")
 			if((Tag)and(not(Tag==0))and(Ply.JackaSentryControl.IFFTags)and(table.HasValue(Ply.JackaSentryControl.IFFTags,Tag)))then
 				local FotPos=playa:GetPos():ToScreen()
@@ -122,7 +122,7 @@ local function JackaRender()
 		local Mode=Ply.JackaSentryControl:GetDTInt(3)
 		if(Mode==2)then
 			DrawColorModify(WHOTBackTab)
-			for key,targ in pairs(ents.GetAll())do
+			for key,targ in ipairs(ents.GetAll())do
 				local Ja=(targ:IsPlayer())or(targ:IsNPC())
 				if((Ja)or(targ:IsVehicle())or(targ:IsOnFire())or(string.find(string.lower(targ:GetClass()),"ragdoll"))or(targ:GetClass()=="ent_jack_generator"))then
 					if((Ja)and(targ:IsEffectActive(EF_NODRAW)))then

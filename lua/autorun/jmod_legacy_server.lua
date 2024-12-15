@@ -126,8 +126,13 @@ if(SERVER)then
 		ply.OriginalJumpPower=ply:GetJumpPower()
 		ply:SetJumpPower(0)
 		sent:SetDTBool(2,false)
-		ply:Give("wep_jack_sentrycontrols")
-		ply:SelectWeapon("wep_jack_sentrycontrols")
+		if ply:HasWeapon("wep_jack_gmod_hands") then
+			ply:Give("wep_jack_gmod_hands")
+			ply:SelectWeapon("wep_jack_gmod_hands")
+		else
+			ply:Give("wep_jack_sentrycontrols")
+			ply:SelectWeapon("wep_jack_sentrycontrols")
+		end
 		ply:SetViewEntity(sent)
 		umsg.Start("JackaSentryControl")
 		umsg.Entity(ply)
@@ -145,7 +150,9 @@ if(SERVER)then
 		ply:SetFOV(0,0)
 		timer.Simple(.1,function() if(IsValid(ply))then ply:SetJumpPower(ply.OriginalJumpPower) end end)
 		sent:SetDTInt(3,0)
-		ply:StripWeapon("wep_jack_sentrycontrols")
+		if ply:HasWeapon("wep_jack_sentrycontrols") then
+			ply:StripWeapon("wep_jack_sentrycontrols")
+		end
 		ply:SetViewEntity(ply)
 		if(term)then term:EmitSound("snd_jack_dronebeep.wav",70,90) end
 		umsg.Start("JackaSentryControlWipe")
@@ -247,7 +254,7 @@ if(SERVER)then
 				util.Effect("propspawn",effectdata)
 			end
 		else
-			for key,ent in pairs(ents.FindInSphere(ply:GetPos(),500))do
+			for key,ent in ipairs(ents.FindInSphere(ply:GetPos(),500))do
 				if(ent.JackyArmoredPanel)then
 					print(tostring(ent).." was found too close to a player's spawn point. It was removed in order to prevent minging.")
 					SafeRemoveEntity(ent)
@@ -428,12 +435,6 @@ if(SERVER)then
 
 	-------------
 	--- OLD OPSQUADS CODE ---
-		--[[
-	local function ASS(p,k)
-		JPrint(p:GetEyeTrace().Entity:GetModel())
-	end
-	hook.Add("KeyPress","TITS",ASS)
-	--]]
 	JackieNPCSpawningTable={
 		Enhanced={},
 		Modified={}
@@ -461,7 +462,7 @@ if(SERVER)then
 		Fr,En=D_LI,D_HT
 		if not(friendly)then Fr=D_HT;En=D_LI end
 		npc.JIFaction=Sq
-		for k,v in pairs(ents.FindByClass("npc_*"))do
+		for k,v in ipairs(ents.FindByClass("npc_*"))do
 			if(v.JIFaction)then
 				if(v.JIFaction==Sq)then
 					npc:AddEntityRelationship(v,D_LI,70)
@@ -496,10 +497,6 @@ if(SERVER)then
 			end
 		end)
 	end
-	function JPrint(msg)
-		player.GetAll()[1]:PrintMessage(HUD_PRINTCENTER,tostring(msg))
-		player.GetAll()[1]:PrintMessage(HUD_PRINTTALK,"["..tostring(math.Round(CurTime(),1)).."] "..tostring(msg))
-	end
 	function JackyPlayNPCAnim(npc,name,stationary,time)
 		npc:RestartGesture(npc:GetSequenceInfo(npc:LookupSequence(name)).activity)
 		if(stationary)then
@@ -510,10 +507,6 @@ if(SERVER)then
 				end
 			end)
 		end
-		--[[
-		JPrint(npc:GetSequenceInfo(npc:LookupSequence(name)).activityname)
-		table.foreach(npc:GetSequenceList(),print)
-		--]]
 	end
 	JackyOpSquadsMustPreCacheHumans=true
 	local AllCreatureTable={} -- cache this table. Why? *crysis nanosuit voice*: MAXIMUM EFFICIENCY.
@@ -650,7 +643,7 @@ if(SERVER)then
 					local Pos=victim:GetPos()+Vector(math.random(-1000,1000),math.random(-1000,1000),0)
 					victim:SetLastPosition(Pos)
 					victim:StopMoving() -- then drop what you're doing
-					victim:SetSchedule(SCHED_FORCED_GO_RUN) -- and fucking run
+					victim:SetSchedule(SCHED_FORCED_GO_RUN)
 				end
 			else
 				if(math.random(1,4)==4)then
@@ -686,7 +679,7 @@ if(SERVER)then
 		if((victim.OpSquadCustomDamageTaker)and(dmginfo:IsDamageType(DMG_BLAST)))then
 			if(math.random(1,5)==2)then
 				victim.OpSquadCustomDamageTaker=false
-				for k,ent in pairs(ents.FindInSphere(victim:GetPos(),500))do
+				for k,ent in ipairs(ents.FindInSphere(victim:GetPos(),500))do
 					if(ent:GetClass()=="npc_combinedropship")then SafeRemoveEntityDelayed(ent,.05) end
 				end
 				SafeRemoveEntityDelayed(victim,.05)
@@ -714,7 +707,7 @@ if(SERVER)then
 			if(victim:Health()<=1)then
 				local Pos=victim:GetPos()+Vector(0,0,30)
 				timer.Simple(.01,function()
-					for key,crab in pairs(ents.FindInSphere(Pos,90))do
+					for key,crab in ipairs(ents.FindInSphere(Pos,90))do
 						local Class=crab:GetClass()
 						if((Class=="npc_headcrab")or(Class=="npc_headcrab_fast"))then
 							SafeRemoveEntity(crab)
@@ -833,7 +826,7 @@ if(SERVER)then
 				if(found.JackyOpSquadNPC)then
 					if(found.OpSquadRotorDamage)then
 						local SelfPos=found:GetPos()
-						for key,thing in pairs(ents.FindInSphere(SelfPos,350))do
+						for key,thing in ipairs(ents.FindInSphere(SelfPos,350))do
 							local Class=thing:GetClass()
 							if not((Class=="npc_helicopter")or(Class=="npc_gunship")or(Class=="npc_strider"))then
 								if(Class=="player")then
@@ -871,7 +864,7 @@ if(SERVER)then
 						if(IsValid(Enemy))then
 							local EnemyPos=Enemy:GetPos()
 							local OhShit=false
-							for key,crap in pairs(ents.FindInSphere(SelfPos,200))do
+							for key,crap in ipairs(ents.FindInSphere(SelfPos,200))do
 								local Disp=found:Disposition(crap)
 								if((Disp==D_HT)or(Disp==D_FR))then
 									OhShit=true
@@ -928,7 +921,7 @@ if(SERVER)then
 							--hear shit
 							if(math.random(1,2)==1)then
 								if not(IsValid(found:GetEnemy()))then
-									for key,thing in pairs(ents.FindInSphere(SelfPos,200))do
+									for key,thing in ipairs(ents.FindInSphere(SelfPos,200))do
 										if not(thing==found)then
 											local Disp=found:Disposition(thing)
 											if((Disp==D_HT)or(Disp==D_FR))then
@@ -1106,7 +1099,7 @@ if(SERVER)then
 								if(IsValid(Enemy))then
 									if(found:GetClass()=="npc_citizen")then
 										local DangerClose=false
-										for key,enpeesee in pairs(ents.FindInSphere(Enemy:GetPos(),200))do
+										for key,enpeesee in ipairs(ents.FindInSphere(Enemy:GetPos(),200))do
 											if(enpeesee:IsNPC())then
 												if(enpeesee:GetClass()=="npc_citizen")then --MOVE!!
 													DangerClose=true

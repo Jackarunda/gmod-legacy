@@ -16,33 +16,33 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/barney_helmet.mdl")
-	self.Entity:SetMaterial("models/mat_jack_monotone_abu_flat")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/barney_helmet.mdl")
+	self:SetMaterial("models/mat_jack_monotone_abu_flat")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(10)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
-	self.Entity:SetColor(Color(102,110,91))
+	self:SetUseType(SIMPLE_USE)
+	self:SetColor(Color(102,110,91))
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Drywall.ImpactSoft")
+		self:EmitSound("Drywall.ImpactSoft")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Think()
 	--wat
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end
 function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then

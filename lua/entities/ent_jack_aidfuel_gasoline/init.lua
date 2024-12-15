@@ -16,13 +16,13 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_lab/harddrive02.mdl")
-	self.Entity:SetColor(Color(175,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_lab/harddrive02.mdl")
+	self:SetColor(Color(175,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(35)
@@ -32,13 +32,13 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Wade.StepRight")
-		self.Entity:EmitSound("Wade.StepLeft")
-		self.Entity:EmitSound("Metal_Box.ImpactHard")
+		self:EmitSound("Wade.StepRight")
+		self:EmitSound("Wade.StepLeft")
+		self:EmitSound("Metal_Box.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
 	if(self.StructuralIntegrity<=0)then
 		self:Asplode()
@@ -52,7 +52,7 @@ function ENT:Asplode()
 	Poof:SetOrigin(SelfPos)
 	Poof:SetScale(1)
 	util.Effect("eff_jack_gasolineburst",Poof,true,true)
-	for key,found in pairs(ents.FindInSphere(SelfPos,150))do
+	for key,found in ipairs(ents.FindInSphere(SelfPos,150))do
 		if(IsValid(found:GetPhysicsObject()))then
 			if(self:Visible(found))then
 				found:Ignite(15)
@@ -86,5 +86,5 @@ function ENT:Think()
 	--pfahahaha
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end

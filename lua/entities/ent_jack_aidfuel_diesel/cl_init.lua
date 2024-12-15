@@ -28,10 +28,10 @@ function ENT:Draw()
 	end
 	self.Prettiness:DrawModel()
 	--render.SetBlend(.5)
-	--self.Entity:DrawModel()
+	--self:DrawModel()
 	--render.SetBlend(1)
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_aidfuel_diesel","Diesel Fuel Can")

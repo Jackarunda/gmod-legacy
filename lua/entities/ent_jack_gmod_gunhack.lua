@@ -190,7 +190,7 @@ if(SERVER)then
 									local FectDater=EffectData()
 									FectDater:SetStart(manhack:GetPos()+manhack:GetForward()*10-manhack:GetUp()*5)
 									FectDater:SetNormal(Direction)
-									--util.Effect("AirboatMuzzleFlash",FectDater) --i'd love to use this, but Garry fucked it all to hell
+									--util.Effect("AirboatMuzzleFlash",FectDater)
 									util.Effect("eff_jack_gmod_pmuzzle",FectDater,true,true)
 									--[[
 									umsg.Start("Jacky'sMuzzleFlashUserMessage")
@@ -242,7 +242,7 @@ if(SERVER)then
 				manhack:EmitSound("snds_jack_gmod/search.wav",65,100)
 				manhack.GunModel:SetAngles(manhack:GetAngles()+Angle(0,0,180))
 			end
-			for key,found in pairs(ents.FindByClass("npc_*"))do
+			for key,found in ipairs(ents.FindByClass("npc_*"))do
 				local enemypos=found:GetPos()
 				if(manhack:Disposition(found)==D_HT)then
 					if not(IsValid(manhack:GetEnemy()))then

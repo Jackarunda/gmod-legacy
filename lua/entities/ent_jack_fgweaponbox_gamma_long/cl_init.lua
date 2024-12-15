@@ -28,7 +28,7 @@ function ENT:Initialize()
 end
 
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 	
 	local SelfPos=self:GetPos()
 	local SelfAng=self:GetAngles()

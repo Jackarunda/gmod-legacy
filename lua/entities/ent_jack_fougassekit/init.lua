@@ -16,18 +16,18 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/weapons/w_c4.mdl")
-	self.Entity:SetColor(Color(255,255,255))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/weapons/w_c4.mdl")
+	self:SetColor(Color(255,255,255))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(50)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 end
 function ENT:PhysicsCollide(data, physobj)
 	if(data.Speed>80 and data.DeltaTime>0.2)then
@@ -61,7 +61,7 @@ local function DetonateFougasses(ply)
 	if(NextTime>Time)then return end
 	NextTime=Time+1
 	local FoundEm=false
-	for key,lel in pairs(ents.FindByClass("ent_jack_aidfuel_diesel"))do
+	for key,lel in ipairs(ents.FindByClass("ent_jack_aidfuel_diesel"))do
 		if((lel.Fougasstivator)and(lel.Fougasstivator==ply)and(lel.Fougassed))then
 			FoundEm=true
 			timer.Simple(.7,function()

@@ -3,7 +3,8 @@ include('shared.lua')
 SWEP.PrintName			= "Stick of Dynamite"			// 'Nice' Weapon name (Shown on HUD)	
 SWEP.Slot				= 4							// Slot in the weapon selection menu
 SWEP.SlotPos			= 1							// Position in the slot
-SWEP.DrawWeaponInfoBox =false
+SWEP.Instructions		= "A mass of sawdust soaked in nitroglycerin and wrapped in paper with a pyrotechnic fuze.\n\nClassic blasting stick dynamite. Default fuze length is 5 seconds.\n\nLMB to throw, RMB to light the fuse.\nYou need a Fuzing Equipment to light the fuse."
+SWEP.DrawWeaponInfoBox =true
 SWEP.DrawCrosshair	 =false --crosshairs are for big loose pussies
 SWEP.BounceWeaponIcon=false
 
@@ -35,7 +36,7 @@ function SWEP:GetViewModelPosition(pos,ang)
 	local Right=ang:Right()
 	local Forward=ang:Forward()
 
-	if(self.Owner:KeyDown(IN_SPEED))then
+	if(self:GetOwner():KeyDown(IN_SPEED))then
 		MoveAmount=MoveAmount+1
 	else
 		MoveAmount=MoveAmount-1

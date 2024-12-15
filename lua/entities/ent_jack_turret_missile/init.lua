@@ -51,7 +51,7 @@ function ENT:SpawnFunction(ply,tr)
 	local effectdata=EffectData()
 	effectdata:SetEntity(ent)
 	util.Effect("propspawn",effectdata)
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<7500)then
 		Settings.MaxVelocity=7500
@@ -150,8 +150,8 @@ function ENT:FireMissal()
 	local Spred=self.ShotSpread
 	--fire round
 	local Miss=ents.Create("ent_jack_turretmissile")
-	Miss.ParentLauncher=self.Entity
-	Miss:SetNetworkedEntity("Owenur",self.Entity)
+	Miss.ParentLauncher=self
+	Miss:SetNetworkedEntity("Owenur",self)
 	Miss:SetPos(SelfPos-self:GetRight()*5)
 	local Ang=Dir:Angle()
 	Ang:RotateAroundAxis(Ang:Up(),90)
@@ -160,7 +160,7 @@ function ENT:FireMissal()
 	Miss.Target=self.CurrentTarget -- go get em tiger
 	Miss:Spawn()
 	Miss:Activate()
-	constraint.NoCollide(self.Entity,Miss,0,0)
+	constraint.NoCollide(self,Miss,0,0)
 	Miss:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()+Dir*400)
 	self.FiredAtCurrentTarget=true
 	self.RoundInChamber=false
@@ -189,7 +189,7 @@ function ENT:FireMissal()
 	effectd:SetNormal(PosAng.Ang:Forward())
 	effectd:SetScale(1)
 	util.Effect("eff_jack_turretmuzzlelight",effectd,true,true)
-	util.BlastDamage(self.Entity,self.Entity,SelfPos-Dir*50,20,20)
+	util.BlastDamage(self,self,SelfPos-Dir*50,20,20)
 	self:GetPhysicsObject():ApplyForceOffset(-Dir*self.ShotPower*6*self.ProjectilesPerShot,SelfPos+self:GetUp()*20)
 end
 function ENT:DetachAmmoBox()

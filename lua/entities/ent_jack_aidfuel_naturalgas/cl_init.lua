@@ -1,7 +1,7 @@
 //local Shit=Material("models/entities/mat_jack_apersbomb")
 include('shared.lua')
 function ENT:Initialize()
-	self.Prettiness=ClientsideModel("models/jmodels/explosives/props_explosive/explosive_butane_can.mdl")
+	self.Prettiness=ClientsideModel("models/jmod/explosives/props_explosive/explosive_butane_can.mdl")
 	self.Prettiness:SetPos(self:GetPos())
 	self.Prettiness:SetParent(self)
 	self.Prettiness:SetNoDraw(true)
@@ -16,10 +16,10 @@ function ENT:Draw()
 	self.Prettiness:SetRenderAngles(Ang)
 	self.Prettiness:DrawModel()
 	--render.SetBlend(.5)
-	--self.Entity:DrawModel()
+	--self:DrawModel()
 	--render.SetBlend(1)
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_aidfuel_naturalgas","Natural Gas Canister")

@@ -4,21 +4,21 @@ include('shared.lua')
 function ENT:Initialize()
 
 	--We need to init physics properties even though this entity isn't physically simulated
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:DrawShadow( false )
-	self.Entity:SetNoDraw(true)
+	self:SetMoveType( MOVETYPE_NONE )
+	self:DrawShadow( false )
+	self:SetNoDraw(true)
 	
-	self.Entity:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
-	self.Entity:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:EnableCollisions( false )		
 	end
 
-	self.Entity:SetNotSolid( true )
+	self:SetNotSolid( true )
 
-	self.Entity:Fire("kill","",0.25)
+	self:Fire("kill","",0.25)
 
 	/*-------------- Here we go, boy --------------*/
 	
@@ -42,7 +42,7 @@ function ENT:Initialize()
 	self:EmitSound("snd_jack_impulse.wav",80,100)
 	self:EmitSound("snd_jack_fragsplodefar.wav",130,100)
 	
-	for key,object in pairs(ents.FindInSphere(SelfPos,100))do
+	for key,object in ipairs(ents.FindInSphere(SelfPos,100))do
 		local Phys=object:GetPhysicsObject()
 		if(IsValid(Phys))then
 			if(Phys:GetMass()<700)then constraint.RemoveAll(object);object:Fire("enablemotion","",0) end
@@ -50,7 +50,7 @@ function ENT:Initialize()
 	end
 	
 	timer.Simple(.075,function()
-		for key,object in pairs(ents.FindInSphere(SelfPos,Radius))do
+		for key,object in ipairs(ents.FindInSphere(SelfPos,Radius))do
 			if(((IsValid(object:GetPhysicsObject()))or(object:IsPlayer())or(object:IsNPC()))and not((object:IsWorld())or(object==self)))then
 				self:FireShrapnel((object:LocalToWorld(object:OBBCenter())-SelfPos):GetNormalized())
 			end
@@ -74,7 +74,7 @@ function ENT:Initialize()
 	timer.Simple(0.1,function()
 		if(IsValid(self))then
 			for i=0,Radius/25 do
-				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/2,{self.Entity,self.ParentEntity})
+				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/2,{self,self.ParentEntity})
 				if(Trayuss.Hit)then
 					if(Power>150)then
 						util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)

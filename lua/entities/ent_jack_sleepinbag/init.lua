@@ -16,30 +16,30 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_equipment/sleeping_bag1.mdl")
-	self.Entity:SetMaterial("models/props_equipment/sleeping_jag1")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/jmod/props/sleeping_bag.mdl")
+	self:SetMaterial("models/props_equipment/sleeping_jag1")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(35)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.Playah=nil
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	self.NextSpawnTime=0
 	self:SetColor(Color(100,100,100))
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Body.ImpactSoft")
+		self:EmitSound("Body.ImpactSoft")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	if((dmginfo:IsDamageType(DMG_BURN))or(dmginfo:IsDamageType(DMG_DIRECT)))then
 		if(math.random(1,3)==2)then self:Remove() end
 	end
@@ -47,7 +47,6 @@ end
 function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then
 		if((self.Playah)and(IsValid(self.Playah)))then
-			-- ass
 		else
 			if(IsValid(activator.JackaSleepPoint))then activator.JackaSleepPoint.Playah=nil;activator.JackaSleepPoint:SetColor(Color(100,100,100)) end
 			self.Playah=activator

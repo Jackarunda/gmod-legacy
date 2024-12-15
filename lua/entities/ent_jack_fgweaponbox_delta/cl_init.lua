@@ -30,7 +30,7 @@ function ENT:Initialize()
 end
 
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 	
 	if not(self:GetDTBool(0))then return end
 	

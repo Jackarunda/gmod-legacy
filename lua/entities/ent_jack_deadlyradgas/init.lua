@@ -6,12 +6,12 @@ local OrganicTable={"player","npc_citizen","npc_combine_s","npc_zombie","npc_fas
 local SynthTable={"npc_hunter","npc_clawscanner","npc_strider","npc_combinegunship","npc_combinedropship"}
 
 function ENT:Initialize()	
-	self.Entity:SetModel("models/Items/AR2_Grenade.mdl")
-	self.Entity:PhysicsInit(SOLID_BBOX)	
-	self.Entity:SetMoveType(MOVETYPE_FLY)	
-	self.Entity:SetSolid(SOLID_BBOX)
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_DISSOLVING)
-	self.Entity:DrawShadow(false)
+	self:SetModel("models/Items/AR2_Grenade.mdl")
+	self:PhysicsInit(SOLID_BBOX)	
+	self:SetMoveType(MOVETYPE_FLY)	
+	self:SetSolid(SOLID_BBOX)
+	self:SetCollisionGroup(COLLISION_GROUP_DISSOLVING)
+	self:DrawShadow(false)
 	
 	self.Age=1
 	self.Stuck=false
@@ -38,7 +38,7 @@ function ENT:Think()
 	local Par=self:GetParent()
 
 	if(self.Active)then
-		for key,found in pairs(ents.FindInSphere(SelfPos,Range))do
+		for key,found in ipairs(ents.FindInSphere(SelfPos,Range))do
 			local Class=found:GetClass()
 			if not(Class=="ent_jack_deadlyradgas")then
 				if(table.HasValue(OrganicTable,Class))then
@@ -48,8 +48,8 @@ function ENT:Think()
 					Ouch:SetDamage(Damg)
 					Ouch:SetDamagePosition(found:GetPos())
 					Ouch:SetDamageForce(Vector(0,0,0))
-					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self.Entity) end
-					if(IsValid(self.Weapon))then Ouch:SetInflictor(self.Weapon) else Ouch:SetInflictor(self.Entity) end
+					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self) end
+					if(IsValid(self))then Ouch:SetInflictor(self) else Ouch:SetInflictor(self) end
 					found:TakeDamageInfo(Ouch)
 					
 					if(math.random(1,5)==1)then
@@ -71,8 +71,8 @@ function ENT:Think()
 					Ouch:SetDamage(Damg*.5)
 					Ouch:SetDamagePosition(found:GetPos())
 					Ouch:SetDamageForce(Vector(0,0,0))
-					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self.Entity) end
-					if(IsValid(self.Weapon))then Ouch:SetInflictor(self.Weapon) else Ouch:SetInflictor(self.Entity) end
+					if(IsValid(self.Owner))then Ouch:SetAttacker(self.Owner) else Ouch:SetAttacker(self) end
+					if(IsValid(self))then Ouch:SetInflictor(self) else Ouch:SetInflictor(self) end
 					found:TakeDamageInfo(Ouch)
 					
 					if(math.random(1,6)==1)then
@@ -96,7 +96,7 @@ function ENT:Think()
 				end
 			end
 		end
-		for key,detector in pairs(ents.FindInSphere(SelfPos,Range*1.25))do
+		for key,detector in ipairs(ents.FindInSphere(SelfPos,Range*1.25))do
 			if(detector:GetClass()=="wep_jack_fungun_eta")then
 				if(IsValid(detector.Owner))then
 					if(detector.Owner==Par)then

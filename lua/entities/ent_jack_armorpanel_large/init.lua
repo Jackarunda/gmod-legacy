@@ -16,14 +16,14 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_phx/construct/metal_plate4x4.mdl")
-	self.Entity:SetMaterial("models/mat_jack_scratchedmetal")
-	self.Entity:SetColor(Color(100,100,100))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_phx/construct/metal_plate4x4.mdl")
+	self:SetMaterial("models/mat_jack_scratchedmetal")
+	self:SetColor(Color(100,100,100))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(1300)
@@ -56,12 +56,12 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		if(self.Entity)then self.Entity:EmitSound("SolidMetal.ImpactHard") end
+		if(self)then self:EmitSound("SolidMetal.ImpactHard") end
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
 	dmginfo:SetDamageForce(dmginfo:GetDamageForce()/10)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	if((dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BUCKSHOT)))then
 		local Attacker=dmginfo:GetAttacker()
 		if(IsValid(Attacker))then
@@ -78,7 +78,6 @@ function ENT:Use(activator,caller)
 	--no
 end
 function ENT:Think()
-	--ass muffins
 end
 function ENT:StartTouch(ent)
 	self:FuckEmUp(ent)

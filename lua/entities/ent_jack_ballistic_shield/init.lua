@@ -4,19 +4,19 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 function ENT:Initialize()
-	self.Entity:SetModel("models/jrleitiss/riotshield/shield.mdl")
-	self.Entity:SetColor(Color(100,100,100))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/jrleitiss/riotshield/shield.mdl")
+	self:SetColor(Color(100,100,100))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(50)
 		phys:SetMaterial("metal")
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.Held=false
 	self.NextUseTime=0
 	if not(self.Reinforcement)then
@@ -46,12 +46,12 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data,physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Drywall.ImpactHard")
+		self:EmitSound("Drywall.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
 	dmginfo:SetDamageForce(dmginfo:GetDamageForce()/10)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	if((dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BUCKSHOT)))then
 		local SelfPos=self:GetPos()
 		sound.Play("Drywall.ImpactHard",SelfPos,75,100)
@@ -60,7 +60,7 @@ function ENT:OnTakeDamage(dmginfo)
 		sound.Play("Concrete.BulletImpact",SelfPos,75,100)
 		if(self.Reinforcement)then
 			if(math.random(1,3)==2)then
-				self.Entity:EmitSound("snd_jack_ricochet_"..tostring(math.random(1,2))..".wav",75,math.Rand(90,110))
+				self:EmitSound("snd_jack_ricochet_"..tostring(math.random(1,2))..".wav",75,math.Rand(90,110))
 				local Bellit={
 					Attacker=dmginfo:GetAttacker(),
 					Damage=1,
@@ -97,5 +97,5 @@ function ENT:Think()
 	return true
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end

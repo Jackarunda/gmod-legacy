@@ -90,7 +90,7 @@ if(SERVER)then
 		npc:Fire("SetTrack",TrackName,0.1)
 		
 		timer.Simple(.1,function()
-			for k,ent in pairs(ents.FindInSphere(selfpos+Vector(0,0,300),300))do
+			for k,ent in ipairs(ents.FindInSphere(selfpos+Vector(0,0,300),300))do
 				if(ent:GetClass()=="prop_dropship_container")then ent.OpSquadCustomDamageTaker=true end
 			end
 		end)

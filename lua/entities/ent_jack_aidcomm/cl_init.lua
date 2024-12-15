@@ -12,7 +12,7 @@ function ENT:Initialize()
 	self.HedPhonz:SetNoDraw(true)
 end
 function ENT:Draw()
-	self.Entity:DrawModel()
+	self:DrawModel()
 	local SelfPos=self:GetPos()
 	local Up=self:GetUp()
 	local Right=self:GetRight()
@@ -42,6 +42,6 @@ function ENT:Draw()
 	end
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_battery","J.I. MP AP Battery")

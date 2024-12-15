@@ -14,7 +14,7 @@ if(SERVER)then
 		local Delay=.01
 		if(JackyOpSquadsMustPreCacheHumans)then
 			Delay=1
-			for key,ply in pairs(player.GetAll())do
+			for key,ply in ipairs(player.GetAll())do
 				ply:PrintMessage(HUD_PRINTCENTER,"Please give the game a moment to\ncache the HL2 citizen/rebel models.")
 			end
 			timer.Simple(.5,function()
@@ -93,7 +93,7 @@ if(SERVER)then
 				npc:SetKeyValue("citizentype","3")
 				npc:SetKeyValue("Expression Type","Random")
 				npc:SetKeyValue("additionalequipment","wep_jack_gmod_npcrocketlauncher")
-				npc:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT) --but gosh damn do they suck giant horse schlong at shooting things with their RPG
+				npc:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT)
 				npc:SetKeyValue("spawnflags","524544") --256+524288(SF_CITIZEN_AMMORESUPPLIER)
 				npc.JackyFinickyAmmoGiver=true
 				npc:SetKeyValue("ammosupply","RPG_Round")
@@ -452,7 +452,7 @@ if(SERVER)then
 		npc:SetKeyValue("citizentype","3")
 		npc:SetKeyValue("Expression Type","Random")
 		npc:SetKeyValue("additionalequipment","wep_jack_npcrocketlauncher")
-		npc:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT) --but gosh damn do they suck giant horse schlong at shooting things with their RPG
+		npc:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT)
 		npc:SetKeyValue("spawnflags","524544") --256+524288(SF_CITIZEN_AMMORESUPPLIER)
 		npc.JackyFinickyAmmoGiver=true
 		npc:SetKeyValue("ammosupply","RPG_Round")
@@ -466,6 +466,7 @@ if(SERVER)then
 		npc:Fire("startpatrolling","",math.Rand(30,60))
 		npc:Fire("addoutput","onplayeruse !self,startpatrolling,"..tostring(npc).."0",0)
 		npc:Fire("setammoresupplieroff","",0)
+		npc:Give("weapon_rpg")
 		JackyOpSquadSpawnEvent(npc)
 		return npc
 	end

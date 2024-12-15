@@ -49,7 +49,7 @@ if(SERVER)then
 					local dist=(selfpos-enempos):Length()
 					if(dist<250)then
 						local DangerClose=false
-						for key,found in pairs(ents.FindInSphere(selfpos,950))do
+						for key,found in ipairs(ents.FindInSphere(selfpos,950))do
 							if((found:IsNPC())or(found:IsPlayer()))then
 								if not(found==roller)then
 									if(found:Visible(roller))then
@@ -89,8 +89,8 @@ if(SERVER)then
 							end
 						else
 							roller:Fire("turnoff","",0)
-							roller:EmitSound("snds_jack_gmod/rolleralert.mp3")
-							for k,other in pairs(ents.FindInSphere(roller:GetPos(),1250))do
+							roller:EmitSound("snds_jack_gmod/rolleralert.wav")
+							for k,other in ipairs(ents.FindInSphere(roller:GetPos(),1250))do
 								if((other.JackaRollerBomb)and not(other==roller))then
 									local Dir=(other:GetPos()-roller:GetPos()):GetNormalized()
 									Hego(other,Dir,7500)
@@ -116,7 +116,7 @@ if(SERVER)then
 				roller:EmitSound("snds_jack_gmod/search.wav",50,100)
 			end
 			local Force=true
-			for key,found in pairs(ents.FindByClass("npc_*"))do
+			for key,found in ipairs(ents.FindByClass("npc_*"))do
 				local enemypos=found:GetPos()
 				if(roller:Disposition(found)==D_HT)then
 					if not(IsValid(roller:GetEnemy()))then

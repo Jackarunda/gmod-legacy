@@ -17,7 +17,7 @@ function ENT:Draw()
 	if not(self.Hot)then Scale=Vector(1.5,1.5,1.5) end
 	local Mat=Matrix()
 	Mat:Scale(Scale)
-	self.Entity:EnableMatrix("RenderMultiply",Mat)
+	self:EnableMatrix("RenderMultiply",Mat)
 
 	if(self.Hot)then
 		local Heat=self.Heat
@@ -37,7 +37,7 @@ function ENT:Draw()
 		dlightend.DieTime=CurTime()+.01
 		
 		render.SuppressEngineLighting(true)
-		self.Entity:DrawModel()
+		self:DrawModel()
 		render.SuppressEngineLighting(false)
 	end
 end

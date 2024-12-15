@@ -17,14 +17,14 @@ local HULL_TARGETING={
 	[HULL_LARGE_CENTERED]=30
 }
 function ENT:Initialize()
-	self.Entity:SetModel("models/hawx/weapons/aim-9 sidewinder.mdl")
-	self.Entity:SetMaterial("models/mat_jack_sidewinderaam")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_NONE)
-	self.Entity:SetUseType(SIMPLE_USE)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/hawx/weapons/aim-9 sidewinder.mdl")
+	self:SetMaterial("models/mat_jack_sidewinderaam")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:SetCollisionGroup(COLLISION_GROUP_NONE)
+	self:SetUseType(SIMPLE_USE)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(15)
@@ -72,7 +72,7 @@ function ENT:PhysicsCollide(data,physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Think()
 	if(self.Exploded)then return end
@@ -145,7 +145,7 @@ function ENT:Detonate()
 		Boom:SetScale(2)
 		util.Effect("eff_jack_lightboom",Boom,true,true)
 		ParticleEffect("pcf_jack_airsplode_medium",SelfPos,self:GetAngles())
-		for key,thing in pairs(ents.FindInSphere(SelfPos,500))do
+		for key,thing in ipairs(ents.FindInSphere(SelfPos,500))do
 			if((thing:IsNPC())and(self:Visible(thing)))then
 				if(table.HasValue({"npc_strider","npc_combinegunship","npc_helicopter","npc_turret_floor","npc_turret_ground","npc_turret_ceiling"},thing:GetClass()))then
 					thing:SetHealth(1)
@@ -153,17 +153,17 @@ function ENT:Detonate()
 				end
 			end
 		end
-		util.BlastDamage(self.Entity,self.Entity,SelfPos,600,300)
+		util.BlastDamage(self,self,SelfPos,600,300)
 		self:EmitSound("snd_jack_fragsplodeclose.wav",80,100)
 		sound.Play("snd_jack_fragsplodeclose.wav",SelfPos+Vector(0,0,1),75,80)
 		sound.Play("snd_jack_fragsplodefar.wav",SelfPos+Vector(0,0,2),100,80)
 		for i=0,30 do
-			local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200,{self.Entity})
+			local Trayuss=util.QuickTrace(SelfPos,VectorRand()*200,{self})
 			if(Trayuss.Hit)then
 				util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)
 			end
 		end
-		for key,obj in pairs(ents.FindInSphere(SelfPos,200))do
+		for key,obj in ipairs(ents.FindInSphere(SelfPos,200))do
 			if(IsValid(obj:GetPhysicsObject()))then
 				if((obj:Visible(self))and not(obj.JackyArmoredPanel))then
 					if(obj:GetPhysicsObject():GetMass()<500)then
@@ -172,7 +172,7 @@ function ENT:Detonate()
 				end
 			end
 		end
-		self.Entity:Remove()
+		self:Remove()
 	end
 end
 function ENT:Use(activator,caller)

@@ -4,21 +4,21 @@ include('shared.lua')
 function ENT:Initialize()
 
 	--We need to init physics properties even though this entity isn't physically simulated
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:DrawShadow( false )
-	self.Entity:SetNoDraw(true)
+	self:SetMoveType( MOVETYPE_NONE )
+	self:DrawShadow( false )
+	self:SetNoDraw(true)
 	
-	self.Entity:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
-	self.Entity:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:EnableCollisions( false )		
 	end
 
-	self.Entity:SetNotSolid( true )
+	self:SetNotSolid( true )
 
-	self.Entity:Fire("kill","",0.25)
+	self:Fire("kill","",0.25)
 
 	/*-------------- Here we go, boy --------------*/
 	
@@ -38,7 +38,7 @@ function ENT:Initialize()
 	util.BlastDamage(Att,Infl,SelfPos,self.BlastRadius,self.BasePower*Mod)
 	util.ScreenShake(SelfPos,99999,99999,self.BasePower/250,self.BlastRadius*1.75)
 	
-	for key,object in pairs(ents.FindInSphere(SelfPos,self.BlastRadius))do
+	for key,object in ipairs(ents.FindInSphere(SelfPos,self.BlastRadius))do
 		local class=object:GetClass()
 		if((class=="func_door_rotating")or(class=="prop_door_rotating")or(class=="func_door"))then
 			if not(object:GetNoDraw())then
@@ -77,7 +77,7 @@ function ENT:Initialize()
 				end
 			end
 		elseif(IsValid(object:GetPhysicsObject()))then
-			if not((object==self.ParentEntity)or(object==self.Entity)or(object:IsPlayer()))then
+			if not((object==self.ParentEntity)or(object==self)or(object:IsPlayer()))then
 				local PhysObj=object:GetPhysicsObject()
 				local ObjPos=object:LocalToWorld(object:OBBCenter())
 				local Direction=(ObjPos-SelfPos):GetNormalized()
@@ -112,9 +112,9 @@ function ENT:Initialize()
 	if(self.FromNavalMine)then Boost=.9 end
 	
 	timer.Simple(0.075,function()
-		for key,object in pairs(ents.FindInSphere(SelfPos,Radius*1.5))do
+		for key,object in ipairs(ents.FindInSphere(SelfPos,Radius*1.5))do
 			if(IsValid(object:GetPhysicsObject()))then
-				if not((object==Parent)or(object==self.Entity))then
+				if not((object==Parent)or(object==self))then
 					local PhysObj=object:GetPhysicsObject()
 					local ObjPos=object:LocalToWorld(object:OBBCenter())
 					local Direction=(ObjPos-SelfPos):GetNormalized()
@@ -142,7 +142,7 @@ function ENT:Initialize()
 	timer.Simple(0.1,function()
 		if(IsValid(self))then
 			for i=0,Radius/50 do
-				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/2,{self.Entity,self.ParentEntity})
+				local Trayuss=util.QuickTrace(SelfPos,VectorRand()*Radius/2,{self,self.ParentEntity})
 				if(Trayuss.Hit)then
 					if(self.BasePower>150)then
 						util.Decal("Scorch",Trayuss.HitPos+Trayuss.HitNormal,Trayuss.HitPos-Trayuss.HitNormal)

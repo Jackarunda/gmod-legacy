@@ -25,7 +25,7 @@ if(SERVER)then
 	SWEP.AutoSwitchTo=false
 	SWEP.AutoSwitchFrom=false 
 	function SWEP:NPCShoot_Secondary(ShootPos,ShootDir)
-		--the fuck are you doing, son?
+		
 	end
 	function SWEP:OnDrop()
 		local rpg=ents.Create("weapon_rpg")
@@ -36,14 +36,14 @@ if(SERVER)then
 		rpg:Activate()
 	end
 	function SWEP:NPCShoot_Primary(ShootPos,ShootDir)
-		if(self.Owner.IsTrainedWithRocketLaunchers)then --we do these simple safety checks
-			local Enemy=self.Owner:GetEnemy()
+		if(self:GetOwner().IsTrainedWithRocketLaunchers)then --we do these simple safety checks
+			local Enemy=self:GetOwner():GetEnemy()
 			local enemypos=Enemy:GetPos()
-			for key,enpeesee in pairs(ents.FindInSphere(enemypos,200))do
+			for key,enpeesee in ipairs(ents.FindInSphere(enemypos,200))do
 				if(enpeesee:IsNPC())then
 					if(enpeesee:GetClass()=="npc_citizen")then --MOVE!!
 						local WarningTable={"vo/npc/male01/getdown02.wav","vo/npc/male01/headsup01.wav","vo/npc/male01/headsup02.wav","vo/npc/male01/watchout.wav"}
-						self.Owner:EmitSound(WarningTable[math.random(1,4)])
+						self:GetOwner():EmitSound(WarningTable[math.random(1,4)])
 						return
 					end
 				end
@@ -52,43 +52,43 @@ if(SERVER)then
 		if(self.NextFireTime<CurTime())then
 			self.Reloading=false
 			local GoDirection=ShootDir
-			if(self.Owner.IsTrainedWithRocketLaunchers)then --he knows to shoot at an enemy's feet, and to adjust for the drop of the rocket.
-				local dist=(self.Owner:GetEnemy():GetPos()-self.Owner:GetPos()):Length()
+			if(self:GetOwner().IsTrainedWithRocketLaunchers)then --he knows to shoot at an enemy's feet, and to adjust for the drop of the rocket.
+				local dist=(self:GetOwner():GetEnemy():GetPos()-self:GetOwner():GetPos()):Length()
 				local DropCompensation=dist^2.022*0.000027
 				local Inaccuracy=VectorRand()*math.Rand(0,40)
-				local MovingTargetTravelTimeCompensation=(self.Owner:GetEnemy():GetVelocity())*(dist/1650)
-				GoDirection=(self.Owner:GetEnemy():GetPos()+Vector(0,0,DropCompensation)+MovingTargetTravelTimeCompensation+Inaccuracy-ShootPos):GetNormalized()
+				local MovingTargetTravelTimeCompensation=(self:GetOwner():GetEnemy():GetVelocity())*(dist/1650)
+				GoDirection=(self:GetOwner():GetEnemy():GetPos()+Vector(0,0,DropCompensation)+MovingTargetTravelTimeCompensation+Inaccuracy-ShootPos):GetNormalized()
 			end
-			JackyPlayNPCAnim(self.Owner,"shoot_rpg",true,.4)
+			JackyPlayNPCAnim(self:GetOwner(),"shoot_rpg",true,.4)
 			if not(self.FiredRocket)then
 				self.FiredRocket=true
 				timer.Simple(.5,function()
 					if(IsValid(self))then
-						self.Owner:EmitSound("weapons/rpg/rocketfire1.wav")
+						self:GetOwner():EmitSound("weapons/rpg/rocketfire1.wav")
 						local rockit=ents.Create("ent_jack_gmod_npcrocket")
 						rockit:SetPos(ShootPos+ShootDir)
-						rockit:SetOwner(self.Owner)
+						rockit:SetOwner(self:GetOwner())
 						rockit:SetAngles(GoDirection:Angle())
-						rockit.Owner=self.Owner
+						rockit.Owner=self:GetOwner()
 						rockit:Spawn()
 						rockit:Activate()
 						self.NextFireTime=CurTime()+5
-						self.Owner:StopMoving()
-						self.Owner:RestartGesture(self.Owner:GetSequenceInfo(self.Owner:LookupSequence("shoot_rpg")).activity)
+						self:GetOwner():StopMoving()
+						self:GetOwner():RestartGesture(self:GetOwner():GetSequenceInfo(self:GetOwner():LookupSequence("shoot_rpg")).activity)
 					end
 				end)
 			end
 		else
 			self.FiredRocket=false
 			if not(self.Reloading)then
-				if(self.Owner.IsTrainedWithRocketLaunchers)then
+				if(self:GetOwner().IsTrainedWithRocketLaunchers)then
 					local chance=math.random(1,3)
 					if(chance==1)then
-						self.Owner:EmitSound("vo/npc/male01/gottareload01.wav")
+						self:GetOwner():EmitSound("vo/npc/male01/gottareload01.wav")
 					elseif(chance==2)then
-						self.Owner:EmitSound("vo/npc/male01/coverwhilereload01.wav")
+						self:GetOwner():EmitSound("vo/npc/male01/coverwhilereload01.wav")
 					elseif(chance==3)then
-						self.Owner:EmitSound("vo/npc/male01/coverwhilereload02.wav")
+						self:GetOwner():EmitSound("vo/npc/male01/coverwhilereload02.wav")
 					end
 				end
 				self.Reloading=true
@@ -113,10 +113,10 @@ elseif(CLIENT)then
 		return current_fov
 	end
 	function SWEP:DrawWorldModel()
-		self.Weapon:DrawModel()
+		self:DrawModel()
 	end
 	function SWEP:DrawWorldModelTranslucent()
-		self.Weapon:DrawModel()
+		self:DrawModel()
 	end
 	function SWEP:AdjustMouseSensitivity()
 		return nil

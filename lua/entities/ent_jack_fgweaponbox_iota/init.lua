@@ -17,17 +17,17 @@ function ENT:SpawnFunction(ply,tr)
 end
 
 function ENT:Initialize()
-	self.Entity:SetModel("models/mass_effect_3/weapons/misc/ammojox.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/mass_effect_3/weapons/misc/ammojox.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_NONE)
+	self:SetCollisionGroup(COLLISION_GROUP_NONE)
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:Wake()
 		phys:SetMass(75)
@@ -70,15 +70,15 @@ end
 function ENT:PhysicsCollide(data,physobj)
 	if(data.DeltaTime>.1)then
 		if(data.Speed>200)then
-			self.Entity:EmitSound("Canister.ImpactHard")
+			self:EmitSound("Canister.ImpactHard")
 		elseif(data.Speed>20)then
-			self.Entity:EmitSound("Canister.ImpactSoft")
+			self:EmitSound("Canister.ImpactSoft")
 		end
 	end
 end
 
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator)

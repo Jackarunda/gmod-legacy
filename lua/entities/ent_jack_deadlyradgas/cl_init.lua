@@ -18,7 +18,7 @@ function ENT:Draw()
 	render.SetMaterial(Glow)
 	render.DrawSprite(SelfPos,Size,Size,Color(150,190,255,255))
 	
-	//self.Entity:DrawModel()
+	//self:DrawModel()
 end
 
 function ENT:Think()
