@@ -275,8 +275,6 @@ if(CLIENT)then
 				Ang:RotateAroundAxis(Ang:Right(),20)
 				helm:SetAngles(Ang)
 				helm:DrawModel()
-				render.ResetModelLighting(1,1,1)
-				render.SuppressEngineLighting(false)
 			end
 		end
 	end
