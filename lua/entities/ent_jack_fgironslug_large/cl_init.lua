@@ -10,7 +10,7 @@ function ENT:Draw()
 	local Mat=Matrix()
 	Mat:Scale(Vector(.3,.3,.3))
 	self:EnableMatrix("RenderMultiply",Mat)
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 function ENT:Think()

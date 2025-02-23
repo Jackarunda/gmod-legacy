@@ -16,14 +16,14 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_junk/PropaneCanister001a.mdl")
-	self.Entity:SetColor(Color(200,200,200))
-	self.Entity:SetMaterial("models/mat_jack_aidfuel_propane")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_junk/PropaneCanister001a.mdl")
+	self:SetColor(Color(200,200,200))
+	self:SetMaterial("models/mat_jack_aidfuel_propane")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(35)
@@ -33,13 +33,13 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
-		self.Entity:EmitSound("Wade.StepRight")
-		self.Entity:EmitSound("Wade.StepLeft")
+		self:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Wade.StepRight")
+		self:EmitSound("Wade.StepLeft")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
 	if(self.StructuralIntegrity<=0)then
 		self:Asplode()
@@ -49,7 +49,7 @@ function ENT:Asplode()
 	if(self.Asploded)then return end
 	self.Asploded=true
 	local SelfPos=self:LocalToWorld(self:OBBCenter())
-	JMod.Sploom(self.Entity,SelfPos,110)
+	JMod.Sploom(self,SelfPos,110)
 	self:Remove()
 end
 function ENT:Use(activator,caller)
@@ -59,5 +59,5 @@ function ENT:Think()
 	--pfahahaha
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end

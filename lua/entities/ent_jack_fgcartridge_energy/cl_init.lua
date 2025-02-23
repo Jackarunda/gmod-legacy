@@ -13,10 +13,10 @@ end
 function ENT:Draw()
 	if(self.AllUsedUp)then
 		render.SuppressEngineLighting(true)
-		self.Entity:DrawModel()
+		self:DrawModel()
 		render.SuppressEngineLighting(false)
 	else
-		self.Entity:DrawModel()
+		self:DrawModel()
 	end
 end
 

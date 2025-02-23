@@ -20,5 +20,4 @@ function ENT:Draw()
 	end
 end
 function ENT:OnRemove()
-	--eat a dick
 end

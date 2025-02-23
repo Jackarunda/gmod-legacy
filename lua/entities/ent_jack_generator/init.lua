@@ -24,18 +24,18 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_outland/generator_static01a.mdl")
-	self.Entity:SetMaterial("models/props_silo/generator_jtatic01.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_outland/generator_static01a.mdl")
+	self:SetMaterial("models/props_silo/generator_jtatic01.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(750)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.Remaining=0
 	self.NextUseTime=0
 	self.NextSoundTime=0
@@ -45,11 +45,11 @@ function ENT:Initialize()
 	self.FuelTank=nil
 	self.NextWorkTime=0
 	self:SetDTBool(0,self.State=="Running")
-	self.Entity:SetColor(Color(150,150,150))
+	self:SetColor(Color(150,150,150))
 end
 function ENT:PhysicsCollide(data,physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("SolidMetal.ImpactHard")
+		self:EmitSound("SolidMetal.ImpactHard")
 	end
 	if not(data.HitEntity:IsWorld())then
 		if((not(data.HitEntity:GetClass()=="ent_jack_generator"))and(data.HitEntity.ExternalCharge)and(data.HitEntity.HasBattery))then
@@ -84,7 +84,7 @@ function ENT:PhysicsCollide(data,physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then
@@ -99,7 +99,7 @@ function ENT:Use(activator,caller)
 end
 function ENT:Start()
 	if(self.Remaining>0)then
-		self:EmitSound("snd_jack_genstart.mp3")
+		self:EmitSound("snd_jack_genstart.wav")
 		self.State="Running"
 		self:SetDTBool(0,self.State=="Running")
 		self.NextSoundTime=CurTime()+8
@@ -110,7 +110,7 @@ function ENT:Start()
 	end
 end
 function ENT:ShutOff()
-	self:EmitSound("snd_jack_genstop.mp3")
+	self:EmitSound("snd_jack_genstop.wav")
 	self.State="Off"
 	self:SetDTBool(0,self.State=="Running")
 end
@@ -148,7 +148,7 @@ function ENT:Think()
 		end
 		if(self.NextSoundTime<CurTime())then
 			self.NextSoundTime=CurTime()+3.5
-			self:EmitSound("snd_jack_genrun.mp3")
+			self:EmitSound("snd_jack_genrun.wav")
 		end
 		if(self:WaterLevel()>0)then self:ShutOff() end
 		self:GetPhysicsObject():ApplyForceCenter(VectorRand()*1500)
@@ -162,7 +162,7 @@ function ENT:Think()
 	end
 end
 function ENT:Refuel()
-	for key,found in pairs(ents.FindInSphere(self:GetPos(),125))do
+	for key,found in ipairs(ents.FindInSphere(self:GetPos(),125))do
 		if((string.find(found:GetClass(),"ent_jack_aidfuel_"))or((found:GetClass()=="prop_physics")and(table.HasValue(FuelsTable,found:GetModel()))))then
 			if(found.FuelLeft)then
 				if not(found.FuelLeft<=0)then

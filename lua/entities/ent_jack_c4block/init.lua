@@ -26,25 +26,25 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/props_misc/tobacco_box-1.mdl")
-	self.Entity:SetMaterial("models/entities/mat_jack_c4")
+	self:SetModel("models/props_misc/tobacco_box-1.mdl")
+	self:SetMaterial("models/entities/mat_jack_c4")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
 	
 	self.Exploded=false
 	
 	self.IsJackyC4Explosive=true
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(10)
 		phys:SetMaterial("gmod_silent")
 	end
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	
 	self:Fire("enableshadow","",0)
 
@@ -70,11 +70,11 @@ function ENT:Detonate()
 	
 	local SympatheticDetonationRadius=400
 	
-	local BlocksIncludedInExplosion={self.Entity}
+	local BlocksIncludedInExplosion={self}
 	for i=0,10 do
-		for key,found in pairs(ents.FindInSphere(SelfPos,SympatheticDetonationRadius))do
+		for key,found in ipairs(ents.FindInSphere(SelfPos,SympatheticDetonationRadius))do
 			if(found.IsJackyC4Explosive)then
-				if not(found==self.Entity)then
+				if not(found==self)then
 					if not(table.HasValue(BlocksIncludedInExplosion,found))then
 						if(self:LoSTo(found))then
 							table.ForceInsert(BlocksIncludedInExplosion,found)
@@ -97,7 +97,7 @@ function ENT:Detonate()
 	AvgPos=AvgPos/ExplosionPower --average the position of all the blocks included
 	local Pos=AvgPos
 	
-	self.Entity:EmitSound("weapons/explode4.wav",130,150)
+	self:EmitSound("weapons/explode4.wav",130,150)
 
 	self:EmitSound("snd_jack_c4splodeclose.wav",100,100)
 	self:EmitSound("snd_jack_c4splodefar.wav",130,100)
@@ -140,13 +140,13 @@ function ENT:Detonate()
 	Explosion:Spawn()
 	Explosion:Activate()
 
-	self.Entity:Remove()
+	self:Remove()
 end
 
 function ENT:PhysicsCollide(data, physobj)
 	// Play sound on bounce
 	if(data.Speed>80 and data.DeltaTime>0.2)then
-		self.Entity:EmitSound("snd_jack_claythunk.wav")
+		self:EmitSound("snd_jack_claythunk.wav")
 	end
 end
 
@@ -159,7 +159,7 @@ function ENT:OnTakeDamage(dmginfo)
 		end
 	end
 
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	
 end
 
@@ -182,7 +182,7 @@ function ENT:LoSTo(entity)
 	local TraceData={}
 	TraceData.start=self:LocalToWorld(self:OBBCenter())+Vector(0,0,10)
 	TraceData.endpos=entity:LocalToWorld(entity:OBBCenter())+Vector(0,0,10)
-	TraceData.filter={self.Entity,entity}
+	TraceData.filter={self,entity}
 	local Trace=util.TraceLine(TraceData)
 	if not(Trace.StartSolid)then
 		if not(Trace.Hit)then
@@ -190,11 +190,11 @@ function ENT:LoSTo(entity)
 		else
 			return false
 		end
-	else --FUCK
+	else
 		local TraceData={}
 		TraceData.start=self:LocalToWorld(self:OBBCenter())
 		TraceData.endpos=entity:LocalToWorld(entity:OBBCenter())
-		TraceData.filter={self.Entity,entity}
+		TraceData.filter={self,entity}
 		local Trace=util.TraceLine(TraceData)
 		if not(Trace.Hit)then
 			return true

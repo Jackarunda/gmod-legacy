@@ -39,7 +39,7 @@ if(SERVER)then
 		if not(GetConVar("ai_ignoreplayers"))then
 			Targs=player.GetAll()
 		end
-		for key,dude in pairs(ents.FindByClass("npc_*"))do
+		for key,dude in ipairs(ents.FindByClass("npc_*"))do
 			local Disp=npc:Disposition(dude)
 			if((Disp==D_HT)or(Disp==D_FR))then
 				table.insert(Targs,dude)
@@ -60,12 +60,12 @@ if(SERVER)then
 		return ent
 	end
 	function ENT:Initialize()
-		self.Entity:SetModel("models/props_phx/construct/metal_angle360.mdl")
-		self.Entity:SetColor(Color(100,100,100,255))
-		self.Entity:PhysicsInit(SOLID_VPHYSICS)
-		self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-		self.Entity:SetSolid(SOLID_VPHYSICS)
-		local phys=self.Entity:GetPhysicsObject()
+		self:SetModel("models/props_phx/construct/metal_angle360.mdl")
+		self:SetColor(Color(100,100,100,255))
+		self:PhysicsInit(SOLID_VPHYSICS)
+		self:SetMoveType(MOVETYPE_VPHYSICS)	
+		self:SetSolid(SOLID_VPHYSICS)
+		local phys=self:GetPhysicsObject()
 		if(phys:IsValid())then
 			phys:Wake()
 			phys:SetMass(1000)
@@ -84,14 +84,14 @@ if(SERVER)then
 	function ENT:PhysicsCollide(data, physobj)
 		if(data.DeltaTime>0.2)then
 			if(data.Speed>300)then
-				self.Entity:EmitSound("SolidMetal.ImpactHard")
+				self:EmitSound("SolidMetal.ImpactHard")
 			elseif(data.Speed>100)then
-				self.Entity:EmitSound("SolidMetal.ImpactSoft")
+				self:EmitSound("SolidMetal.ImpactSoft")
 			end
 		end
 	end
 	function ENT:OnTakeDamage(dmginfo)
-		self.Entity:TakePhysicsDamage(dmginfo)
+		self:TakePhysicsDamage(dmginfo)
 	end
 	function ENT:Use(activator,caller)
 		if(self.NextUseTime>CurTime())then return end
@@ -121,7 +121,7 @@ if(SERVER)then
 		end
 		if((self.Stage=="On")and(self.NextSpawnTime<Time))then
 			local Num=0
-			for key,found in pairs(ents.FindByClass("npc_zombie"))do
+			for key,found in ipairs(ents.FindByClass("npc_zombie"))do
 				if(found:GetOwner()==self)then
 					if(math.random(1,7)==5)then
 						if not(IsValid(found:GetEnemy()))then
@@ -160,7 +160,7 @@ if(SERVER)then
 		return true
 	end
 	function ENT:OnRemove()
-		for key,found in pairs(ents.FindByClass("npc_*"))do
+		for key,found in ipairs(ents.FindByClass("npc_*"))do
 			if(found:GetOwner()==self)then
 				SafeRemoveEntity(found)
 			end
@@ -173,7 +173,7 @@ if(SERVER)then
 		util.Effect("eff_jack_gmod_portalopen",PortalOpen,true,true)
 		timer.Simple(.625,function()
 			if(IsValid(self))then
-				for key,blocker in pairs(ents.FindInSphere(pos+Vector(0,0,50),50))do
+				for key,blocker in ipairs(ents.FindInSphere(pos+Vector(0,0,50),50))do
 					local MType=blocker:GetMoveType()
 					local Phys=blocker:GetPhysicsObject()
 					if(blocker:IsPlayer())then
@@ -419,7 +419,7 @@ if(SERVER)then
 		npc:SetOwner(self)
 		JackyOpSquadSpawnEvent(npc)
 		npc:SetBodygroup(1,0)
-		if(true)then -- you are going to die
+		if not Skin or math.random(1, 4) == 3 then -- you are going to die
 			npc:SetMaterial("models/flesh")
 			npc.OpSquadUltraMegaSuperPowerDeathZombie=true
 			npc:SetMaxHealth(400)
@@ -444,7 +444,7 @@ elseif(CLIENT)then
 		--
 	end
 	function ENT:Draw()
-		self.Entity:DrawModel()
+		self:DrawModel()
 		local Pos=self:GetPos()+self:GetUp()*3.5-self:GetForward()*45-self:GetRight()*45
 		local Col=render.GetLightColor(Pos)
 		Col=Color(math.Clamp(Col.r*255*1.8,0,255),math.Clamp(Col.g*255*1.8,0,255),math.Clamp(Col.b*255*1.8,0,255)) -- wow gary, just wow.

@@ -67,7 +67,7 @@ local LaserEndPlayed=false
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("revolver")
-	self.LasingSound=CreateSound(self.Weapon,"snd_jack_laserloop.wav")
+	self.LasingSound=CreateSound(self,"snd_jack_laserloop.wav")
 	self.NewCartridge=true
 	self.dt.Ammo=1.005
 
@@ -91,7 +91,7 @@ function SWEP:PrimaryAttack()
 	if not(self.dt.State==2)then return end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.2)
-	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
+	local ShootPos=self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20
 	if(SERVER)then self:EmitSound("snd_jack_laserbegin.wav",70,100) end
 	self.LasingSound:Play()
 	self.dt.State=3
@@ -106,7 +106,7 @@ function SWEP:PrimaryAttack()
 	end
 end
 
-//FOR INSTANCE, THIS MASK ALLOWS THE TRACE TO SEE THROUGH WINDOWS fuck that shit
+//FOR INSTANCE, THIS MASK ALLOWS THE TRACE TO SEE THROUGH WINDOWS
 
 function SWEP:LaserTrace(stert,ayund,filtah,stack)
 	if(stack>=30)then print("CRASH PREVENTION: You're shooting the laser at something that's confusing the logic.") return end -- prevent errors
@@ -139,8 +139,8 @@ function SWEP:LaserTrace(stert,ayund,filtah,stack)
 				WantSomeIceWithThatBurn:SetDamage(math.Rand(.27,.37))
 				WantSomeIceWithThatBurn:SetDamagePosition(Tress.HitPos)
 				WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-				WantSomeIceWithThatBurn:SetAttacker(self.Owner)
-				WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
+				WantSomeIceWithThatBurn:SetAttacker(self:GetOwner())
+				WantSomeIceWithThatBurn:SetInflictor(self)
 				if(Tress.Entity:IsOnFire())then
 					WantSomeIceWithThatBurn:SetDamageType(DMG_GENERIC)
 				elseif(math.random(1,9)==5)then
@@ -189,14 +189,14 @@ function SWEP:Think()
 	
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -207,13 +207,13 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 
 	local State=self.dt.State
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
+	if((self:GetOwner():InVehicle())or(self:GetOwner():KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.LasingSound:Stop()
 			self.dt.State=2
@@ -221,16 +221,16 @@ function SWEP:Think()
 		return
 	end
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
 	local Aim=self.dt.Aim/100
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*(3-3*Aim)-self.Owner:GetUp()*(5-3*Aim)+AimVec*25
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*(3-3*Aim)-self:GetOwner():GetUp()*(5-3*Aim)+AimVec*25
 	
 	if(State==3)then
 		self.dt.Heat=math.Clamp(Heat+.0012*self.HeatMul,0,1)
 		local Ammo=self.dt.Ammo
 		local Loss=(.0028+.18*Heat^4)*.01*self.ConsumptionMul
-		//self.Owner:PrintMessage(HUD_PRINTCENTER,Loss)
+		//self:GetOwner():PrintMessage(HUD_PRINTCENTER,Loss)
 		self.dt.Ammo=Ammo-Loss
 		if not(self.NextLasingSoundTime)then self.NextLasingSoundTime=CurTime()+.1 end
 		if(self.NextLasingSoundTime<CurTime())then
@@ -238,7 +238,7 @@ function SWEP:Think()
 			self.LasingSound:Play()
 			self.NextLasingSoundTime=CurTime()+3.15
 		end
-		self:LaserTrace(ShootPos,BaseShootPos+AimVec*40000,{self.Owner},1)
+		self:LaserTrace(ShootPos,BaseShootPos+AimVec*40000,{self:GetOwner()},1)
 	end
 end
 
@@ -246,30 +246,30 @@ function SWEP:BurstCool()
 	if(self.dt.State==4)then return end
 	self.dt.State=4
 
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:GetViewModel():SetPlaybackRate(.25)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.25)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
-		self.Weapon:EmitSound("snd_jack_laservent.wav",70,100)
+		self:EmitSound("snd_jack_laservent.wav",70,100)
 	end
 	local Pewf=EffectData()
-	Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-	Pewf:SetStart(self.Owner:GetVelocity())
+	Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+	Pewf:SetStart(self:GetOwner():GetVelocity())
 	util.Effect("eff_jack_instantvent",Pewf,true,true)
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			local Pewf=EffectData()
-			Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-			Pewf:SetStart(self.Owner:GetVelocity())
+			Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+			Pewf:SetStart(self:GetOwner():GetVelocity())
 			util.Effect("eff_jack_instantvent",Pewf,true,true)
 		end
 	end)
 	timer.Simple(.4,function()
 		if(IsValid(self))then
 			local Pewf=EffectData()
-			Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-			Pewf:SetStart(self.Owner:GetVelocity())
+			Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+			Pewf:SetStart(self:GetOwner():GetVelocity())
 			util.Effect("eff_jack_instantvent",Pewf,true,true)
 		end
 	end)
@@ -370,7 +370,7 @@ end
 hook.Add("KeyRelease","JackysAlphaLaserReleaseSound",PlayEndSound)
 
 local function GunThink()
-	for key,wep in pairs(ents.FindByClass("wep_jack_fungun_alpha"))do
+	for key,wep in ipairs(ents.FindByClass("wep_jack_fungun_alpha"))do
 		local Heat=wep.dt.Heat
 		if(Heat)then
 			local State=wep.dt.State

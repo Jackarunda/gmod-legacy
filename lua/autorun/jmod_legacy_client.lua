@@ -231,7 +231,7 @@ if(CLIENT)then
 	local function JackyClientHeadcrabRemoval(data)
 		local Pos=data:ReadVector()
 		timer.Simple(.01,function()
-			for key,rag in pairs(ents.FindInSphere(Pos,90))do
+			for key,rag in ipairs(ents.FindInSphere(Pos,90))do
 				if(rag:GetClass()=="class C_ClientRagdoll")then
 					local Moddel=rag:GetModel()
 					if((Moddel=="models/headcrabclassic.mdl")or(Moddel=="models/headcrab.mdl"))then
@@ -245,7 +245,7 @@ if(CLIENT)then
 	local function JackyClientRagdollRemoval(data)
 		local Pos=data:ReadVector()
 		timer.Simple(.01,function()
-			for key,rag in pairs(ents.FindInSphere(Pos,90))do
+			for key,rag in ipairs(ents.FindInSphere(Pos,90))do
 				if(rag:GetClass()=="class C_ClientRagdoll")then
 					SafeRemoveEntity(rag)
 				end
@@ -257,17 +257,8 @@ if(CLIENT)then
 		SafeRemoveEntity(data:ReadEntity().Helmet)
 	end
 	usermessage.Hook("JackyOpSquadRemoveHelmet",JackyOpSquadRemoveHelmet)
-	--local Avg=0
-	--local Count=0
 	local function JackyOpSquadOpaqueDrawFunc(bDrawingDepth,bDrawingSkybox)
-		--Avg=Avg+FrameTime()
-		--Count=Count+1
-		--if(Count>=300)then
-		--	Count=0
-		--	JPrint(Avg/300)
-		--	Avg=0
-		--end
-		for key,helm in pairs(ents.FindByClass("class C_BaseFlex"))do
+		for key,helm in ipairs(ents.FindByClass("class C_BaseFlex"))do
 			if(helm.IsJackyOpSquadHelmet)then
 				if not(IsValid(helm.Wearer))then
 					SafeRemoveEntity(helm)
@@ -277,24 +268,13 @@ if(CLIENT)then
 				local Right=Ang:Right()
 				local Up=Ang:Up()
 				local Forward=Ang:Forward()
-				helm:SetRenderOrigin(Pos-Forward*59+Right*29.7-Up*1.8)
+				helm:SetRenderOrigin(Pos - Forward * .2 + Right * 1.5)
 				Ang:RotateAroundAxis(Up,-190)
 				Ang:RotateAroundAxis(Right,-95)
 				Ang:RotateAroundAxis(Forward,102)
 				Ang:RotateAroundAxis(Ang:Right(),20)
 				helm:SetAngles(Ang)
-				local PosTwo=Pos+Vector(0,0,40) -- all this shit could be avoided if the damn model just had a proper origin
-				local Col=render.GetLightColor(PosTwo)
-				render.SuppressEngineLighting(true)
-				render.SetModelLighting(BOX_TOP,Col.r*1.5,Col.g*1.5,Col.b*1.5)
-				render.SetModelLighting(BOX_BOTTOM,Col.r*.25,Col.g*.25,Col.b*.25)
-				render.SetModelLighting(BOX_RIGHT,Col.r*.25,Col.g*.25,Col.b*.25)
-				render.SetModelLighting(BOX_LEFT,Col.r*.25,Col.g*.25,Col.b*.25)
-				render.SetModelLighting(BOX_FRONT,Col.r*.25,Col.g*.25,Col.b*.25)
-				render.SetModelLighting(BOX_BACK,Col.r*.25,Col.g*.25,Col.b*.25)
 				helm:DrawModel()
-				render.ResetModelLighting(1,1,1)
-				render.SuppressEngineLighting(false)
 			end
 		end
 	end

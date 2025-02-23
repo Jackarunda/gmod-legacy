@@ -49,7 +49,7 @@ function ENT:SpawnFunction(ply,tr)
 	local effectdata=EffectData()
 	effectdata:SetEntity(ent)
 	util.Effect("propspawn",effectdata)
-	//HA GARRY I FUCKING BEAT YOU AND YOUR STUPID RULES
+
 	local Settings=physenv.GetPerformanceSettings()
 	if(Settings.MaxVelocity<7500)then
 		Settings.MaxVelocity=7500
@@ -119,13 +119,13 @@ function ENT:FireShot()
 		local Spred=self.ShotSpread
 		--fire round
 		local Miss=ents.Create("ent_jack_turretrocket")
-		Miss.ParentLauncher=self.Entity
-		Miss:SetNetworkedEntity("Owenur",self.Entity)
+		Miss.ParentLauncher=self
+		Miss:SetNetworkedEntity("Owenur",self)
 		Miss:SetPos(SelfPos-self:GetRight()*5+Dir*40+Vector(0,0,5))
 		local Ang=Dir:Angle()
 		Ang:RotateAroundAxis(Ang:Up(),90)
 		Miss:SetAngles(Ang)
-		constraint.NoCollide(self.Entity,Miss,0,0)
+		constraint.NoCollide(self,Miss,0,0)
 		Miss.InitialVel=self:GetPhysicsObject():GetVelocity()+Dir*1000
 		Miss:Spawn()
 		Miss:Activate()
@@ -152,7 +152,7 @@ function ENT:FireShot()
 		self.NextNoMovementCheckTime=CurTime()+5
 		self:SetDTBool(2,self.RoundInChamber)
 		self.RoundsOnBelt=0
-		util.BlastDamage(self.Entity,self.Entity,SelfPos-Dir*75,50,50)
+		util.BlastDamage(self,self,SelfPos-Dir*75,50,50)
 		self:GetPhysicsObject():ApplyForceOffset(-Dir*self.ShotPower*6*self.ProjectilesPerShot,SelfPos+self:GetUp()*20)
 	else
 		if(self.NextWhineTime<CurTime())then

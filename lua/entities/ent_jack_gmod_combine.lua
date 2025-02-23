@@ -598,7 +598,7 @@ if(SERVER)then
 			local TrackName=tostring(npc) .. "1"
 			npc:Fire("SetTrack",TrackName,0.1)
 		end)
-		timer.Simple(1.6,function()							--FUCK this was alot of work
+		timer.Simple(1.6,function()
 			undo.Create("Combine Opposition Squad")
 			undo.SetPlayer(ply)
 			if(IsValid(npc1))then undo.AddEntity(npc1) end

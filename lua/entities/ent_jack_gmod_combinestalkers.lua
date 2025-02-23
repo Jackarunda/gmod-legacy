@@ -31,7 +31,7 @@ if(SERVER)then
 		end
 	end
 	local function DoNotTarget(npc)
-		for key,enem in pairs(ents.FindByClass("npc_*"))do
+		for key,enem in ipairs(ents.FindByClass("npc_*"))do
 			if(enem:IsNPC())then
 				if(enem.GetEnemy)then
 					local Nemy=enem:GetEnemy()
@@ -85,7 +85,6 @@ if(SERVER)then
 								end
 							end
 						elseif(npc.OpSquadStalkerState=="Stalking")then
-							-- there are no brakes on the FUCKING RAPE TRAIN
 							npc.OpSquadCareful=false
 							if not(npc.OpSquadStalkerCamoIncreasing)then
 								npc.OpSquadStalkerCamoIncreasing=true
@@ -271,7 +270,7 @@ if(SERVER)then
 			if(IsValid(npc1))then undo.AddEntity(npc1) end
 			if(IsValid(npc2))then undo.AddEntity(npc2) end
 			undo.AddFunction(function(undo)
-				for key,found in pairs(ents.FindByClass("npc_cscanner"))do
+				for key,found in ipairs(ents.FindByClass("npc_cscanner"))do
 					if((found:GetOwner()==npc1)or(found:GetOwner()==npc2))then SafeRemoveEntity(found) end
 				end
 			end)

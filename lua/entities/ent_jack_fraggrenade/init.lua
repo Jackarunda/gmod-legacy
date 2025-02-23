@@ -37,11 +37,11 @@ end
    Name: ENT:Initialize()
 ---------------------------------------------------------*/
 function ENT:Initialize()
-	self.Entity:SetModel("models/jmodels/explosives/grenades/fragnade/w_fragjade.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/jmod/explosives/grenades/minifragnade/w_minifragjade.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	
 	if(self.PinOut)then
 		self.NextExplodeTime=CurTime()+self.FuzeTime
@@ -52,20 +52,20 @@ function ENT:Initialize()
 			Spewn:Spawn()
 			Spewn:Activate()
 			Spewn:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity()+VectorRand()*750)
-			self.Entity:EmitSound("snd_jack_spoonfling.wav")
+			self:EmitSound("snd_jack_spoonfling.wav")
 			self.SpoonOff=true
 		end
 	end
 
 	if(self.SpoonOff)then self:SetDTBool(0,true) end
 
-	self.Entity:SetCollisionGroup(COLLISION_GROUP_NONE)
+	self:SetCollisionGroup(COLLISION_GROUP_NONE)
 	self.Exploded=false
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	
 	self.Heat=0
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:Wake()
 		phys:SetMass(7)
@@ -135,7 +135,7 @@ end
 function ENT:PhysicsCollide(data,physobj)
 	if(data.DeltaTime>0.2)then
 		if(data.Speed>50)then
-			self.Entity:EmitSound("Grenade.ImpactHard")
+			self:EmitSound("Grenade.ImpactHard")
 		end
 	end
 end

@@ -24,52 +24,53 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/jiinkyy/liinkyylaptopclosed.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/jiinkyy/liinkyylaptopclosed.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(35)
 	end
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.Connection=nil
 	self.Active=false
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Computer.ImpactHard")
+		self:EmitSound("Computer.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then
-		if not(self.BatteryCharge>0)then activator:PrintMessage(HUD_PRINTTALK,"ERROR: battery dead") return end
+		if not(self.BatteryCharge>0)then activator:ChatPrint("ERROR: battery dead") return end
 		if not((self.Controller)or(activator.JackaSentryController))then
 			if not((activator:GetShootPos()-self:GetPos()):Length()<75)then return end
 			if not(self.Connection)then
 				local Turr=self:FindTurret()
 				if(not(Turr))then
-					activator:PrintMessage(HUD_PRINTTALK,"ERROR: no response from sentry (is there one in range?)")
+					activator:ChatPrint("ERROR: no response from sentry (is there one in range?)")
 					self:EmitSound("snd_jack_uiselect.wav",70,100)
 				elseif((not(Turr.CurrentTarget==activator))and(not(Turr.IsLocked)))then
-					activator:PrintMessage(HUD_PRINTTALK,"Wireless connection established with sentry "..tostring(Turr:EntIndex()))
+					activator:ChatPrint("Wireless connection established with sentry "..tostring(Turr:EntIndex()))
 					self:EmitSound("snd_jack_laptoplatch.wav",70,110)
 					self:SetModel("models/jiinkyy/liinkyylaptopopen.mdl")
 					JackaGenericUseEffect(activator)
 					self.Connection=Turr
+					activator:ChatPrint("Press JUMP to stop turret control")
 				else
-					activator:PrintMessage(HUD_PRINTTALK,"ERROR: connection refused")
+					activator:ChatPrint("ERROR: connection refused")
 					Turr:EmitSound("snd_jack_denied.wav",75,100)
 				end
 			else
 				local Turr=self:FindTurret()
 				if((Turr)and not(Turr==self.Connection))then
-					activator:PrintMessage(HUD_PRINTTALK,"Wireless connection established with sentry "..tostring(Turr:EntIndex()))
+					activator:ChatPrint("Wireless connection established with sentry "..tostring(Turr:EntIndex()))
 					self:EmitSound("snd_jack_uiselect.wav",70,100)
 					self.Connection=Turr
 				elseif(IsValid(self.Connection))then
@@ -77,12 +78,12 @@ function ENT:Use(activator,caller)
 						JackaSentryControl(activator,self,self.Connection)
 						self.Connection:EmitSound("snd_jack_dronebeep.wav",70,110)
 					elseif(self.Connection:GetDTInt(0)==0)then
-						activator:PrintMessage(HUD_PRINTTALK,"ERROR: no response from sentry (is the sentry turned on?)")
+						activator:ChatPrint("ERROR: no response from sentry (is the sentry turned on?)")
 						self:EmitSound("snd_jack_uiselect.wav",70,100)
 					end
 				else
 					self.Connection=nil
-					activator:PrintMessage(HUD_PRINTTALK,"ERROR: no response from sentry; sentry ID erased")
+					activator:ChatPrint("ERROR: no response from sentry; sentry ID erased")
 					self:EmitSound("snd_jack_laptoplatch.wav",70,90)
 					self:SetModel("models/jiinkyy/liinkyylaptopclosed.mdl")
 					JackaGenericUseEffect(activator)
@@ -94,7 +95,7 @@ end
 function ENT:FindTurret()
 	local Closest=75
 	local Ret=nil
-	for key,found in pairs(ents.FindInSphere(self:GetPos(),75))do
+	for key,found in ipairs(ents.FindInSphere(self:GetPos(),75))do
 		local Dist=(found:GetPos()-self:GetPos()):Length()
 		local Phys=found:GetPhysicsObject()
 		if(((not(found==self))and(not(found==ply))and(Dist<Closest))and(IsValid(Phys))and(not(found:IsWorld()))and(string.find(found:GetClass(),"ent_jack_turret_")))then
@@ -114,7 +115,7 @@ function ENT:Think()
 			self.BatteryCharge=self.BatteryCharge-.4
 			self:SetDTInt(0,(self.BatteryCharge/self.BatteryMaxCharge)*100)
 			if(self.BatteryCharge<=0)then
-				self.Controller:PrintMessage(HUD_PRINTTALK,"ERROR: terminal battery dying. Shutting down")
+				self.Controller:ChatPrint("ERROR: terminal battery dying. Shutting down")
 				JackaSentryControlWipe(self.Controller,self,self.Controlled)
 				self:EmitSound("snd_jack_laptoplatch.wav",70,90)
 				self:SetModel("models/jiinkyy/liinkyylaptopclosed.mdl")

@@ -18,7 +18,7 @@ function ENT:Draw()
 	render.SetColorModulation(1,1,1)
 	self.Junk:SetRenderOrigin(self:GetPos()+self:GetUp()*-3+self:GetRight()*-1.5)
 	self.Junk:SetRenderAngles(self:GetRight():Angle())
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 
 function ENT:OnRemove()

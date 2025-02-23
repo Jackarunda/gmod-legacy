@@ -4,21 +4,21 @@ include('shared.lua')
 function ENT:Initialize()
 
 	--We need to init physics properties even though this entity isn't physically simulated
-	self.Entity:SetMoveType( MOVETYPE_NONE )
-	self.Entity:DrawShadow( false )
-	self.Entity:SetNoDraw(true)
+	self:SetMoveType( MOVETYPE_NONE )
+	self:DrawShadow( false )
+	self:SetNoDraw(true)
 	
-	self.Entity:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
-	self.Entity:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:SetCollisionBounds( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
+	self:PhysicsInitBox( Vector( -20, -20, -10 ), Vector( 20, 20, 10 ) )
 	
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if(phys:IsValid())then
 		phys:EnableCollisions( false )		
 	end
 
-	self.Entity:SetNotSolid( true )
+	self:SetNotSolid( true )
 
-	self.Entity:Fire("kill","",0.25)
+	self:Fire("kill","",0.25)
 
 	/*-------------- Here we go, boy --------------*/
 	
@@ -31,7 +31,7 @@ function ENT:Initialize()
 	util.ScreenShake(SelfPos,99999,99999,Power/15,Radius*1.5)
 	
 	timer.Simple(.075,function()
-		for key,object in pairs(ents.FindInSphere(SelfPos,Radius))do
+		for key,object in ipairs(ents.FindInSphere(SelfPos,Radius))do
 			local Class=object:GetClass()
 			if(((IsValid(object:GetPhysicsObject()))or(object:IsPlayer())or(object:IsNPC()))and not((object:IsWorld())or(Class=="ent_jack_spoon")or(object==self)or(Class=="ent_jack_fraggrenade")or(Class=="ent_jack_plastisplosion")))then
 				self:FireShrapnel((object:LocalToWorld(object:OBBCenter())-SelfPos):GetNormalized())

@@ -26,15 +26,15 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/props/CS_militia/footlocker01_closed.mdl")
-	self.Entity:SetMaterial("models/entities/mat_jack_minebox")
+	self:SetModel("models/props/CS_militia/footlocker01_closed.mdl")
+	self:SetMaterial("models/entities/mat_jack_minebox")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(800)
@@ -43,20 +43,20 @@ function ENT:Initialize()
 	
 	self.BeingUsed=false
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 end
 
 function ENT:PhysicsCollide(data,physobj)
 	// Play sound on bounce
 	if(data.Speed>150 and data.DeltaTime>0.2)then
-		self.Entity:EmitSound("Metal_Box.ImpactHard")
-		self.Entity:EmitSound("Weapon.ImpactSoft")
-		self.Entity:EmitSound("Weapon.ImpactSoft")
+		self:EmitSound("Metal_Box.ImpactHard")
+		self:EmitSound("Weapon.ImpactSoft")
+		self:EmitSound("Weapon.ImpactSoft")
 	end
 end
 
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 
 function ENT:Use(activator,caller)
@@ -64,7 +64,7 @@ function ENT:Use(activator,caller)
 	if(activator:IsPlayer())then
 		if not(activator:HasWeapon("wep_jack_landmine"))then
 			self:SetModel("models/props/CS_militia/footlocker01_open.mdl")
-			self.Entity:SetMaterial("models/entities/mat_jack_minebox")
+			self:SetMaterial("models/entities/mat_jack_minebox")
 			self.BeingUsed=true
 			self:EmitSound("vehicles/atv_ammo_open.wav")
 			self:EmitSound("BaseCombatCharacter.AmmoPickup")
@@ -74,7 +74,7 @@ function ENT:Use(activator,caller)
 			timer.Simple(.5,function()
 				if(IsValid(self))then
 					self:SetModel("models/props/CS_militia/footlocker01_closed.mdl")
-					self.Entity:SetMaterial("models/entities/mat_jack_minebox")
+					self:SetMaterial("models/entities/mat_jack_minebox")
 					timer.Simple(4.5,function() if(IsValid(self))then self.BeingUsed=false end end)
 					self:EmitSound("vehicles/atv_ammo_close.wav")
 					self:EmitSound("vehicles/atv_ammo_close.wav")
@@ -86,13 +86,13 @@ end
 
 function ENT:ProvideForPaintJob()
 	self:SetModel("models/props/CS_militia/footlocker01_open.mdl")
-	self.Entity:SetMaterial("models/entities/mat_jack_minebox")
+	self:SetMaterial("models/entities/mat_jack_minebox")
 	self.BeingUsed=true
 	self:EmitSound("vehicles/atv_ammo_open.wav")
 	timer.Simple(1.5,function()
 		if(IsValid(self))then
 			self:SetModel("models/props/CS_militia/footlocker01_closed.mdl")
-			self.Entity:SetMaterial("models/entities/mat_jack_minebox")
+			self:SetMaterial("models/entities/mat_jack_minebox")
 			timer.Simple(2,function() if(IsValid(self))then self.BeingUsed=false end end)
 			self:EmitSound("vehicles/atv_ammo_close.wav")
 		end

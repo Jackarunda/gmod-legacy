@@ -25,7 +25,6 @@ function ENT:Initialize()
 	self.Pistol:SetNoDraw(true)
 	self.Pistol:SetModelScale(1.25,0)
 	self.CameraRot=0
-	-- why do I have to do this? Fix your broken-ass shit Garry
 	local Dude=self
 	local TName="JackieManualDraw"..tostring(Dude:EntIndex())
 	timer.Create(TName,1,0,function()

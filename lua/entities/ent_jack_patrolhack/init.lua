@@ -61,14 +61,14 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/manhack.mdl")
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:SetUseType(SIMPLE_USE)
-	self.Entity:SetNoDraw(false)
-	self.Entity:DrawShadow(true)
-	local Phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/manhack.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:SetUseType(SIMPLE_USE)
+	self:SetNoDraw(false)
+	self:DrawShadow(true)
+	local Phys=self:GetPhysicsObject()
 	Phys:Wake()
 	Phys:SetMass(20)
 	Phys:SetDragCoefficient(.3)
@@ -172,7 +172,7 @@ function ENT:FireAtTarget()
 		local Dir=(TargPos-SelfPos):GetNormalized()
 		local Phys=self.Target:GetPhysicsObject()
 		local Bellit={
-			Attacker=self.Entity,
+			Attacker=self,
 			Damage=10,
 			Force=5,
 			Num=1,
@@ -224,9 +224,9 @@ function ENT:ScanForTarget()
 		end
 	end
 	local Closest=ScanRange
-	for key,potential in pairs(ents.FindInSphere(ScanPos,ScanRange))do
+	for key,potential in ipairs(ents.FindInSphere(ScanPos,ScanRange))do
 		local HullType=nil
-		if(potential:IsPlayer())then --why the fuck doesn't GetConVar("ai_ignoreplayers") work
+		if(potential:IsPlayer())then
 			HullType=0
 		elseif(potential:IsNPC())then
 			HullType=potential:GetHullType()
@@ -602,7 +602,7 @@ end
 local function ChatListen(ply,txt)
 	timer.Simple(.25,function()
 		if(IsValid(ply))then
-			for key,drone in pairs(ents.FindByClass("ent_jack_patrolhack"))do
+			for key,drone in ipairs(ents.FindByClass("ent_jack_patrolhack"))do
 				drone:Listen(ply,txt)
 			end
 		end

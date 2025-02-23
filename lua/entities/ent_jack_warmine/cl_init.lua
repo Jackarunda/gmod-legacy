@@ -14,7 +14,7 @@ function ENT:Draw()
 	Ang:RotateAroundAxis(Ang:Right(),-90)
 	self.Warhead:SetRenderOrigin(self:GetPos()+self:GetUp()*8-self:GetForward()*3.75+self:GetRight()*.25)
 	self.Warhead:SetRenderAngles(Ang)
-	self.Entity:DrawModel()
+	self:DrawModel()
 	self.Warhead:DrawModel()
 end
 function ENT:OnRemove()

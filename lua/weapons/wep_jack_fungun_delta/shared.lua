@@ -99,7 +99,7 @@ local NoHealthTable={"npc_rollermine","npc_helicopter","npc_turret_floor","npc_t
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("revolver")
-	self.KlystronSound=CreateSound(self.Weapon,"snd_jack_microwavegunhum.wav")
+	self.KlystronSound=CreateSound(self,"snd_jack_microwavegunhum.wav")
 	self.NewCartridge=true
 	self.dt.Mode=true
 	self.dt.Ammo=1.005
@@ -125,14 +125,14 @@ end
 function SWEP:PrimaryAttack()
 	if(self.dt.Sprint>10)then return end
 	if not(self.dt.State==2)then return end
-	if(self.Owner:KeyDown(IN_USE))then
+	if(self:GetOwner():KeyDown(IN_USE))then
 		self.dt.Mode=not(self.dt.Mode)
-		self.Weapon:EmitSound("snd_jack_microwaveswitch.wav",70,100)
+		self:EmitSound("snd_jack_microwaveswitch.wav",70,100)
 		return
 	end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.2)
-	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
+	local ShootPos=self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20
 	if(SERVER)then self:EmitSound("snd_jack_microwaveclick.wav",70,100) end
 	self.KlystronSound:Play()
 	self.dt.State=3
@@ -144,8 +144,8 @@ end
 function SWEP:FireMicroWaves() -- also radio waves :D
 	if(CLIENT)then return end
 
-	local SelfPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
+	local SelfPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
 	local RandomDirection=(AimVec+VectorRand()*.06):GetNormalized()
 	
 	local Synthetic=1
@@ -169,7 +169,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 		local TrDat={}
 		TrDat.start=CurrentTraceFromPosition
 		TrDat.endpos=NewEndPos
-		TrDat.filter=self.Owner
+		TrDat.filter=self:GetOwner()
 		TrDat.mask=-1 -- hit water
 		local Tr=util.TraceLine(TrDat)
 		
@@ -200,8 +200,8 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				WantSomeIceWithThatBurn:SetDamage(Dm*DamMod*Organic)
 				WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 				WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-				WantSomeIceWithThatBurn:SetAttacker(self.Owner)
-				WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
+				WantSomeIceWithThatBurn:SetAttacker(self:GetOwner())
+				WantSomeIceWithThatBurn:SetInflictor(self)
 				WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 				Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
 				
@@ -225,7 +225,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				if not(self.dt.Mode)then
 					if(table.HasValue(HighHealthTable,Class))then
 						if(math.random(1,600)==49)then
-							util.BlastDamage(self.Weapon,self.Owner,Tr.Entity:GetPos(),50,100)
+							util.BlastDamage(self,self:GetOwner(),Tr.Entity:GetPos(),50,100)
 						end
 					elseif(table.HasValue(NoHealthTable,Class))then
 						if(math.random(1,250)==2)then
@@ -239,8 +239,8 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 						WantSomeIceWithThatBurn:SetDamage(Dm*DamMod*Synthetic)
 						WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 						WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-						WantSomeIceWithThatBurn:SetAttacker(self.Owner)
-						WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
+						WantSomeIceWithThatBurn:SetAttacker(self:GetOwner())
+						WantSomeIceWithThatBurn:SetInflictor(self)
 						WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 						Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
 					end
@@ -254,8 +254,8 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 					WantSomeIceWithThatBurn:SetDamage(5*Organic)
 					WantSomeIceWithThatBurn:SetDamagePosition(Tr.HitPos)
 					WantSomeIceWithThatBurn:SetDamageForce(Vector(0,0,0))
-					WantSomeIceWithThatBurn:SetAttacker(self.Owner)
-					WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
+					WantSomeIceWithThatBurn:SetAttacker(self:GetOwner())
+					WantSomeIceWithThatBurn:SetInflictor(self)
 					WantSomeIceWithThatBurn:SetDamageType(DMG_DIRECT)
 					Tr.Entity:TakeDamageInfo(WantSomeIceWithThatBurn)
 				end
@@ -264,7 +264,7 @@ function SWEP:FireMicroWaves() -- also radio waves :D
 				WeHitSomething=true
 				HitWet=true
 			elseif(Class=="ent_jack_target")then
-				Tr.Entity:TakeDamage(1,self.Owner,self.Weapon)
+				Tr.Entity:TakeDamage(1,self:GetOwner(),self)
 			end
 		else
 			HitMeh=true
@@ -287,14 +287,14 @@ function SWEP:Think()
 	
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -305,13 +305,13 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 
 	local State=self.dt.State
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
+	if((self:GetOwner():InVehicle())or(self:GetOwner():KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.KlystronSound:Stop()
 			self.dt.State=2
@@ -320,9 +320,9 @@ function SWEP:Think()
 		return
 	end
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*5
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*4-self:GetOwner():GetUp()*5
+	local AimVec=self:GetOwner():GetAimVector()
 	self.CurrentAimVector=AimVec -- used by the drawing functions, stored for efficiency
 	
 	if(State==3)then
@@ -331,7 +331,7 @@ function SWEP:Think()
 		local BaseLoss=.0125
 		if not(self.dt.Mode)then BaseLoss=.0075 end
 		local Loss=(.0028+.18*Heat^4)*BaseLoss*self.ConsumptionMul
-		//self.Owner:PrintMessage(HUD_PRINTCENTER,Loss)
+		//self:GetOwner():PrintMessage(HUD_PRINTCENTER,Loss)
 		self.dt.Ammo=Ammo-Loss
 		if not(self.NextKlystronSoundTime)then self.NextKlystronSoundTime=CurTime()+.1 end
 		if(self.NextKlystronSoundTime<CurTime())then
@@ -340,7 +340,7 @@ function SWEP:Think()
 			self.NextKlystronSoundTime=CurTime()+4.9
 		end
 		self:FireMicroWaves()
-		self.Owner:ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
+		self:GetOwner():ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
 	end
 end
 
@@ -350,26 +350,26 @@ function SWEP:BurstCool()
 	
 	if not(IsValid(self))then return end
 	
-	self.Weapon:SetDTFloat(3,0)
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:GetViewModel():SetPlaybackRate(.25)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:SetDTFloat(3,0)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.25)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
-		self.Weapon:EmitSound("snd_jack_microwavevent.wav",70,100)
+		self:EmitSound("snd_jack_microwavevent.wav",70,100)
 	end
 	if(SERVER)then
 		local Pewf=EffectData()
-		Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-		Pewf:SetStart(self.Owner:GetVelocity())
+		Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+		Pewf:SetStart(self:GetOwner():GetVelocity())
 		util.Effect("eff_jack_instantvent",Pewf,true,true)
 	end
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -378,8 +378,8 @@ function SWEP:BurstCool()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -475,7 +475,7 @@ end
 hook.Add("KeyRelease","JackysDeltaReleaseSound",PlayEndSound)
 
 local function GunThink()	
-	for key,wep in pairs(ents.FindByClass("wep_jack_fungun_delta"))do
+	for key,wep in ipairs(ents.FindByClass("wep_jack_fungun_delta"))do
 		local Heat=wep.dt.Heat
 		if(Heat)then
 			local State=wep.dt.State

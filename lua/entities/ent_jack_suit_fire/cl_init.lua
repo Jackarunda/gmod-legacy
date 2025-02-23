@@ -11,7 +11,7 @@ end
 function ENT:Draw()
 	local OrigR,OrigG,OrigB=render.GetColorModulation()
 	render.SetColorModulation(.2,.2,.2)
-	self.Entity:DrawModel()
+	self:DrawModel()
 	render.SetColorModulation(OrigR,OrigG,OrigB)
 	self.Pretty:SetRenderOrigin(self:GetPos()+self:GetUp()*-4-self:GetForward()*-11)
 	local Ang=self:GetAngles()
@@ -20,6 +20,6 @@ function ENT:Draw()
 	self.Pretty:DrawModel()
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_suit_fire","Fire/Faraday Suit")

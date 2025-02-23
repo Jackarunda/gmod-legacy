@@ -26,24 +26,24 @@ end
 
 function ENT:Initialize()
 
-	self.Entity:SetModel("models/jmodels/explosives/grenades/tnt/w_jnt.mdl")
+	self:SetModel("models/jmod/explosives/grenades/tnt/w_jnt.mdl")
 
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-	self.Entity:SetSolid(SOLID_VPHYSICS)
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
 	
 	self.Exploded=false
 	self.FuzeLength=1500
 	self.IsJackyTNT=true
 
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(30)
 		phys:SetMaterial("metal")
 	end
 	
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 	self.NextUseTime=CurTime()
 	self.NextFuzeTime=CurTime()
 	
@@ -71,11 +71,11 @@ function ENT:Detonate()
 	
 	local SympatheticDetonationRadius=400
 	
-	local BlocksIncludedInExplosion={self.Entity}
+	local BlocksIncludedInExplosion={self}
 	for i=0,10 do
-		for key,found in pairs(ents.FindInSphere(SelfPos,SympatheticDetonationRadius))do
+		for key,found in ipairs(ents.FindInSphere(SelfPos,SympatheticDetonationRadius))do
 			if(found.IsJackyTNT)then
-				if not(found==self.Entity)then
+				if not(found==self)then
 					if not(table.HasValue(BlocksIncludedInExplosion,found))then
 						if(self:LoSTo(found))then
 							table.ForceInsert(BlocksIncludedInExplosion,found)
@@ -98,7 +98,7 @@ function ENT:Detonate()
 	AvgPos=AvgPos/ExplosionPower --average the position of all the blocks included
 	local Pos=AvgPos
 	
-	self.Entity:EmitSound("weapons/explode4.wav",130,150)
+	self:EmitSound("weapons/explode4.wav",130,150)
 
 	self:EmitSound("snd_jack_c4splodeclose.wav",100,100)
 	self:EmitSound("snd_jack_c4splodefar.wav",130,100)
@@ -140,13 +140,13 @@ function ENT:Detonate()
 	Explosion:Spawn()
 	Explosion:Activate()
 
-	self.Entity:Remove()
+	self:Remove()
 end
 
 function ENT:PhysicsCollide(data, physobj)
 	// Play sound on bounce
 	if(data.Speed>80 and data.DeltaTime>0.2)then
-		self.Entity:EmitSound("Metal_Box.ImpactHard")
+		self:EmitSound("Metal_Box.ImpactHard")
 	end
 end
 
@@ -159,7 +159,7 @@ function ENT:OnTakeDamage(dmginfo)
 		end
 	end
 
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	
 end
 
@@ -183,7 +183,7 @@ function ENT:Think()
 		Fsh:SetNormal(self:GetForward())
 		util.Effect("eff_jack_fuzeburn",Fsh,true,true)
 		
-		self.Entity:EmitSound("snd_jack_sss.wav",65,math.Rand(90,110))
+		self:EmitSound("snd_jack_sss.wav",65,math.Rand(90,110))
 		
 		if(self.FuzeLength<=0)then
 			self:Detonate()
@@ -202,6 +202,10 @@ function ENT:Use(activator)
 			if(Count>0)then
 				JackySimpleOrdnanceArm(self,activator,"Fuze Lit")
 				self.FuzeLit=true
+			else
+				activator:ChatPrint("You need a Fuzing Equipment to arm the bomb.")
+				self.NextUseTime=CurTime()+1.5
+				self.NextFuzeTime=CurTime()+1.5
 			end
 		else
 			if(math.random(1,3)==2)then self.FuzeLit=false end
@@ -213,7 +217,7 @@ function ENT:LoSTo(entity)
 	local TraceData={}
 	TraceData.start=self:LocalToWorld(self:OBBCenter())+Vector(0,0,10)
 	TraceData.endpos=entity:LocalToWorld(entity:OBBCenter())+Vector(0,0,10)
-	TraceData.filter={self.Entity,entity}
+	TraceData.filter={self,entity}
 	local Trace=util.TraceLine(TraceData)
 	if not(Trace.StartSolid)then
 		if not(Trace.Hit)then
@@ -221,11 +225,11 @@ function ENT:LoSTo(entity)
 		else
 			return false
 		end
-	else --FUCK
+	else
 		local TraceData={}
 		TraceData.start=self:LocalToWorld(self:OBBCenter())
 		TraceData.endpos=entity:LocalToWorld(entity:OBBCenter())
-		TraceData.filter={self.Entity,entity}
+		TraceData.filter={self,entity}
 		local Trace=util.TraceLine(TraceData)
 		if not(Trace.Hit)then
 			return true

@@ -29,13 +29,13 @@ function ENT:ExternalCharge(amt)
 	if(self.BatteryCharge>=self.BatteryMaxCharge)then self.BatteryCharge=self.BatteryMaxCharge end
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_c17/substation_transformer01d.mdl")
-	self.Entity:SetMaterial("models/mat_jack_teslasentry")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_c17/substation_transformer01d.mdl")
+	self:SetMaterial("models/mat_jack_teslasentry")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(100)
@@ -59,7 +59,7 @@ function ENT:Initialize()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		self.Entity:EmitSound("Canister.ImpactHard")
+		self:EmitSound("Canister.ImpactHard")
 	end
 	if(data.Speed>750)then
 		self.StructuralIntegrity=self.StructuralIntegrity-data.Speed/10
@@ -76,7 +76,7 @@ function ENT:Break()
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	local DType=dmginfo:GetDamageType()
 	if((dmginfo:IsDamageType(DMG_BUCKSHOT))or(dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BLAST))or(dmginfo:IsDamageType(DMG_CLUB)))then
 		self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
@@ -103,7 +103,7 @@ function ENT:Use(activator,caller)
 	end
 end
 function ENT:FindRepairKit()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do
 		if(potential:GetClass()=="ent_jack_turretrepairkit")then
 			return potential
 		end
@@ -183,7 +183,7 @@ function ENT:GetPoz()
 	return self:GetPos()+self:GetUp()*(30+(self.UpAmount*1.6))
 end
 function ENT:FindBattery()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do
 		if(potential:GetClass()=="ent_jack_turretbattery")then
 			if not(potential.Dead)then
 				return potential
@@ -196,7 +196,7 @@ function ENT:FindTarget()
 	self.BatteryCharge=self.BatteryCharge-.0125
 	local NewTarg=nil
 	local Closest=self.MaxEngagementRange
-	for key,found in pairs(ents.FindInSphere(self:GetPoz(),self.MaxEngagementRange))do
+	for key,found in ipairs(ents.FindInSphere(self:GetPoz(),self.MaxEngagementRange))do
 		local Class=found:GetClass()
 		local Phys=found:GetPhysicsObject()
 		local Class=found:GetClass()
@@ -301,7 +301,7 @@ function ENT:Think()
 									local Powa=self.CapacitorCharge
 									self.CapacitorCharge=0
 									self:ZapTheShitOutOf(Target,DmgAmt,Powa)
-									self:ElectricalArcEffect(self.Entity,Target,Powa)
+									self:ElectricalArcEffect(self,Target,Powa)
 									self:ArcToGround(Target,Powa)
 								end
 							end
@@ -347,8 +347,8 @@ function ENT:ZapTheShitOutOf(Target,DmgAmt,Powa)
 		Dayumege:SetDamageForce(Target:GetUp()*50*DmgAmt*5)
 	end
 	Dayumege:SetDamage(DmgAmt)
-	Dayumege:SetInflictor(self.Entity)
-	Dayumege:SetAttacker(self.Entity)
+	Dayumege:SetInflictor(self)
+	Dayumege:SetAttacker(self)
 	if(Powa>=20)then
 		if(math.Rand(0,1)>.25)then
 			if(Target:IsNPC())then

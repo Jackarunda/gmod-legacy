@@ -17,15 +17,15 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_pipes/pipe03_connector01.mdl")
-	self.Entity:SetMaterial("models/mat_jack_monotone_abu")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
+	self:SetModel("models/props_pipes/pipe03_connector01.mdl")
+	self:SetMaterial("models/mat_jack_monotone_abu")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
 	self.Exploded=false
-	local phys=self.Entity:GetPhysicsObject()
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(40)
@@ -39,7 +39,7 @@ function ENT:Detonate(toucher)
 	if(self.Exploded)then return end
 	self.Exploded=true
 	local SelfPos=self:LocalToWorld(self:OBBCenter())
-	for key,found in pairs(ents.FindInSphere(SelfPos,75))do
+	for key,found in ipairs(ents.FindInSphere(SelfPos,75))do
 		if(IsValid(found:GetPhysicsObject()))then
 			if(found:Visible(self))then
 				if((found:GetPhysicsObject():GetMass()<1000)and not(found.JackyArmoredPanel))then
@@ -50,7 +50,7 @@ function ENT:Detonate(toucher)
 		end
 	end
 	local EffectType=1
-	local Traec=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+	local Traec=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 	if(Traec.Hit)then
 		if((Traec.MatType==MAT_DIRT)or(Traec.MatType==MAT_SAND))then
 			EffectType=1
@@ -72,7 +72,7 @@ function ENT:Detonate(toucher)
 	util.Effect("eff_jack_minesplode_l",plooie,true,true)
 	--util.Effect("eff_jack_minesplode",plooie,true,true)
 	ParticleEffect("pcf_jack_groundsplode_medium",SelfPos,vector_up:Angle())
-	for key,playa in pairs(ents.FindInSphere(SelfPos,100))do
+	for key,playa in ipairs(ents.FindInSphere(SelfPos,100))do
 		local Clayus=playa:GetClass()
 		if((playa:IsPlayer())or(playa:IsNPC())or(Clayuss=="prop_vehicle_jeep")or(Clayuss=="prop_vehicle_jeep")or(Clayus=="prop_vehicle_airboat"))then
 			playa:SetVelocity(playa:GetVelocity()+vector_up*500)
@@ -81,7 +81,7 @@ function ENT:Detonate(toucher)
 	util.BlastDamage(self,self,SelfPos,240,math.Rand(325,375))
 	util.BlastDamage(self,self,SelfPos+vector_up*130,100,math.Rand(225,275))
 	util.ScreenShake(SelfPos,99999,99999,1.5,700)
-	for key,object in pairs(ents.FindInSphere(SelfPos,150))do
+	for key,object in ipairs(ents.FindInSphere(SelfPos,150))do
 		local Clayuss=object:GetClass()
 		if not(Clayuss=="ent_jack_landmine_lrg")then
 			if(IsValid(object:GetPhysicsObject()))then
@@ -91,10 +91,10 @@ function ENT:Detonate(toucher)
 			end
 		end
 	end
-	self.Entity:EmitSound("BaseExplosionEffect.Sound")
+	self:EmitSound("BaseExplosionEffect.Sound")
 	self:EmitSound("snd_jack_fragsplodeclose.wav",90,80)
 	self:EmitSound("snd_jack_fragsplodeclose.wav",90,80)
-	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".mp3",SelfPos,80,85)
+	sound.Play("snd_jack_debris"..tostring(math.random(1,2))..".wav",SelfPos,80,85)
 	if(self)then self:Remove() end
 end
 function ENT:PhysicsCollide(data, physobj)
@@ -103,13 +103,13 @@ end
 function ENT:StartTouch(ent)
 	if(self.Armed)then
 		self:Detonate(ent)
-		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 		if(Tr.Hit)then
 			util.Decal("Scorch",Tr.HitPos+Tr.HitNormal,Tr.HitPos-Tr.HitNormal)
 		end
 	else
 		if(self.NextBounceNoiseTime<CurTime())then
-			self.Entity:EmitSound("SolidMetal.ImpactSoft")
+			self:EmitSound("SolidMetal.ImpactSoft")
 			self.NextBounceNoiseTime=CurTime()+0.4
 		end
 	end
@@ -117,7 +117,7 @@ end
 function ENT:EndTouch(ent)
 	if(self.Armed)then
 		self:Detonate(ent)
-		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self.Entity)
+		local Tr=util.QuickTrace(self:GetPos(),Vector(0,0,-5),self)
 		if(Tr.Hit)then
 			util.Decal("Scorch",Tr.HitPos+Tr.HitNormal,Tr.HitPos-Tr.HitNormal)
 		end

@@ -16,32 +16,32 @@ function ENT:SpawnFunction(ply,tr)
 	return ent
 end
 function ENT:Initialize()
-	self.Entity:SetModel("models/props_lab/harddrive02.mdl")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/props_lab/harddrive02.mdl")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(35)
 	end
 	self.Burning=false
 	self.FuelLeft=100
-	self.Entity:SetUseType(SIMPLE_USE)
+	self:SetUseType(SIMPLE_USE)
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
 		if(self.FuelLeft>0)then
-			self.Entity:EmitSound("Wade.StepRight")
-			self.Entity:EmitSound("Wade.StepLeft")
+			self:EmitSound("Wade.StepRight")
+			self:EmitSound("Wade.StepLeft")
 		end
-		self.Entity:EmitSound("Metal_Box.ImpactHard")
+		self:EmitSound("Metal_Box.ImpactHard")
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 end
 function ENT:Use(activator,caller)
 	if(self.FuelLeft<=0)then return end
@@ -70,7 +70,7 @@ function ENT:Use(activator,caller)
 	end
 end
 function ENT:FindFougasseKit()
-	for key,thing in pairs(ents.FindInSphere(self:GetPos(),75))do
+	for key,thing in ipairs(ents.FindInSphere(self:GetPos(),75))do
 		if(thing:GetClass()=="ent_jack_fougassekit")then
 			return thing
 		end
@@ -88,14 +88,14 @@ function ENT:Fougassplode()
 	ParticleEffect("pcf_jack_airsplode_small",SelfPos,vector_up:Angle())
 	sound.Play("snd_jack_firebomb.wav",SelfPos,85,110)
 	if(self:WaterLevel()>0)then self:Remove() return end
-	for key,found in pairs(ents.FindInSphere(SelfPos,400))do
+	for key,found in ipairs(ents.FindInSphere(SelfPos,400))do
 		if(IsValid(found:GetPhysicsObject()))then
 			if(self:Visible(found))then
 				found:Ignite(30)
 			end
 		end
 	end
-	JMod.Sploom(self.Entity,SelfPos,30)
+	JMod.Sploom(self,SelfPos,30)
 	for i=0,25 do
 		local Tr=util.QuickTrace(SelfPos,VectorRand()*math.Rand(200,300),{self})
 		if(Tr.Hit)then
@@ -155,5 +155,5 @@ function ENT:Think()
 	return true
 end
 function ENT:OnRemove()
-	--aw fuck you
+	
 end

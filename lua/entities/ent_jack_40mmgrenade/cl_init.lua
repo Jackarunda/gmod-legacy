@@ -19,6 +19,5 @@ function ENT:Draw()
 	render.SetColorModulation(1,1,1)
 end
 function ENT:OnRemove()
-	--eat a dick
 end
 language.Add("ent_jack_40mmgrenade","40mm Grenade")

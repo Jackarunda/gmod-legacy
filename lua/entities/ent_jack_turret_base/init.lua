@@ -163,16 +163,16 @@ function ENT:WillTargetThisSize(siz)
 end
 function ENT:Initialize()
 	self:SetAngles(Angle(0,0,0))
-	self.Entity:SetModel("models/combine_turrets/floor_turret.mdl")
-	--self.Entity:SetMaterial(self.TurretSkin)
-	self.Entity:SetMaterial("models/mat_jack_turret")
-	self.Entity:SetColor(Color(50,50,50))
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)	
-	self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:SetUseType(SIMPLE_USE)
-	self.Entity:DrawShadow(true)
-	local phys=self.Entity:GetPhysicsObject()
+	self:SetModel("models/combine_turrets/floor_turret.mdl")
+	--self:SetMaterial(self.TurretSkin)
+	self:SetMaterial("models/mat_jack_turret")
+	self:SetColor(Color(50,50,50))
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetMoveType(MOVETYPE_VPHYSICS)	
+	self:SetSolid(SOLID_VPHYSICS)
+	self:SetUseType(SIMPLE_USE)
+	self:DrawShadow(true)
+	local phys=self:GetPhysicsObject()
 	if phys:IsValid()then
 		phys:Wake()
 		phys:SetMass(200)
@@ -194,7 +194,7 @@ function ENT:GetShootPos()
 end
 function ENT:PhysicsCollide(data, physobj)
 	if((data.Speed>80)and(data.DeltaTime>0.2))then
-		if(IsValid(self.Entity))then self.Entity:EmitSound("Canister.ImpactHard") end
+		if(IsValid(self))then self:EmitSound("Canister.ImpactHard") end
 	end
 	if(data.Speed>750)then
 		self.StructuralIntegrity=self.StructuralIntegrity-data.Speed/10
@@ -207,7 +207,7 @@ function ENT:PhysicsCollide(data, physobj)
 	end
 end
 function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo)
+	self:TakePhysicsDamage(dmginfo)
 	if((dmginfo:IsDamageType(DMG_BUCKSHOT))or(dmginfo:IsDamageType(DMG_BULLET))or(dmginfo:IsDamageType(DMG_BLAST))or(dmginfo:IsDamageType(DMG_CLUB)))then
 		self.StructuralIntegrity=self.StructuralIntegrity-dmginfo:GetDamage()
 		if(self.StructuralIntegrity<=0)then
@@ -388,7 +388,7 @@ function ENT:Think()
 	end
 	if(State==TS_IDLING)then
 		if(self.NextWatchTime<Time)then
-			for key,potential in pairs(ents.FindInSphere(SelfPos,self.MaxTrackRange))do
+			for key,potential in ipairs(ents.FindInSphere(SelfPos,self.MaxTrackRange))do
 				if(GetVolyum(potential)>0)then
 					if(self:MotionCheck(potential))then
 						if(self:CanSee(potential))then
@@ -525,7 +525,7 @@ function ENT:ScanForTarget()
 	local Closest=self.MaxTrackRange
 	local Owner=self.Owner or self
 	local BestCandidate=nil
-	for key,potential in pairs(ents.FindInSphere(SelfPos,self.MaxTrackRange))do
+	for key,potential in ipairs(ents.FindInSphere(SelfPos,self.MaxTrackRange))do
 		local Size=GetVolyum(potential)
 		if((Size>0)and(self:WillTargetThisSize(Size)))then
 			if((not(potential==self))and(not(potential:IsWorld()))and(self:CanSee(potential)))then
@@ -656,7 +656,7 @@ function ENT:Alert(targ)
 		self.BatteryCharge=self.BatteryCharge-.5*self.MechanicsSizeMod
 		if(self.WillLight)then
 			self.flashlight=ents.Create("env_projectedtexture")
-			self.flashlight:SetParent(self.Entity)
+			self.flashlight:SetParent(self)
 			-- The local positions are the offsets from parent..
 			self.flashlight:SetLocalPos(Vector(0,0,50))
 			self.flashlight:SetLocalAngles(Angle(0,0,0))
@@ -750,7 +750,7 @@ function ENT:FireShot()
 			end
 			return
 		end
-		--self.Entity:ResetSequence(3) --prollem with this is the flash
+		--self:ResetSequence(3) --prollem with this is the flash
 		self:ManipulateBoneScale(3,Vector(self.BarrelSizeMod.x,self.BarrelSizeMod.y,self.BarrelSizeMod.z*.75))
 		timer.Simple(.1,function()
 			if(IsValid(self))then
@@ -910,7 +910,7 @@ function ENT:StartUp()
 	self:Notice()
 end
 function ENT:FindAmmo()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do
 		if(potential:GetClass()==BOXES[self.AmmoType])then
 			if not(potential.Empty)then
 				return potential
@@ -967,7 +967,7 @@ function ENT:DetachBattery()
 	self:EmitSound("snd_jack_turretbatteryunload.wav")
 end
 function ENT:FindBattery()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do
 		if(potential:GetClass()=="ent_jack_turretbattery")then
 			if not(potential.Dead)then
 				return potential
@@ -1012,7 +1012,7 @@ function ENT:Fix(kit)
 	SafeRemoveEntity(kit)
 end
 function ENT:FindRepairKit()
-	for key,potential in pairs(ents.FindInSphere(self:GetPos(),40))do 
+	for key,potential in ipairs(ents.FindInSphere(self:GetPos(),40))do 
 		if(potential:GetClass()=="ent_jack_turretrepairkit")then
 			return potential
 		end
@@ -1020,31 +1020,31 @@ function ENT:FindRepairKit()
 	return nil
 end
 --[[--------------------------------------------------------------
---					Chat mothafucka						   --
+--							Chat					 		  --
 --------------------------------------------------------------]]--
 local function SentryChat(ply,txt)
 	local Found=false
 	if(string.sub(txt,1,12)=="sentry lock ")then
-		for key,sent in pairs(ents.FindInSphere(ply:GetPos(),150))do
+		for key,sent in ipairs(ents.FindInSphere(ply:GetPos(),150))do
 			if(string.find(sent:GetClass(),"ent_jack_turret_"))then
 				local Pass=string.Split(txt," ")[3]
 				if((Pass)and(not(sent.IsLocked))and(sent.BatteryCharge>0))then
 					Found=true
 					sent.IsLocked=true
 					sent.LockPass=Pass
-					ply:PrintMessage(HUD_PRINTTALK,"Sentry "..tostring(sent:EntIndex()).." locked with password "..Pass)
+					ply:ChatPrint("Sentry "..tostring(sent:EntIndex()).." locked with password "..Pass)
 				end
 			end
 		end
 	elseif(string.sub(txt,1,14)=="sentry unlock ")then
-		for key,sent in pairs(ents.FindInSphere(ply:GetPos(),150))do
+		for key,sent in ipairs(ents.FindInSphere(ply:GetPos(),150))do
 			if(string.find(sent:GetClass(),"ent_jack_turret_"))then
 				local Pass=string.Split(txt," ")[3]
 				if((Pass)and(sent.IsLocked)and(Pass==sent.LockPass)and(sent.BatteryCharge>0))then
 					Found=true
 					sent.IsLocked=false
 					sent.LockPass=""
-					ply:PrintMessage(HUD_PRINTTALK,"Sentry "..tostring(sent:EntIndex()).." unlocked")
+					ply:ChatPrint("Sentry "..tostring(sent:EntIndex()).." unlocked")
 					sent:EmitSound("snd_jack_granted.wav",75,100)
 				end
 			end
@@ -1160,10 +1160,10 @@ local function IFFTag(...)
 	if((Tag)and(Tag!=0))then
 		if not(table.HasValue(self.IFFTags,Tag))then
 			if not(Tag==0)then table.ForceInsert(self.IFFTags,Tag) end
-			ply:PrintMessage(HUD_PRINTTALK,"Personal IFF tag ID recorded.")
+			ply:ChatPrint("Personal IFF tag ID recorded.")
 		else
 			table.remove(self.IFFTags,table.KeyFromValue(self.IFFTags,Tag))
-			ply:PrintMessage(HUD_PRINTTALK,"Personal IFF tag ID forgotten.")
+			ply:ChatPrint("Personal IFF tag ID forgotten.")
 		end
 	else
 		ply:PrintMessage(HUD_PRINTCENTER,"You don't have an IFF tag equipped.")

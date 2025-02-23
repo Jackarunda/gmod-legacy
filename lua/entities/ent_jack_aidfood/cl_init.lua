@@ -15,9 +15,9 @@ function ENT:Draw()
 	render.SetColorModulation(.5,.5,.5)
 	self.Inside:DrawModel()
 	render.SetColorModulation(1,1,1)
-	self.Entity:DrawModel()
+	self:DrawModel()
 end
 function ENT:OnRemove()
-	--fuck you kid you're a dick
+	
 end
 language.Add("ent_jack_aidfood","J.I. Food Box")

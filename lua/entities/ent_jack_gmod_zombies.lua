@@ -372,7 +372,7 @@ if(SERVER)then
 			JackyOpSquadSpawnEvent(npc)
 			npc29=npc
 		end)
-		timer.Simple(1.45,function()							--FUCK this was alot of work
+		timer.Simple(1.45,function()
 			undo.Create("Zombie Opposition Squad")
 			undo.SetPlayer(ply)
 			if(IsValid(npc1))then undo.AddEntity(npc1) end
@@ -405,7 +405,7 @@ if(SERVER)then
 			if(IsValid(npc28))then undo.AddEntity(npc28) end
 			if(IsValid(npc29))then undo.AddEntity(npc29) end
 			undo.AddFunction(function(undo)
-				for key,found in pairs(ents.FindByClass("npc_headcrab_poison"))do
+				for key,found in ipairs(ents.FindByClass("npc_headcrab_poison"))do
 					if(found:GetOwner()==npc1)then SafeRemoveEntity(found) end
 				end
 			end)

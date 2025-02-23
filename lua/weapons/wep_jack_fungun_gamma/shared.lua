@@ -63,7 +63,7 @@ local BlastEndPlayed=false
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("revolver")
-	self.BlastingSound=CreateSound(self.Weapon,"snd_jack_plasmaloop.wav")
+	self.BlastingSound=CreateSound(self,"snd_jack_plasmaloop.wav")
 	self.AccentSound=CreateSound(self,"snd_jack_plasmaloop_reversed.wav")
 	self.NewCartridge=true
 	self.dt.Ammo=1.005
@@ -88,7 +88,7 @@ function SWEP:PrimaryAttack()
 	if not(self.dt.State==2)then return end
 	if(self.dt.Ammo<=0)then return end
 	self:SetNextPrimaryFire(CurTime()+.2)
-	local ShootPos=self.Owner:GetShootPos()+self.Owner:GetAimVector()*20
+	local ShootPos=self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20
 	self:EmitSound("snd_jack_plasmapop.wav",80,100)
 	self:EmitSound("snd_jack_plasmapop.wav",70,100)
 	self.BlastingSound:Play()
@@ -109,14 +109,14 @@ function SWEP:Think()
 	
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -127,13 +127,13 @@ function SWEP:Think()
 	local Red=math.Clamp(Heat*463-69,0,255)
 	local Green=math.Clamp(Heat*1275-1020,0,255)
 	local Blue=math.Clamp(Heat*2550-2295,0,255)
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,tostring(math.Round(Red)).." "..tostring(math.Round(Green)).." "..tostring(math.Round(Blue)))
 	self.VElements["narg"].color=Color(Red,Green,Blue,255)
 
 	local State=self.dt.State
-	//self.Owner:PrintMessage(HUD_PRINTCENTER,State)
+	//self:GetOwner():PrintMessage(HUD_PRINTCENTER,State)
 	if((State==4)or(State==5))then return end
-	if((self.Owner:InVehicle())or(self.Owner:KeyDown(IN_ZOOM)))then
+	if((self:GetOwner():InVehicle())or(self:GetOwner():KeyDown(IN_ZOOM)))then
 		if(State==3)then
 			self.BlastingSound:Stop()
 			self.AccentSound:Stop()
@@ -142,9 +142,9 @@ function SWEP:Think()
 		return
 	end
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*5
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*4-self:GetOwner():GetUp()*5
+	local AimVec=self:GetOwner():GetAimVector()
 	
 	if not(self.HeldBackAmount)then self.HeldBackAmount=0 end
 	
@@ -155,7 +155,7 @@ function SWEP:Think()
 		self.dt.Heat=math.Clamp(Heat+.002*self.HeatMul,0,1)
 		local Ammo=self.dt.Ammo
 		local Loss=(.0122+.17*Heat^4)*.007*self.ConsumptionMul
-		//self.Owner:PrintMessage(HUD_PRINTCENTER,Loss)
+		//self:GetOwner():PrintMessage(HUD_PRINTCENTER,Loss)
 		self.dt.Ammo=Ammo-Loss
 		if not(self.NextBlastingSoundTime)then self.NextBlastingSoundTime=CurTime()+.1 end
 		if(self.NextBlastingSoundTime<CurTime())then
@@ -170,15 +170,15 @@ function SWEP:Think()
 			local WeldPos=nil
 			local WeldNorm=nil
 			for i=1,2 do
-				local TressDat={start=BaseShootPos,endpos=ShootPos+AimVec*math.Rand(100,110)+VectorRand()*math.Rand(0,20),filter=self.Owner,mask=MASK_SHOT}
+				local TressDat={start=BaseShootPos,endpos=ShootPos+AimVec*math.Rand(100,110)+VectorRand()*math.Rand(0,20),filter=self:GetOwner(),mask=MASK_SHOT}
 				local Tress=util.TraceLine(TressDat)
 				if(Tress.Hit)then
 					local WantSomeIceWithThatBurn=DamageInfo()
 					WantSomeIceWithThatBurn:SetDamage(math.Rand(.2,.4))
 					WantSomeIceWithThatBurn:SetDamagePosition(Tress.HitPos)
 					WantSomeIceWithThatBurn:SetDamageForce(AimVec*900)
-					WantSomeIceWithThatBurn:SetAttacker(self.Owner)
-					WantSomeIceWithThatBurn:SetInflictor(self.Weapon)
+					WantSomeIceWithThatBurn:SetAttacker(self:GetOwner())
+					WantSomeIceWithThatBurn:SetInflictor(self)
 					if(Tress.Entity:IsOnFire())then
 						WantSomeIceWithThatBurn:SetDamageType(DMG_GENERIC)
 					elseif(math.random(1,9)==5)then
@@ -238,7 +238,7 @@ function SWEP:Think()
 				end
 			end
 			if(math.random(1,2)==2)then
-				if(self.Owner:WaterLevel()==3)then
+				if(self:GetOwner():WaterLevel()==3)then
 					local Blamo=EffectData()
 					Blamo:SetOrigin(ShootPos+AimVec*30)
 					Blamo:SetStart(AimVec)
@@ -246,8 +246,8 @@ function SWEP:Think()
 				end
 			end
 		end
-		self.Owner:ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
-		self.Owner:SetVelocity(-AimVec*.5)
+		self:GetOwner():ViewPunch(Angle(math.Rand(-.05,.05),math.Rand(-.05,.05),math.Rand(-.05,.05)))
+		self:GetOwner():SetVelocity(-AimVec*.5)
 	else
 		self.HeldBackAmount=math.Clamp(self.HeldBackAmount*.95-.0001,0,1)
 		self.TurbineSpin=math.Clamp(self.TurbineSpin*.98-.0001,0,1)
@@ -261,25 +261,25 @@ function SWEP:BurstCool()
 	if(self.dt.State==4)then return end
 	self.dt.State=4
 
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:GetViewModel():SetPlaybackRate(.25)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():GetViewModel():SetPlaybackRate(.25)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	if not(BurstCoolSoundPlayed)then
 		BurstCoolSoundPlayed=true
-		self.Weapon:EmitSound("snd_jack_plasmavent.wav",70,100)
+		self:EmitSound("snd_jack_plasmavent.wav",70,100)
 	end
 	if(SERVER)then
 		local Pewf=EffectData()
-		Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-		Pewf:SetStart(self.Owner:GetVelocity())
+		Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+		Pewf:SetStart(self:GetOwner():GetVelocity())
 		util.Effect("eff_jack_instantvent",Pewf,true,true)
 	end
 	timer.Simple(.2,function()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -288,8 +288,8 @@ function SWEP:BurstCool()
 		if(IsValid(self))then
 			if(SERVER)then
 				local Pewf=EffectData()
-				Pewf:SetOrigin(self.Owner:GetShootPos()+self.Owner:GetAimVector()*20+self.Owner:GetRight()*4)
-				Pewf:SetStart(self.Owner:GetVelocity())
+				Pewf:SetOrigin(self:GetOwner():GetShootPos()+self:GetOwner():GetAimVector()*20+self:GetOwner():GetRight()*4)
+				Pewf:SetStart(self:GetOwner():GetVelocity())
 				util.Effect("eff_jack_instantvent",Pewf,true,true)
 			end
 		end
@@ -365,10 +365,10 @@ if(CLIENT)then
 	end
 	function SWEP:ViewModelDrawn()
 		if(self.dt.State==3)then
-			local VM=self.Owner:GetViewModel()
+			local VM=self:GetOwner():GetViewModel()
 			local Pos,Ang=VM:GetBonePosition(VM:LookupBone("Main Frame"))
 			Pos=Pos+Ang:Right()*3-Ang:Up()*2
-			local Dir=self.Owner:GetAimVector()
+			local Dir=self:GetOwner():GetAimVector()
 			render.SetMaterial(Distort)
 			render.DrawSprite(Pos+Dir*50*math.Rand(.8,1.2),60*math.Rand(.8,1.2),60*math.Rand(.8,1.2),Color(175,200,255,255*math.Rand(.8,1.2)))
 			render.SetMaterial(Glow)
@@ -421,7 +421,7 @@ end
 hook.Add("KeyRelease","JackysGammaBlasterReleaseSound",PlayEndSound)
 
 local function GunThink()	
-	for key,wep in pairs(ents.FindByClass("wep_jack_fungun_gamma"))do
+	for key,wep in ipairs(ents.FindByClass("wep_jack_fungun_gamma"))do
 		local Heat=wep.dt.Heat
 		if(Heat)then
 			local State=wep.dt.State
@@ -461,8 +461,8 @@ if(CLIENT)then
 		if(IsValid(self))then
 			if(self:GetClass()=="wep_jack_fungun_gamma")then
 				if(self.dt.State==3)then
-					local Pos,Ang=self.Owner:GetBonePosition(self.Owner:LookupBone("ValveBiped.Bip01_R_Hand"))
-					local Dir=self.Owner:GetAimVector()
+					local Pos,Ang=self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
+					local Dir=self:GetOwner():GetAimVector()
 					
 					local Mat=math.random(1,2)
 						if(Mat==2)then

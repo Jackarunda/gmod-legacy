@@ -85,7 +85,7 @@ local AlertSoundPlayed=false
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("revolver")
-	self.FreezingSound=CreateSound(self.Weapon,"snd_jack_iceloop.wav")
+	self.FreezingSound=CreateSound(self,"snd_jack_iceloop.wav")
 	self.FreezingSound:SetSoundLevel(60)
 	self.CurrentProjectileSize=0
 	self.NewCartridge=true
@@ -115,41 +115,41 @@ function SWEP:PrimaryAttack()
 	if not(self.dt.State==2)then return end
 	if(self.dt.Sprint>15)then return end
 	
-	local BaseShootPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
 	local ShootPos=BaseShootPos+AimVec*20
-	local CtD={start=BaseShootPos,endpos=ShootPos,filter=self.Owner}
+	local CtD={start=BaseShootPos,endpos=ShootPos,filter=self:GetOwner()}
 	local Ct=util.TraceLine(CtD)
 	if(Ct.Hit)then ShootPos=BaseShootPos end
 	
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	
 	self.dt.Ammo=math.Clamp(self.dt.Ammo-.0025,0,1)
 	
 	if(SERVER)then
-		self.Weapon:EmitSound("snd_jack_iceshot.wav",70,100)
+		self:EmitSound("snd_jack_iceshot.wav",70,100)
 		self:EmitSound("snd_jack_iceshot.wav",100,80)
 		self:EmitSound("snd_jack_iceshot.wav",60,120)
 		
 		local Size=self.dt.Size
 		local Spike=ents.Create("ent_jack_projecticle")
 		Spike:SetPos(ShootPos)
-		Spike.Weapon=self.Weapon
-		Spike.Owner=self.Owner
-		Spike.InitialFlightDirection=(AimVec+self.Owner:GetVelocity():GetNormalized()*.1):GetNormalized()
+		Spike.Weapon=self
+		Spike.Owner=self:GetOwner()
+		Spike.InitialFlightDirection=(AimVec+self:GetOwner():GetVelocity():GetNormalized()*.1):GetNormalized()
 		Spike.InitialFlightSpeed=160 -- about 184 mps
 		Spike:SetDTFloat(0,Size)
 		Spike:Spawn()
 		Spike:Activate()
 		
 		Size=Size/7.5
-		self.Owner:SetEyeAngles(self.Owner:EyeAngles()+Angle(-Size,-Size/2,0))
-		self.Owner:ViewPunch(Angle(-Size/2,-Size/3,0))
+		self:GetOwner():SetEyeAngles(self:GetOwner():EyeAngles()+Angle(-Size,-Size/2,0))
+		self:GetOwner():ViewPunch(Angle(-Size/2,-Size/3,0))
 		
-		local Derp=self.Owner:GetGroundEntity()
+		local Derp=self:GetOwner():GetGroundEntity()
 		if not((IsValid(Derp))or(Derp:IsWorld()))then
-			self.Owner:SetVelocity(-AimVec*Size*25)
+			self:GetOwner():SetVelocity(-AimVec*Size*25)
 		end
 	end
 
@@ -157,7 +157,7 @@ function SWEP:PrimaryAttack()
 		local Poof=EffectData()
 		Poof:SetScale(1)
 		Poof:SetNormal(AimVec)
-		Poof:SetStart(self.Owner:GetVelocity())
+		Poof:SetStart(self:GetOwner():GetVelocity())
 		Poof:SetOrigin(ShootPos)
 		util.Effect("eff_jack_coldmuzzle",Poof,true,true)
 
@@ -171,9 +171,9 @@ function SWEP:PrimaryAttack()
 	timer.Simple(.5,function()
 		if(IsValid(self))then
 			self.dt.State=2
-			if(self.Owner:KeyDown(IN_ATTACK))then
+			if(self:GetOwner():KeyDown(IN_ATTACK))then
 				self:PrimaryAttack()
-			elseif(self.Owner:KeyDown(IN_RELOAD))then
+			elseif(self:GetOwner():KeyDown(IN_RELOAD))then
 				self:Reload()
 			end
 		end
@@ -183,14 +183,14 @@ end
 function SWEP:Think()
 	if(SERVER)then
 		local Held=self.dt.Sprint
-		if(self.Owner:KeyDown(IN_SPEED))then
+		if(self:GetOwner():KeyDown(IN_SPEED))then
 			if(Held<100)then self.dt.Sprint=Held+6 end
 		else
 			if(Held>0)then self.dt.Sprint=Held-6 end
 		end
 		
 		local Aim=self.dt.Aim
-		if(self.Owner:KeyDown(IN_ATTACK2))then
+		if(self:GetOwner():KeyDown(IN_ATTACK2))then
 			if(Aim<100)then self.dt.Aim=Aim+6 end
 		else
 			if(Aim>0)then self.dt.Aim=Aim-6 end
@@ -201,7 +201,7 @@ function SWEP:Think()
 	local Size=self.dt.Size
 
 	if((State==4)or(State==5))then return end
-	if(self.Owner:InVehicle())then
+	if(self:GetOwner():InVehicle())then
 		if(State==3)then
 			self.FreezingSound:Stop()
 			self.dt.State=2
@@ -218,9 +218,9 @@ function SWEP:Think()
 	local Ammo=self.dt.Ammo
 	local Sprin=self.dt.Sprint/100
 
-	local BaseShootPos=self.Owner:GetShootPos()
-	local AimVec=self.Owner:GetAimVector()
-	local ShootPos=BaseShootPos+self.Owner:GetRight()*4-self.Owner:GetUp()*(5-7*Sprin)+AimVec*(30-25*Sprin)
+	local BaseShootPos=self:GetOwner():GetShootPos()
+	local AimVec=self:GetOwner():GetAimVector()
+	local ShootPos=BaseShootPos+self:GetOwner():GetRight()*4-self:GetOwner():GetUp()*(5-7*Sprin)+AimVec*(30-25*Sprin)
 	
 	if(State==3)then
 		if not(self.NextFreezingSoundTime)then self.NextFreezingSoundTime=CurTime()+.1 end
@@ -231,7 +231,7 @@ function SWEP:Think()
 			self.NextFreezingSoundTime=CurTime()+1.5
 		end
 		local Add=.05
-		if(self.Owner:WaterLevel()==3)then Add=.25 end
+		if(self:GetOwner():WaterLevel()==3)then Add=.25 end
 		self.CurrentProjectileSize=math.Clamp(Size+Add,1,100)
 		self.dt.Size=self.CurrentProjectileSize
 		
@@ -239,7 +239,7 @@ function SWEP:Think()
 			if(SERVER)then
 				local Shh=EffectData()
 				Shh:SetOrigin(ShootPos+VectorRand()*math.Rand(0,5))
-				Shh:SetStart(self.Owner:GetVelocity()+VectorRand()*math.Rand(0,10))
+				Shh:SetStart(self:GetOwner():GetVelocity()+VectorRand()*math.Rand(0,10))
 				Shh:SetScale(1)
 				util.Effect("eff_jack_cold",Shh,true,true)
 			end
@@ -261,7 +261,7 @@ end
 function SWEP:StartFreezing()
 	if not(self.dt.State==2)then return end
 	self.dt.State=4
-	self.Weapon:EmitSound("snd_jack_beginice.wav",55,100)
+	self:EmitSound("snd_jack_beginice.wav",55,100)
 	timer.Simple(.5,function()
 		if(IsValid(self))then
 			self.dt.State=3
@@ -273,13 +273,13 @@ function SWEP:FinishFreezing()
 	if not(self.dt.State==3)then return end
 	self.FreezingSound:Stop()
 	self.dt.State=4
-	self.Weapon:EmitSound("snd_jack_endice.wav",55,100)
+	self:EmitSound("snd_jack_endice.wav",55,100)
 	timer.Simple(.75,function()
 		if(IsValid(self))then
 			self.dt.State=2
-			if(self.Owner:KeyDown(IN_ATTACK))then
+			if(self:GetOwner():KeyDown(IN_ATTACK))then
 				self:PrimaryAttack()
-			elseif(self.Owner:KeyDown(IN_RELOAD))then
+			elseif(self:GetOwner():KeyDown(IN_RELOAD))then
 				self:Reload()
 			end
 		end
